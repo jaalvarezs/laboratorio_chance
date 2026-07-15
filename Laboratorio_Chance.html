@@ -147,6 +147,13 @@
   </div>
   <div class="aviso" id="avisoStorage"></div>
   <ul class="nuevos" id="listaNuevos"></ul>
+  <div style="margin-top:24px">
+    <b style="font-family:Archivo">Importación masiva (tablero completo)</b>
+    <div class="sub" style="margin:4px 0 10px">Pega una lista con formato <b>fecha,lotería,número</b> — una por línea; si una línea no trae fecha se usa la del campo de arriba. Flujo recomendado: toma la foto del tablero, envíamela en Claude y te devuelvo la lista lista para pegar aquí.</div>
+    <textarea id="impTexto" rows="6" style="width:100%; font:13px ui-monospace,monospace; border:1px solid var(--borde); border-radius:8px; padding:10px; color:var(--tinta)" placeholder="2026-07-14,Sinuano Día,8298&#10;2026-07-14,Astro Luna,5099"></textarea>
+    <div class="fila-form" style="margin-top:10px"><button id="btnImportar">Importar lista</button></div>
+    <div class="aviso" id="impResultado"></div>
+  </div>
 </section>
 
 <section>
@@ -214,6 +221,28 @@ function clasificarAcierto(pred, numStr, posiciones){
   if (u2) return {tipo:'dosUlt', aciertos:ac};
   if (ac >= 2) return {tipo:'parcial', aciertos:ac};
   return {tipo:'nada', aciertos:ac};
+}
+function parsearImportacion(texto, fechaDefecto, existentes){
+  const out = {ok:[], errores:[], duplicados:[]};
+  const lineas = texto.split(/\r?\n/);
+  for (let i = 0; i < lineas.length; i++){
+    const cruda = lineas[i].trim();
+    if (!cruda) continue;
+    const partes = cruda.split(/[,;\t]/).map(s => s.trim()).filter(s => s !== '');
+    if (partes.length < 2){ out.errores.push(i + 1); continue; }
+    let fecha = fechaDefecto, ini = 0;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(partes[0])){ fecha = partes[0]; ini = 1; }
+    if (partes.length - ini < 2){ out.errores.push(i + 1); continue; }
+    let num = partes[partes.length - 1].split('-')[0].trim();
+    const lot = partes.slice(ini, partes.length - 1).join(' ');
+    if (!/^\d{3,4}$/.test(num) || !lot || !fecha){ out.errores.push(i + 1); continue; }
+    num = num.padStart(4, '0');
+    const clave = fecha + '|' + lot;
+    if (existentes.has(clave)){ out.duplicados.push(lot); continue; }
+    existentes.add(clave);
+    out.ok.push([fecha, lot, num]);
+  }
+  return out;
 }
 // ==/ENGINE==
 
@@ -483,6 +512,22 @@ document.getElementById('btnAgregar').onclick = async () => {
   document.getElementById('fNum').value = '';
   poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
 };
+document.getElementById('btnImportar').onclick = async () => {
+  const texto = document.getElementById('impTexto').value;
+  if (!texto.trim()) return;
+  const fechaDef = document.getElementById('fFecha').value || new Date().toISOString().slice(0, 10);
+  const existentes = new Set(baseCompleta().map(r => r[0] + '|' + r[1]));
+  const r = parsearImportacion(texto, fechaDef, existentes);
+  for (const reg of r.ok) NUEVOS.push(reg);
+  if (r.ok.length) await guardarNuevos();
+  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  let msj = 'Importados: ' + r.ok.length + ' registros.';
+  if (r.duplicados.length) msj += ' Omitidos por duplicado (misma fecha y lotería): ' + r.duplicados.length + '.';
+  if (r.errores.length) msj += ' Líneas con error: ' + r.errores.join(', ') + '.';
+  document.getElementById('impResultado').textContent = msj;
+  if (r.ok.length && !r.errores.length) document.getElementById('impTexto').value = '';
+};
+
 document.getElementById('btnLimpiar').onclick = async () => {
   if (!NUEVOS.length) return;
   if (!confirm('¿Borrar los ' + NUEVOS.length + ' registros agregados?')) return;
