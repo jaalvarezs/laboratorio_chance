@@ -1,0 +1,14 @@
+{
+  "name": "Laboratorio de Chance",
+  "short_name": "Lab Chance",
+  "description": "Backtesting de métodos caliente, rezagado y frío por lotería, con sorteos reales de Colombia.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F5F0",
+  "theme_color": "#1B2A4A",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

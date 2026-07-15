@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laboratorio de Chance · Backtesting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root{
+    --papel:#F7F5F0; --carta:#FFFFFF; --tinta:#1B2A4A; --tinta-suave:#3A4A6B;
+    --oro:#E8A21D; --oro-oscuro:#B87D0E;
+    --caliente:#D85A30; --rezagado:#6C5FD3; --frio:#0F6E56;
+    --muted:#6B7280; --borde:#E4E0D6; --ok:#0F6E56; --alerta:#B45309;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  body{background:var(--papel); color:var(--tinta); font-family:'Inter',system-ui,sans-serif; font-size:15px; line-height:1.6}
+  .banda{background:var(--tinta); color:#fff; padding:26px 0 22px}
+  .cont{max-width:960px; margin:0 auto; padding:0 20px}
+  .eyebrow{font-family:'Archivo'; font-weight:700; font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--oro)}
+  h1{font-family:'Archivo'; font-weight:900; font-size:30px; line-height:1.15; margin:6px 0 4px}
+  .banda p{color:#C7CEDD; font-size:14px; max-width:640px}
+  .fila-sel{display:flex; gap:14px; align-items:end; flex-wrap:wrap; margin-top:18px}
+  .campo label{display:block; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:#9FB0CE; margin-bottom:5px}
+  select,input[type=text],input[type=date]{font:inherit; padding:9px 12px; border:1px solid var(--borde); border-radius:8px; background:#fff; color:var(--tinta); min-width:180px}
+  .banda select{border-color:#44557A; background:#24365C; color:#fff}
+  .pastilla{background:#24365C; border:1px solid #44557A; border-radius:8px; padding:9px 14px; font-size:13px; color:#C7CEDD}
+  .pastilla b{color:#fff; font-family:'Archivo'; font-weight:700}
+  main{padding:30px 0 50px}
+  section{margin-bottom:34px}
+  h2{font-family:'Archivo'; font-weight:700; font-size:19px; margin-bottom:4px}
+  .sub{color:var(--muted); font-size:13.5px; margin-bottom:16px}
+  .metodos{display:grid; gap:14px}
+  .metodo{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:16px 18px; display:flex; align-items:center; gap:18px; flex-wrap:wrap}
+  .metodo .nombre{min-width:150px}
+  .metodo .nombre b{font-family:'Archivo'; font-weight:700; font-size:15px; letter-spacing:.02em}
+  .metodo .nombre span{display:block; font-size:12.5px; color:var(--muted)}
+  .balotas{display:flex; gap:10px}
+  .balota{width:52px; height:52px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #FFF6E3, #FDEBC4 55%, #F3D390); border:3px solid var(--oro-oscuro); display:flex; align-items:center; justify-content:center; font-family:'Archivo'; font-weight:900; font-size:24px; color:var(--tinta); box-shadow:inset 0 -4px 8px rgba(184,125,14,.25)}
+  .metodo.m-cal .nombre b{color:var(--caliente)} .metodo.m-rez .nombre b{color:var(--rezagado)} .metodo.m-fri .nombre b{color:var(--frio)}
+  .tarjetas{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px}
+  .tarjeta{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:16px 18px}
+  .tarjeta .etq{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
+  .tarjeta .valor{font-family:'Archivo'; font-weight:900; font-size:28px; margin-top:2px}
+  .tarjeta .comp{font-size:12.5px; color:var(--muted); margin-top:2px}
+  .tarjeta .comp b{color:var(--tinta)}
+  .grafico{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:18px}
+  .leyenda{display:flex; gap:18px; flex-wrap:wrap; font-size:12.5px; color:var(--muted); margin-bottom:10px}
+  .leyenda span{display:flex; align-items:center; gap:6px}
+  .chip{width:18px; height:0; border-top:3px solid}
+  .veredicto{border-radius:14px; padding:16px 18px; font-size:14px; border:1px solid var(--borde); background:var(--carta)}
+  .veredicto b{font-family:'Archivo'}
+  .fila-form{display:flex; gap:12px; flex-wrap:wrap; align-items:end}
+  button{font:inherit; font-weight:600; padding:10px 18px; border-radius:8px; border:1px solid var(--tinta); background:var(--tinta); color:#fff; cursor:pointer}
+  button:hover{background:var(--tinta-suave)}
+  button.sec{background:transparent; color:var(--tinta)}
+  .nuevos{margin-top:14px; font-size:13.5px}
+  .nuevos li{display:flex; gap:10px; align-items:center; padding:6px 0; border-bottom:1px dashed var(--borde); list-style:none}
+  .nuevos button{padding:2px 10px; font-size:12px; border-color:#C4443A; background:transparent; color:#C4443A}
+  .aviso{font-size:12.5px; color:var(--muted); margin-top:8px}
+  .nota-honesta{background:#FBF3E2; border:1px solid #EAD9AE; border-radius:14px; padding:16px 18px; font-size:13.5px; color:#5B4A1E}
+    .dia{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:12px 16px; margin-bottom:12px}
+  .dia-h{font-family:'Archivo'; font-weight:700; font-size:14px; color:var(--tinta); border-bottom:1px solid var(--borde); padding-bottom:6px; margin-bottom:6px}
+  .dia-r{display:flex; justify-content:space-between; gap:12px; padding:3px 0; font-size:13.5px; border-bottom:1px dashed #F0EDE4}
+  .dia-r:last-child{border-bottom:none}
+  .dia-r b{font-family:'Archivo'; font-weight:700; letter-spacing:.06em}
+  .banner{border-radius:14px; padding:16px 18px; margin-bottom:16px; font-size:14.5px; border:2px solid}
+  .banner.b-exacto{background:#FDF3D7; border-color:var(--oro); color:#5B4A1E}
+  .banner.b-parcial{background:#E7F3EE; border-color:var(--frio); color:#0A4A3A}
+  .banner.b-nada{background:var(--carta); border-color:var(--borde); color:var(--muted); border-width:1px}
+  .banner b{font-family:'Archivo'}
+  .acierto-item{display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--carta); border:1px solid var(--borde); border-left:4px solid var(--oro); border-radius:10px; padding:8px 14px; margin-bottom:8px; font-size:13.5px}
+  .acierto-item .tag{font-family:'Archivo'; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; background:#FDF3D7; color:#7A5A10; border-radius:6px; padding:2px 8px}
+  @media (max-width:640px){ .balota{width:44px; height:44px; font-size:20px} .metodo .nombre{min-width:100%} }
+</style>
+</head>
+<body>
+<header class="banda">
+  <div class="cont">
+    <div class="eyebrow">Laboratorio de chance · sorteos reales de Colombia</div>
+    <h1>Backtesting de métodos por lotería</h1>
+    <p>Chance y Lotería de Medellín en un solo laboratorio: recorre el histórico simulando qué habría pronosticado cada método usando solo los sorteos anteriores, y mide el acierto real contra lo que predice el puro azar.</p>
+    <div class="fila-sel">
+      <div class="campo"><label for="selLot">Lotería</label><select id="selLot"></select></div>
+      <div class="pastilla">Registros: <b id="stTotal">—</b></div>
+      <div class="pastilla">Rango: <b id="stRango">—</b></div>
+    </div>
+  </div>
+</header>
+<main class="cont">
+
+<section>
+  <h2>Pronóstico para el próximo sorteo</h2>
+  <div class="sub" id="subPron">Calculado con todos los sorteos disponibles de la selección.</div>
+  <div class="metodos">
+    <div class="metodo m-cal"><div class="nombre"><b>CALIENTE</b><span>dígito más frecuente por posición</span></div><div class="balotas" id="balCal"></div></div>
+    <div class="metodo m-rez"><div class="nombre"><b>REZAGADO</b><span>dígito con más sorteos sin salir</span></div><div class="balotas" id="balRez"></div></div>
+    <div class="metodo m-fri"><div class="nombre"><b>FRÍO</b><span>dígito menos frecuente por posición</span></div><div class="balotas" id="balFri"></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>Backtest · ¿algún método le gana al azar?</h2>
+  <div class="sub" id="subBack">—</div>
+  <div class="tarjetas" id="tarjetas"></div>
+  <div id="aciertosLog" style="margin-top:14px"></div>
+</section>
+
+<section>
+  <div class="grafico">
+    <div class="leyenda">
+      <span><span class="chip" style="border-color:var(--caliente)"></span>Caliente</span>
+      <span><span class="chip" style="border-color:var(--rezagado); border-top-style:dashed"></span>Rezagado</span>
+      <span><span class="chip" style="border-color:var(--frio); border-top-style:dotted"></span>Frío</span>
+      <span><span class="chip" style="border-color:#9CA3AF; border-top-style:dashed"></span>Esperado por azar</span>
+    </div>
+    <div style="position:relative; height:300px"><canvas id="chartAcum" role="img" aria-label="Promedio acumulado de cifras acertadas en posición por método, comparado con la línea del azar"></canvas></div>
+  </div>
+</section>
+
+<section>
+  <div class="veredicto" id="veredicto">—</div>
+</section>
+
+<section>
+  <h2>Consulta del histórico</h2>
+  <div class="sub">Elige la lotería y el rango de fechas a visualizar; solo se muestran los resultados de ese periodo. <span id="histCuenta"></span></div>
+  <div class="fila-form" style="margin-bottom:14px">
+    <div class="campo"><label for="filtroHist">Lotería</label><select id="filtroHist"></select></div>
+    <div class="campo"><label for="histIni">Desde</label><input type="date" id="histIni"></div>
+    <div class="campo"><label for="histFin">Hasta</label><input type="date" id="histFin"></div>
+  </div>
+  <div id="histLista"></div>
+</section>
+
+<section>
+  <div id="bannerAcierto" style="display:none"></div>
+  <h2>Registrar resultados nuevos</h2>
+  <div class="sub">Los sorteos que agregues se guardan y entran de inmediato al pronóstico y al backtest.</div>
+  <div class="fila-form">
+    <div class="campo"><label for="fFecha">Fecha</label><input type="date" id="fFecha"></div>
+    <div class="campo"><label for="fLot">Lotería</label><input type="text" id="fLot" list="listaLots" placeholder="Ej: Sinuano Noche"><datalist id="listaLots"></datalist></div>
+    <div class="campo"><label for="fNum">Número (4 cifras)</label><input type="text" id="fNum" placeholder="Ej: 0492" maxlength="4" style="min-width:120px"></div>
+    <button id="btnAgregar">Agregar sorteo</button>
+    <button class="sec" id="btnLimpiar">Borrar agregados</button>
+  </div>
+  <div class="aviso" id="avisoStorage"></div>
+  <ul class="nuevos" id="listaNuevos"></ul>
+</section>
+
+<section>
+  <div class="nota-honesta"><b>Lectura honesta del laboratorio:</b> cada sorteo es independiente y uniforme, así que lo esperado es que los tres métodos converjan a la línea del azar a medida que acumulas evaluaciones. Con muestras pequeñas (~20 sorteos por lotería) verás métodos "ganando" o "perdiendo" temporalmente — eso es varianza, no señal. La brecha se considera real solo si |z| supera 3 de forma sostenida al crecer los datos. Nota: en Pick 3 el análisis usa solo las 3 cifras del juego.</div>
+</section>
+
+</main>
+<script>
+const DATOS = [["2007-01-05","Lotería de Medellín","3652"],["2007-01-12","Lotería de Medellín","9407"],["2007-01-19","Lotería de Medellín","9864"],["2007-01-26","Lotería de Medellín","5589"],["2007-02-02","Lotería de Medellín","1721"],["2007-02-09","Lotería de Medellín","5318"],["2007-02-16","Lotería de Medellín","3407"],["2007-02-23","Lotería de Medellín","5723"],["2007-03-02","Lotería de Medellín","1047"],["2007-03-09","Lotería de Medellín","1563"],["2007-03-16","Lotería de Medellín","1655"],["2007-03-23","Lotería de Medellín","0957"],["2007-03-30","Lotería de Medellín","4055"],["2007-04-04","Lotería de Medellín","2680"],["2007-04-13","Lotería de Medellín","5208"],["2007-04-20","Lotería de Medellín","2485"],["2007-04-27","Lotería de Medellín","6373"],["2007-05-04","Lotería de Medellín","2902"],["2007-05-11","Lotería de Medellín","8235"],["2007-05-18","Lotería de Medellín","0900"],["2007-05-25","Lotería de Medellín","1407"],["2007-06-01","Lotería de Medellín","3697"],["2007-06-08","Lotería de Medellín","0252"],["2007-06-15","Lotería de Medellín","8259"],["2007-06-22","Lotería de Medellín","4101"],["2007-06-29","Lotería de Medellín","1944"],["2007-07-06","Lotería de Medellín","1545"],["2007-07-13","Lotería de Medellín","1364"],["2007-07-21","Lotería de Medellín","2086"],["2007-07-27","Lotería de Medellín","5028"],["2007-08-03","Lotería de Medellín","6327"],["2007-08-10","Lotería de Medellín","9141"],["2007-08-17","Lotería de Medellín","9371"],["2007-08-24","Lotería de Medellín","9482"],["2007-08-31","Lotería de Medellín","6090"],["2007-09-07","Lotería de Medellín","8251"],["2007-09-14","Lotería de Medellín","2522"],["2007-09-21","Lotería de Medellín","7265"],["2007-09-28","Lotería de Medellín","0372"],["2007-10-05","Lotería de Medellín","5490"],["2007-10-12","Lotería de Medellín","7875"],["2007-10-19","Lotería de Medellín","0880"],["2007-10-26","Lotería de Medellín","3108"],["2007-11-02","Lotería de Medellín","2820"],["2007-11-09","Lotería de Medellín","2025"],["2007-11-16","Lotería de Medellín","1544"],["2007-11-23","Lotería de Medellín","3730"],["2007-11-30","Lotería de Medellín","3055"],["2007-12-07","Lotería de Medellín","4123"],["2007-12-14","Lotería de Medellín","5699"],["2007-12-21","Lotería de Medellín","3243"],["2007-12-28","Lotería de Medellín","0149"],["2008-01-04","Lotería de Medellín","7113"],["2008-01-11","Lotería de Medellín","2912"],["2008-01-18","Lotería de Medellín","8413"],["2008-01-25","Lotería de Medellín","8767"],["2008-02-01","Lotería de Medellín","2057"],["2008-02-08","Lotería de Medellín","0034"],["2008-02-15","Lotería de Medellín","8919"],["2008-02-22","Lotería de Medellín","3776"],["2008-02-29","Lotería de Medellín","4755"],["2008-03-07","Lotería de Medellín","1865"],["2008-03-14","Lotería de Medellín","1363"],["2008-03-22","Lotería de Medellín","3036"],["2008-03-28","Lotería de Medellín","9511"],["2008-04-04","Lotería de Medellín","5379"],["2008-04-11","Lotería de Medellín","9234"],["2008-04-18","Lotería de Medellín","6549"],["2008-04-25","Lotería de Medellín","4169"],["2008-05-02","Lotería de Medellín","3324"],["2008-05-09","Lotería de Medellín","3704"],["2008-05-16","Lotería de Medellín","5329"],["2008-05-23","Lotería de Medellín","1828"],["2008-05-30","Lotería de Medellín","1678"],["2008-06-06","Lotería de Medellín","9591"],["2008-06-13","Lotería de Medellín","5327"],["2008-06-20","Lotería de Medellín","9541"],["2008-06-27","Lotería de Medellín","2852"],["2008-07-04","Lotería de Medellín","9603"],["2008-07-11","Lotería de Medellín","7972"],["2008-07-18","Lotería de Medellín","9435"],["2008-07-25","Lotería de Medellín","9717"],["2008-08-01","Lotería de Medellín","1022"],["2008-08-08","Lotería de Medellín","4122"],["2008-08-15","Lotería de Medellín","9332"],["2008-08-22","Lotería de Medellín","7631"],["2008-08-29","Lotería de Medellín","7827"],["2008-09-05","Lotería de Medellín","7780"],["2008-09-12","Lotería de Medellín","6499"],["2008-09-19","Lotería de Medellín","3839"],["2008-09-26","Lotería de Medellín","0170"],["2008-10-03","Lotería de Medellín","7049"],["2008-10-10","Lotería de Medellín","7944"],["2008-10-17","Lotería de Medellín","1885"],["2008-10-24","Lotería de Medellín","4895"],["2008-10-31","Lotería de Medellín","9014"],["2008-11-07","Lotería de Medellín","9472"],["2008-11-14","Lotería de Medellín","2234"],["2008-11-21","Lotería de Medellín","9993"],["2008-11-28","Lotería de Medellín","2356"],["2008-12-05","Lotería de Medellín","6064"],["2008-12-12","Lotería de Medellín","4178"],["2008-12-19","Lotería de Medellín","5468"],["2008-12-26","Lotería de Medellín","3045"],["2009-01-02","Lotería de Medellín","1363"],["2009-01-06","Lotería de Medellín","5842"],["2009-01-09","Lotería de Medellín","2868"],["2009-01-16","Lotería de Medellín","1983"],["2009-01-23","Lotería de Medellín","3981"],["2009-01-30","Lotería de Medellín","7035"],["2009-02-13","Lotería de Medellín","0863"],["2009-02-20","Lotería de Medellín","9651"],["2009-02-27","Lotería de Medellín","6882"],["2009-03-06","Lotería de Medellín","8826"],["2009-03-13","Lotería de Medellín","3801"],["2009-03-20","Lotería de Medellín","8543"],["2009-03-27","Lotería de Medellín","0268"],["2009-04-03","Lotería de Medellín","6291"],["2009-04-11","Lotería de Medellín","7789"],["2009-04-17","Lotería de Medellín","5255"],["2009-04-24","Lotería de Medellín","7725"],["2009-05-02","Lotería de Medellín","4922"],["2009-05-08","Lotería de Medellín","5772"],["2009-05-15","Lotería de Medellín","4759"],["2009-05-22","Lotería de Medellín","3851"],["2009-05-29","Lotería de Medellín","5082"],["2009-06-05","Lotería de Medellín","9316"],["2009-06-12","Lotería de Medellín","6125"],["2009-06-19","Lotería de Medellín","5416"],["2009-06-26","Lotería de Medellín","6510"],["2009-07-03","Lotería de Medellín","0099"],["2009-07-10","Lotería de Medellín","8847"],["2009-07-17","Lotería de Medellín","8390"],["2009-07-24","Lotería de Medellín","6645"],["2009-07-31","Lotería de Medellín","2837"],["2009-08-08","Lotería de Medellín","4712"],["2009-08-14","Lotería de Medellín","6517"],["2009-08-21","Lotería de Medellín","0859"],["2009-08-28","Lotería de Medellín","3287"],["2009-09-04","Lotería de Medellín","7315"],["2009-09-11","Lotería de Medellín","2889"],["2009-09-18","Lotería de Medellín","3550"],["2009-09-25","Lotería de Medellín","8896"],["2009-10-02","Lotería de Medellín","4939"],["2009-10-09","Lotería de Medellín","4762"],["2009-10-16","Lotería de Medellín","6566"],["2009-10-23","Lotería de Medellín","0775"],["2009-10-30","Lotería de Medellín","4702"],["2009-11-06","Lotería de Medellín","4371"],["2009-11-13","Lotería de Medellín","1028"],["2009-11-20","Lotería de Medellín","3391"],["2009-11-27","Lotería de Medellín","6639"],["2009-12-04","Lotería de Medellín","1592"],["2009-12-11","Lotería de Medellín","9583"],["2009-12-18","Lotería de Medellín","6431"],["2009-12-26","Lotería de Medellín","2759"],["2010-01-02","Lotería de Medellín","6259"],["2010-01-08","Lotería de Medellín","4548"],["2010-01-15","Lotería de Medellín","2411"],["2010-01-22","Lotería de Medellín","5264"],["2010-01-29","Lotería de Medellín","6978"],["2010-02-05","Lotería de Medellín","9063"],["2010-02-12","Lotería de Medellín","2803"],["2010-02-19","Lotería de Medellín","9776"],["2010-02-26","Lotería de Medellín","2350"],["2010-03-05","Lotería de Medellín","2727"],["2010-03-12","Lotería de Medellín","4559"],["2010-03-19","Lotería de Medellín","3548"],["2010-03-26","Lotería de Medellín","8050"],["2010-04-03","Lotería de Medellín","8079"],["2010-04-09","Lotería de Medellín","3374"],["2010-04-16","Lotería de Medellín","2049"],["2010-04-23","Lotería de Medellín","9024"],["2010-04-30","Lotería de Medellín","8127"],["2010-05-07","Lotería de Medellín","4038"],["2010-05-14","Lotería de Medellín","3343"],["2010-05-21","Lotería de Medellín","9496"],["2010-05-28","Lotería de Medellín","0169"],["2010-06-04","Lotería de Medellín","5456"],["2010-06-11","Lotería de Medellín","6754"],["2010-06-18","Lotería de Medellín","6692"],["2010-06-25","Lotería de Medellín","3292"],["2010-07-02","Lotería de Medellín","6180"],["2010-07-09","Lotería de Medellín","9060"],["2010-07-16","Lotería de Medellín","7321"],["2010-07-23","Lotería de Medellín","2705"],["2010-07-30","Lotería de Medellín","1276"],["2010-08-06","Lotería de Medellín","8473"],["2010-08-13","Lotería de Medellín","9448"],["2010-08-20","Lotería de Medellín","1531"],["2010-08-27","Lotería de Medellín","0265"],["2010-09-03","Lotería de Medellín","9572"],["2010-09-10","Lotería de Medellín","8875"],["2010-09-17","Lotería de Medellín","7287"],["2010-09-24","Lotería de Medellín","6620"],["2010-10-01","Lotería de Medellín","9048"],["2010-10-08","Lotería de Medellín","6062"],["2010-10-15","Lotería de Medellín","3948"],["2010-10-22","Lotería de Medellín","2337"],["2010-10-29","Lotería de Medellín","1799"],["2010-11-05","Lotería de Medellín","3347"],["2010-11-12","Lotería de Medellín","8061"],["2010-11-19","Lotería de Medellín","0099"],["2010-11-26","Lotería de Medellín","3908"],["2010-12-03","Lotería de Medellín","5658"],["2010-12-10","Lotería de Medellín","3984"],["2010-12-17","Lotería de Medellín","6867"],["2010-12-24","Lotería de Medellín","4574"],["2010-12-31","Lotería de Medellín","0169"],["2011-01-07","Lotería de Medellín","0679"],["2011-01-14","Lotería de Medellín","6212"],["2011-01-21","Lotería de Medellín","2928"],["2011-01-28","Lotería de Medellín","5432"],["2011-02-04","Lotería de Medellín","9664"],["2011-02-11","Lotería de Medellín","2251"],["2011-02-18","Lotería de Medellín","0938"],["2011-02-25","Lotería de Medellín","0114"],["2011-03-04","Lotería de Medellín","6813"],["2011-03-11","Lotería de Medellín","6176"],["2011-03-18","Lotería de Medellín","0079"],["2011-03-25","Lotería de Medellín","5062"],["2011-04-01","Lotería de Medellín","6378"],["2011-04-08","Lotería de Medellín","5832"],["2011-04-15","Lotería de Medellín","5037"],["2011-04-22","Lotería de Medellín","2727"],["2011-04-29","Lotería de Medellín","3714"],["2011-05-06","Lotería de Medellín","0841"],["2011-05-13","Lotería de Medellín","9916"],["2011-05-20","Lotería de Medellín","2416"],["2011-05-27","Lotería de Medellín","2081"],["2011-06-03","Lotería de Medellín","9236"],["2011-06-10","Lotería de Medellín","2155"],["2011-06-17","Lotería de Medellín","8646"],["2011-06-24","Lotería de Medellín","1515"],["2011-07-01","Lotería de Medellín","0874"],["2011-07-08","Lotería de Medellín","4784"],["2011-07-15","Lotería de Medellín","3642"],["2011-07-22","Lotería de Medellín","1165"],["2011-07-29","Lotería de Medellín","3272"],["2011-08-05","Lotería de Medellín","0620"],["2011-08-12","Lotería de Medellín","9132"],["2011-08-19","Lotería de Medellín","7307"],["2011-08-26","Lotería de Medellín","5101"],["2011-09-02","Lotería de Medellín","3914"],["2011-09-09","Lotería de Medellín","9871"],["2011-09-16","Lotería de Medellín","7785"],["2011-09-23","Lotería de Medellín","4014"],["2011-09-30","Lotería de Medellín","8268"],["2011-10-07","Lotería de Medellín","5896"],["2011-10-14","Lotería de Medellín","1302"],["2011-10-21","Lotería de Medellín","6601"],["2011-10-28","Lotería de Medellín","8391"],["2011-11-04","Lotería de Medellín","4779"],["2011-11-11","Lotería de Medellín","6645"],["2011-11-18","Lotería de Medellín","9120"],["2011-11-25","Lotería de Medellín","8207"],["2011-12-02","Lotería de Medellín","7953"],["2011-12-09","Lotería de Medellín","7285"],["2011-12-16","Lotería de Medellín","6368"],["2011-12-23","Lotería de Medellín","5300"],["2011-12-30","Lotería de Medellín","3257"],["2012-01-06","Lotería de Medellín","2565"],["2012-01-13","Lotería de Medellín","2798"],["2012-01-20","Lotería de Medellín","0578"],["2012-01-27","Lotería de Medellín","6202"],["2012-02-03","Lotería de Medellín","2253"],["2012-02-10","Lotería de Medellín","7147"],["2012-02-17","Lotería de Medellín","2410"],["2012-02-24","Lotería de Medellín","1173"],["2012-03-02","Lotería de Medellín","1771"],["2012-03-09","Lotería de Medellín","3616"],["2012-03-16","Lotería de Medellín","9103"],["2012-03-23","Lotería de Medellín","3424"],["2012-03-30","Lotería de Medellín","2271"],["2012-04-07","Lotería de Medellín","6566"],["2012-04-13","Lotería de Medellín","4286"],["2012-04-20","Lotería de Medellín","0860"],["2012-04-27","Lotería de Medellín","7298"],["2012-05-04","Lotería de Medellín","9043"],["2012-05-11","Lotería de Medellín","6866"],["2012-05-18","Lotería de Medellín","7251"],["2012-05-25","Lotería de Medellín","0539"],["2012-06-01","Lotería de Medellín","4647"],["2012-06-08","Lotería de Medellín","1334"],["2012-06-15","Lotería de Medellín","3582"],["2012-06-22","Lotería de Medellín","0998"],["2012-06-29","Lotería de Medellín","5496"],["2012-07-06","Lotería de Medellín","7307"],["2012-07-13","Lotería de Medellín","0944"],["2012-07-21","Lotería de Medellín","5266"],["2012-07-27","Lotería de Medellín","3992"],["2012-08-03","Lotería de Medellín","4238"],["2012-08-10","Lotería de Medellín","1207"],["2012-08-17","Lotería de Medellín","9900"],["2012-08-24","Lotería de Medellín","9259"],["2012-08-31","Lotería de Medellín","9945"],["2012-09-07","Lotería de Medellín","8973"],["2012-09-14","Lotería de Medellín","9129"],["2012-09-21","Lotería de Medellín","6041"],["2012-09-28","Lotería de Medellín","7322"],["2012-10-05","Lotería de Medellín","7179"],["2012-10-12","Lotería de Medellín","0515"],["2012-10-19","Lotería de Medellín","6757"],["2012-10-26","Lotería de Medellín","2350"],["2012-11-02","Lotería de Medellín","6991"],["2012-11-09","Lotería de Medellín","1897"],["2012-11-16","Lotería de Medellín","5804"],["2012-11-23","Lotería de Medellín","5032"],["2012-11-30","Lotería de Medellín","0609"],["2012-12-07","Lotería de Medellín","5691"],["2012-12-14","Lotería de Medellín","0342"],["2012-12-21","Lotería de Medellín","3524"],["2012-12-28","Lotería de Medellín","8200"],["2013-01-04","Lotería de Medellín","1648"],["2013-01-11","Lotería de Medellín","2586"],["2013-01-18","Lotería de Medellín","0863"],["2013-01-25","Lotería de Medellín","3464"],["2013-02-01","Lotería de Medellín","9136"],["2013-02-08","Lotería de Medellín","5563"],["2013-02-15","Lotería de Medellín","6282"],["2013-02-22","Lotería de Medellín","3378"],["2013-03-01","Lotería de Medellín","4468"],["2013-03-08","Lotería de Medellín","0272"],["2013-03-15","Lotería de Medellín","2570"],["2013-03-22","Lotería de Medellín","2770"],["2013-03-30","Lotería de Medellín","1421"],["2013-04-05","Lotería de Medellín","5662"],["2013-04-12","Lotería de Medellín","3651"],["2013-04-19","Lotería de Medellín","4361"],["2013-04-26","Lotería de Medellín","9858"],["2013-05-03","Lotería de Medellín","5861"],["2013-05-10","Lotería de Medellín","5711"],["2013-05-17","Lotería de Medellín","2303"],["2013-05-24","Lotería de Medellín","1977"],["2013-05-31","Lotería de Medellín","5320"],["2013-06-07","Lotería de Medellín","0826"],["2013-06-14","Lotería de Medellín","7585"],["2013-06-21","Lotería de Medellín","1708"],["2013-06-28","Lotería de Medellín","7655"],["2013-07-05","Lotería de Medellín","9260"],["2013-07-12","Lotería de Medellín","4934"],["2013-07-19","Lotería de Medellín","5618"],["2013-07-26","Lotería de Medellín","0621"],["2013-08-02","Lotería de Medellín","7706"],["2013-08-09","Lotería de Medellín","9227"],["2013-08-16","Lotería de Medellín","7987"],["2013-08-23","Lotería de Medellín","2607"],["2013-08-30","Lotería de Medellín","8349"],["2013-09-06","Lotería de Medellín","6550"],["2013-09-13","Lotería de Medellín","2713"],["2013-09-20","Lotería de Medellín","8490"],["2013-09-27","Lotería de Medellín","2816"],["2013-10-04","Lotería de Medellín","6963"],["2013-10-11","Lotería de Medellín","5249"],["2013-10-18","Lotería de Medellín","7519"],["2013-10-25","Lotería de Medellín","0455"],["2013-11-01","Lotería de Medellín","4637"],["2013-11-08","Lotería de Medellín","5678"],["2013-11-15","Lotería de Medellín","3298"],["2013-11-22","Lotería de Medellín","5988"],["2013-11-29","Lotería de Medellín","4088"],["2013-12-06","Lotería de Medellín","4100"],["2013-12-13","Lotería de Medellín","5862"],["2013-12-20","Lotería de Medellín","9529"],["2013-12-27","Lotería de Medellín","1995"],["2014-01-03","Lotería de Medellín","7940"],["2014-01-10","Lotería de Medellín","5132"],["2014-01-17","Lotería de Medellín","1713"],["2014-01-24","Lotería de Medellín","6455"],["2014-01-31","Lotería de Medellín","5582"],["2014-02-07","Lotería de Medellín","0949"],["2014-02-14","Lotería de Medellín","1150"],["2014-02-21","Lotería de Medellín","1249"],["2014-02-28","Lotería de Medellín","9154"],["2014-03-07","Lotería de Medellín","1584"],["2014-03-14","Lotería de Medellín","2806"],["2014-03-21","Lotería de Medellín","9847"],["2014-03-28","Lotería de Medellín","8064"],["2014-04-04","Lotería de Medellín","0965"],["2014-04-11","Lotería de Medellín","1270"],["2014-04-19","Lotería de Medellín","1548"],["2014-04-25","Lotería de Medellín","3665"],["2014-05-02","Lotería de Medellín","9059"],["2014-05-09","Lotería de Medellín","7916"],["2014-05-16","Lotería de Medellín","6843"],["2014-05-23","Lotería de Medellín","2498"],["2014-05-30","Lotería de Medellín","8758"],["2014-06-06","Lotería de Medellín","7364"],["2014-06-13","Lotería de Medellín","7823"],["2014-06-20","Lotería de Medellín","4845"],["2014-06-27","Lotería de Medellín","9400"],["2014-07-04","Lotería de Medellín","7537"],["2014-07-11","Lotería de Medellín","8954"],["2014-07-18","Lotería de Medellín","3627"],["2014-07-25","Lotería de Medellín","7721"],["2014-08-01","Lotería de Medellín","8986"],["2014-08-08","Lotería de Medellín","6388"],["2014-08-15","Lotería de Medellín","9716"],["2014-08-22","Lotería de Medellín","5507"],["2014-08-29","Lotería de Medellín","5545"],["2014-09-05","Lotería de Medellín","8350"],["2014-09-12","Lotería de Medellín","1884"],["2014-09-19","Lotería de Medellín","7707"],["2014-09-26","Lotería de Medellín","3607"],["2014-10-03","Lotería de Medellín","8502"],["2014-10-10","Lotería de Medellín","4374"],["2014-10-17","Lotería de Medellín","5102"],["2014-10-24","Lotería de Medellín","7959"],["2014-10-31","Lotería de Medellín","5393"],["2014-11-07","Lotería de Medellín","2398"],["2014-11-14","Lotería de Medellín","1569"],["2014-11-21","Lotería de Medellín","9816"],["2014-11-28","Lotería de Medellín","2004"],["2014-12-05","Lotería de Medellín","4125"],["2014-12-12","Lotería de Medellín","3544"],["2014-12-19","Lotería de Medellín","9835"],["2014-12-26","Lotería de Medellín","7603"],["2015-01-02","Lotería de Medellín","0782"],["2015-01-09","Lotería de Medellín","3780"],["2015-01-16","Lotería de Medellín","7608"],["2015-01-23","Lotería de Medellín","1049"],["2015-01-30","Lotería de Medellín","5554"],["2015-02-06","Lotería de Medellín","7643"],["2015-02-13","Lotería de Medellín","9808"],["2015-02-20","Lotería de Medellín","9880"],["2015-02-27","Lotería de Medellín","8104"],["2015-03-06","Lotería de Medellín","0695"],["2015-03-13","Lotería de Medellín","0193"],["2015-03-20","Lotería de Medellín","1721"],["2015-03-27","Lotería de Medellín","1436"],["2015-04-04","Lotería de Medellín","6935"],["2015-04-10","Lotería de Medellín","3133"],["2015-04-17","Lotería de Medellín","0265"],["2015-04-24","Lotería de Medellín","8363"],["2015-04-30","Lotería de Medellín","1672"],["2015-05-08","Lotería de Medellín","8058"],["2015-05-15","Lotería de Medellín","7928"],["2015-05-22","Lotería de Medellín","9390"],["2015-05-29","Lotería de Medellín","1406"],["2015-06-05","Lotería de Medellín","0700"],["2015-06-12","Lotería de Medellín","7744"],["2015-06-19","Lotería de Medellín","9586"],["2015-06-26","Lotería de Medellín","2708"],["2015-07-03","Lotería de Medellín","1929"],["2015-07-10","Lotería de Medellín","3559"],["2015-07-17","Lotería de Medellín","2611"],["2015-07-24","Lotería de Medellín","9002"],["2015-07-31","Lotería de Medellín","0575"],["2015-08-07","Lotería de Medellín","6999"],["2015-08-14","Lotería de Medellín","4697"],["2015-08-21","Lotería de Medellín","6333"],["2015-08-28","Lotería de Medellín","8409"],["2015-09-04","Lotería de Medellín","6490"],["2015-09-11","Lotería de Medellín","2702"],["2015-09-18","Lotería de Medellín","1172"],["2015-09-25","Lotería de Medellín","2287"],["2015-10-02","Lotería de Medellín","9629"],["2015-10-09","Lotería de Medellín","8448"],["2015-10-16","Lotería de Medellín","1859"],["2015-10-23","Lotería de Medellín","2530"],["2015-10-30","Lotería de Medellín","4472"],["2015-11-06","Lotería de Medellín","7630"],["2015-11-13","Lotería de Medellín","8521"],["2015-11-20","Lotería de Medellín","2431"],["2015-11-27","Lotería de Medellín","4637"],["2015-12-04","Lotería de Medellín","2988"],["2015-12-11","Lotería de Medellín","1815"],["2015-12-24","Lotería de Medellín","7165"],["2015-12-31","Lotería de Medellín","1056"],["2016-01-08","Lotería de Medellín","9594"],["2016-01-15","Lotería de Medellín","3670"],["2016-01-22","Lotería de Medellín","0133"],["2016-01-29","Lotería de Medellín","4338"],["2016-02-05","Lotería de Medellín","0685"],["2016-02-12","Lotería de Medellín","4519"],["2016-02-19","Lotería de Medellín","1116"],["2016-02-26","Lotería de Medellín","7728"],["2016-03-04","Lotería de Medellín","2882"],["2016-03-11","Lotería de Medellín","6630"],["2016-03-18","Lotería de Medellín","6386"],["2016-03-26","Lotería de Medellín","2039"],["2016-04-01","Lotería de Medellín","7219"],["2016-04-08","Lotería de Medellín","0181"],["2016-04-15","Lotería de Medellín","3596"],["2016-04-22","Lotería de Medellín","1181"],["2016-04-29","Lotería de Medellín","9183"],["2016-05-06","Lotería de Medellín","0268"],["2016-05-13","Lotería de Medellín","2187"],["2016-05-20","Lotería de Medellín","5450"],["2016-05-27","Lotería de Medellín","5226"],["2016-06-03","Lotería de Medellín","5816"],["2016-06-10","Lotería de Medellín","3423"],["2016-06-17","Lotería de Medellín","2696"],["2016-06-24","Lotería de Medellín","0575"],["2016-07-01","Lotería de Medellín","9896"],["2016-07-08","Lotería de Medellín","5823"],["2016-07-15","Lotería de Medellín","7131"],["2016-07-22","Lotería de Medellín","9550"],["2016-07-29","Lotería de Medellín","1176"],["2016-08-05","Lotería de Medellín","1228"],["2016-08-12","Lotería de Medellín","1335"],["2016-08-19","Lotería de Medellín","8100"],["2016-08-26","Lotería de Medellín","1897"],["2016-09-02","Lotería de Medellín","1449"],["2016-09-09","Lotería de Medellín","4554"],["2016-09-16","Lotería de Medellín","7594"],["2016-09-23","Lotería de Medellín","0624"],["2016-09-30","Lotería de Medellín","8712"],["2016-10-07","Lotería de Medellín","8272"],["2016-10-14","Lotería de Medellín","6355"],["2016-10-21","Lotería de Medellín","6087"],["2016-10-28","Lotería de Medellín","1395"],["2016-11-04","Lotería de Medellín","4584"],["2016-11-11","Lotería de Medellín","6888"],["2016-11-18","Lotería de Medellín","2331"],["2016-11-25","Lotería de Medellín","0981"],["2016-12-02","Lotería de Medellín","4006"],["2016-12-09","Lotería de Medellín","4944"],["2016-12-16","Lotería de Medellín","5241"],["2016-12-30","Lotería de Medellín","0417"],["2017-01-06","Lotería de Medellín","4240"],["2017-01-13","Lotería de Medellín","4612"],["2017-01-20","Lotería de Medellín","6620"],["2017-01-27","Lotería de Medellín","5682"],["2017-02-03","Lotería de Medellín","6163"],["2017-02-10","Lotería de Medellín","8192"],["2017-02-17","Lotería de Medellín","5589"],["2017-02-24","Lotería de Medellín","8178"],["2017-03-03","Lotería de Medellín","7292"],["2017-03-10","Lotería de Medellín","9908"],["2017-03-17","Lotería de Medellín","6935"],["2017-03-24","Lotería de Medellín","9746"],["2017-03-31","Lotería de Medellín","2406"],["2017-04-07","Lotería de Medellín","4956"],["2017-04-12","Lotería de Medellín","7074"],["2017-04-21","Lotería de Medellín","8286"],["2017-04-28","Lotería de Medellín","9162"],["2017-05-05","Lotería de Medellín","4405"],["2017-05-12","Lotería de Medellín","3842"],["2017-05-19","Lotería de Medellín","9323"],["2017-05-26","Lotería de Medellín","9063"],["2017-06-02","Lotería de Medellín","7196"],["2017-06-09","Lotería de Medellín","2804"],["2017-06-16","Lotería de Medellín","7932"],["2017-06-23","Lotería de Medellín","2816"],["2017-06-30","Lotería de Medellín","2880"],["2017-07-07","Lotería de Medellín","9294"],["2017-07-14","Lotería de Medellín","8499"],["2017-07-21","Lotería de Medellín","5681"],["2017-07-28","Lotería de Medellín","3683"],["2017-08-04","Lotería de Medellín","5501"],["2017-08-11","Lotería de Medellín","4674"],["2017-08-18","Lotería de Medellín","3786"],["2017-08-25","Lotería de Medellín","3939"],["2017-09-01","Lotería de Medellín","6712"],["2017-09-08","Lotería de Medellín","5918"],["2017-09-15","Lotería de Medellín","8238"],["2017-09-22","Lotería de Medellín","6422"],["2017-09-29","Lotería de Medellín","7942"],["2017-10-06","Lotería de Medellín","9946"],["2017-10-13","Lotería de Medellín","1731"],["2017-10-20","Lotería de Medellín","0839"],["2017-10-27","Lotería de Medellín","6780"],["2017-11-03","Lotería de Medellín","2416"],["2017-11-10","Lotería de Medellín","4823"],["2017-11-17","Lotería de Medellín","8676"],["2017-11-24","Lotería de Medellín","6834"],["2017-12-01","Lotería de Medellín","7429"],["2017-12-09","Lotería de Medellín","9389"],["2017-12-15","Lotería de Medellín","6334"],["2017-12-22","Lotería de Medellín","0269"],["2017-12-29","Lotería de Medellín","7661"],["2018-01-05","Lotería de Medellín","0587"],["2018-01-12","Lotería de Medellín","6511"],["2018-01-19","Lotería de Medellín","9627"],["2018-01-26","Lotería de Medellín","9248"],["2018-02-02","Lotería de Medellín","4444"],["2018-02-09","Lotería de Medellín","7958"],["2018-02-16","Lotería de Medellín","7954"],["2018-02-23","Lotería de Medellín","9791"],["2018-03-02","Lotería de Medellín","4809"],["2018-03-09","Lotería de Medellín","1295"],["2018-03-16","Lotería de Medellín","2531"],["2018-03-23","Lotería de Medellín","1780"],["2018-03-31","Lotería de Medellín","4786"],["2018-04-06","Lotería de Medellín","6631"],["2018-04-13","Lotería de Medellín","8642"],["2018-04-20","Lotería de Medellín","4272"],["2018-04-27","Lotería de Medellín","2647"],["2018-05-04","Lotería de Medellín","5801"],["2018-05-11","Lotería de Medellín","7976"],["2018-05-18","Lotería de Medellín","5653"],["2018-05-25","Lotería de Medellín","8975"],["2018-06-01","Lotería de Medellín","7129"],["2018-06-08","Lotería de Medellín","7462"],["2018-06-15","Lotería de Medellín","5444"],["2018-06-22","Lotería de Medellín","6706"],["2018-06-29","Lotería de Medellín","1786"],["2018-07-06","Lotería de Medellín","5943"],["2018-07-13","Lotería de Medellín","6024"],["2018-07-21","Lotería de Medellín","1540"],["2018-07-27","Lotería de Medellín","0250"],["2018-08-03","Lotería de Medellín","0821"],["2018-08-10","Lotería de Medellín","5105"],["2018-08-17","Lotería de Medellín","7525"],["2018-08-24","Lotería de Medellín","9285"],["2018-08-31","Lotería de Medellín","8808"],["2018-09-07","Lotería de Medellín","4410"],["2018-09-14","Lotería de Medellín","7321"],["2018-09-21","Lotería de Medellín","4430"],["2018-09-28","Lotería de Medellín","8012"],["2018-10-05","Lotería de Medellín","4592"],["2018-10-12","Lotería de Medellín","8273"],["2018-10-19","Lotería de Medellín","5840"],["2018-10-26","Lotería de Medellín","4201"],["2018-11-02","Lotería de Medellín","9975"],["2018-11-09","Lotería de Medellín","5471"],["2018-11-16","Lotería de Medellín","3091"],["2018-11-23","Lotería de Medellín","2451"],["2018-11-30","Lotería de Medellín","7678"],["2018-12-07","Lotería de Medellín","2719"],["2018-12-14","Lotería de Medellín","6285"],["2018-12-21","Lotería de Medellín","1515"],["2018-12-28","Lotería de Medellín","7621"],["2019-01-04","Lotería de Medellín","8251"],["2019-01-11","Lotería de Medellín","1500"],["2019-01-18","Lotería de Medellín","7765"],["2019-01-25","Lotería de Medellín","6922"],["2019-02-01","Lotería de Medellín","4461"],["2019-02-08","Lotería de Medellín","5151"],["2019-02-15","Lotería de Medellín","1803"],["2019-02-22","Lotería de Medellín","0922"],["2019-03-01","Lotería de Medellín","9502"],["2019-03-08","Lotería de Medellín","9144"],["2019-03-15","Lotería de Medellín","3056"],["2019-03-22","Lotería de Medellín","5514"],["2019-03-29","Lotería de Medellín","4602"],["2019-04-05","Lotería de Medellín","1460"],["2019-04-12","Lotería de Medellín","9675"],["2019-04-20","Lotería de Medellín","1931"],["2019-04-26","Lotería de Medellín","6756"],["2019-05-03","Lotería de Medellín","1453"],["2019-05-10","Lotería de Medellín","6595"],["2019-05-17","Lotería de Medellín","3590"],["2019-05-24","Lotería de Medellín","3218"],["2019-05-31","Lotería de Medellín","9258"],["2019-06-07","Lotería de Medellín","7852"],["2019-06-14","Lotería de Medellín","4726"],["2019-06-21","Lotería de Medellín","8207"],["2019-06-28","Lotería de Medellín","0077"],["2019-07-05","Lotería de Medellín","1938"],["2019-07-12","Lotería de Medellín","4916"],["2019-07-19","Lotería de Medellín","8047"],["2019-07-26","Lotería de Medellín","5458"],["2019-08-02","Lotería de Medellín","5240"],["2019-08-09","Lotería de Medellín","5279"],["2019-08-16","Lotería de Medellín","6945"],["2019-08-23","Lotería de Medellín","8456"],["2019-08-30","Lotería de Medellín","2098"],["2019-09-06","Lotería de Medellín","9990"],["2019-09-13","Lotería de Medellín","5249"],["2019-09-20","Lotería de Medellín","2717"],["2019-09-27","Lotería de Medellín","2507"],["2019-10-04","Lotería de Medellín","9129"],["2019-10-11","Lotería de Medellín","5797"],["2019-10-18","Lotería de Medellín","6787"],["2019-10-25","Lotería de Medellín","8509"],["2019-11-01","Lotería de Medellín","9061"],["2019-11-08","Lotería de Medellín","7667"],["2019-11-15","Lotería de Medellín","6283"],["2019-11-22","Lotería de Medellín","7852"],["2019-11-29","Lotería de Medellín","2222"],["2019-12-06","Lotería de Medellín","7060"],["2019-12-13","Lotería de Medellín","5479"],["2019-12-20","Lotería de Medellín","8899"],["2019-12-27","Lotería de Medellín","3097"],["2020-01-03","Lotería de Medellín","7384"],["2020-01-10","Lotería de Medellín","6377"],["2020-01-17","Lotería de Medellín","3311"],["2020-01-24","Lotería de Medellín","9171"],["2020-01-31","Lotería de Medellín","8876"],["2020-02-07","Lotería de Medellín","2582"],["2020-02-14","Lotería de Medellín","9019"],["2020-02-21","Lotería de Medellín","1972"],["2020-02-28","Lotería de Medellín","6798"],["2020-03-06","Lotería de Medellín","7636"],["2020-03-13","Lotería de Medellín","4702"],["2020-03-20","Lotería de Medellín","9358"],["2020-05-15","Lotería de Medellín","0211"],["2020-05-22","Lotería de Medellín","9383"],["2020-05-29","Lotería de Medellín","5044"],["2020-06-05","Lotería de Medellín","1560"],["2020-06-12","Lotería de Medellín","2312"],["2020-06-19","Lotería de Medellín","6537"],["2020-06-26","Lotería de Medellín","8039"],["2020-07-03","Lotería de Medellín","7767"],["2020-07-10","Lotería de Medellín","7424"],["2020-07-17","Lotería de Medellín","9879"],["2020-07-24","Lotería de Medellín","3363"],["2020-07-31","Lotería de Medellín","4901"],["2020-08-08","Lotería de Medellín","8984"],["2020-08-14","Lotería de Medellín","6143"],["2020-08-21","Lotería de Medellín","0828"],["2020-08-28","Lotería de Medellín","2613"],["2020-09-04","Lotería de Medellín","8508"],["2020-09-11","Lotería de Medellín","9315"],["2020-09-18","Lotería de Medellín","7498"],["2020-09-25","Lotería de Medellín","9055"],["2020-10-02","Lotería de Medellín","9606"],["2020-10-09","Lotería de Medellín","4439"],["2020-10-16","Lotería de Medellín","3045"],["2020-10-23","Lotería de Medellín","7309"],["2020-10-30","Lotería de Medellín","2836"],["2020-11-06","Lotería de Medellín","4387"],["2020-11-13","Lotería de Medellín","3283"],["2020-11-20","Lotería de Medellín","1495"],["2020-11-27","Lotería de Medellín","6132"],["2020-12-04","Lotería de Medellín","6399"],["2020-12-11","Lotería de Medellín","0549"],["2020-12-18","Lotería de Medellín","2429"],["2020-12-24","Lotería de Medellín","1670"],["2021-01-02","Lotería de Medellín","5455"],["2021-01-08","Lotería de Medellín","6589"],["2021-01-15","Lotería de Medellín","7022"],["2021-01-22","Lotería de Medellín","6059"],["2021-01-29","Lotería de Medellín","0374"],["2021-02-05","Lotería de Medellín","0539"],["2021-02-12","Lotería de Medellín","7403"],["2021-02-19","Lotería de Medellín","4468"],["2021-02-26","Lotería de Medellín","6401"],["2021-03-05","Lotería de Medellín","7109"],["2021-03-12","Lotería de Medellín","7675"],["2021-03-19","Lotería de Medellín","3079"],["2021-03-26","Lotería de Medellín","7707"],["2021-04-03","Lotería de Medellín","5614"],["2021-04-09","Lotería de Medellín","3257"],["2021-04-16","Lotería de Medellín","3169"],["2021-04-23","Lotería de Medellín","8781"],["2021-04-30","Lotería de Medellín","1230"],["2021-05-07","Lotería de Medellín","4807"],["2021-05-14","Lotería de Medellín","9549"],["2021-05-21","Lotería de Medellín","3191"],["2021-05-28","Lotería de Medellín","5741"],["2021-06-04","Lotería de Medellín","2570"],["2021-06-11","Lotería de Medellín","8743"],["2021-06-18","Lotería de Medellín","6418"],["2021-06-25","Lotería de Medellín","2520"],["2021-07-02","Lotería de Medellín","1014"],["2021-07-09","Lotería de Medellín","3356"],["2021-07-16","Lotería de Medellín","1319"],["2021-07-23","Lotería de Medellín","7403"],["2021-07-30","Lotería de Medellín","7516"],["2021-08-06","Lotería de Medellín","5126"],["2021-08-13","Lotería de Medellín","2517"],["2021-08-20","Lotería de Medellín","0861"],["2021-08-27","Lotería de Medellín","2762"],["2021-09-03","Lotería de Medellín","8755"],["2021-09-10","Lotería de Medellín","1447"],["2021-09-17","Lotería de Medellín","9336"],["2021-09-24","Lotería de Medellín","3653"],["2021-10-01","Lotería de Medellín","3535"],["2021-10-08","Lotería de Medellín","0465"],["2021-10-15","Lotería de Medellín","3302"],["2021-10-22","Lotería de Medellín","8228"],["2021-10-29","Lotería de Medellín","4579"],["2021-11-05","Lotería de Medellín","8168"],["2021-11-12","Lotería de Medellín","7611"],["2021-11-19","Lotería de Medellín","7808"],["2021-11-26","Lotería de Medellín","4611"],["2021-12-03","Lotería de Medellín","9978"],["2021-12-10","Lotería de Medellín","8621"],["2021-12-17","Lotería de Medellín","7850"],["2021-12-24","Lotería de Medellín","9832"],["2021-12-31","Lotería de Medellín","4362"],["2022-01-07","Lotería de Medellín","3206"],["2022-01-14","Lotería de Medellín","9747"],["2022-01-21","Lotería de Medellín","7845"],["2022-01-28","Lotería de Medellín","2624"],["2022-02-04","Lotería de Medellín","1341"],["2022-02-11","Lotería de Medellín","5742"],["2022-02-18","Lotería de Medellín","6085"],["2022-02-25","Lotería de Medellín","3306"],["2022-03-04","Lotería de Medellín","1082"],["2022-03-11","Lotería de Medellín","3708"],["2022-03-18","Lotería de Medellín","1677"],["2022-03-25","Lotería de Medellín","3112"],["2022-04-01","Lotería de Medellín","3181"],["2022-04-08","Lotería de Medellín","3729"],["2022-04-15","Lotería de Medellín","1096"],["2022-04-22","Lotería de Medellín","2898"],["2022-04-29","Lotería de Medellín","4915"],["2022-05-06","Lotería de Medellín","1306"],["2022-05-13","Lotería de Medellín","0626"],["2022-05-20","Lotería de Medellín","1427"],["2022-05-27","Lotería de Medellín","3373"],["2022-06-03","Lotería de Medellín","5937"],["2022-06-10","Lotería de Medellín","6451"],["2022-06-17","Lotería de Medellín","4007"],["2022-06-24","Lotería de Medellín","5631"],["2022-07-01","Lotería de Medellín","6320"],["2022-07-08","Lotería de Medellín","7671"],["2022-07-15","Lotería de Medellín","4044"],["2022-07-22","Lotería de Medellín","8942"],["2022-07-29","Lotería de Medellín","0667"],["2022-08-05","Lotería de Medellín","3562"],["2022-08-12","Lotería de Medellín","0858"],["2022-08-19","Lotería de Medellín","1194"],["2022-08-26","Lotería de Medellín","7167"],["2022-09-02","Lotería de Medellín","0627"],["2022-09-09","Lotería de Medellín","4116"],["2022-09-16","Lotería de Medellín","6083"],["2022-09-23","Lotería de Medellín","1737"],["2022-09-30","Lotería de Medellín","1064"],["2022-10-07","Lotería de Medellín","4974"],["2022-10-14","Lotería de Medellín","2604"],["2022-10-21","Lotería de Medellín","5030"],["2022-10-28","Lotería de Medellín","8388"],["2022-11-04","Lotería de Medellín","4550"],["2022-11-11","Lotería de Medellín","8271"],["2022-11-18","Lotería de Medellín","3950"],["2022-11-25","Lotería de Medellín","9718"],["2022-12-02","Lotería de Medellín","7001"],["2022-12-09","Lotería de Medellín","3975"],["2022-12-16","Lotería de Medellín","8603"],["2022-12-23","Lotería de Medellín","5174"],["2022-12-30","Lotería de Medellín","7134"],["2023-01-06","Lotería de Medellín","1311"],["2023-01-13","Lotería de Medellín","7698"],["2023-01-20","Lotería de Medellín","8945"],["2023-01-27","Lotería de Medellín","3935"],["2023-02-03","Lotería de Medellín","2469"],["2023-02-10","Lotería de Medellín","8424"],["2023-02-17","Lotería de Medellín","3559"],["2023-02-24","Lotería de Medellín","1055"],["2023-03-03","Lotería de Medellín","4732"],["2023-03-10","Lotería de Medellín","9162"],["2023-03-17","Lotería de Medellín","7899"],["2023-03-24","Lotería de Medellín","2228"],["2023-03-31","Lotería de Medellín","8984"],["2023-04-08","Lotería de Medellín","5724"],["2023-04-14","Lotería de Medellín","4773"],["2023-04-21","Lotería de Medellín","4512"],["2023-04-28","Lotería de Medellín","8945"],["2023-05-05","Lotería de Medellín","4798"],["2023-05-12","Lotería de Medellín","2701"],["2023-05-19","Lotería de Medellín","1952"],["2023-05-26","Lotería de Medellín","8060"],["2023-06-02","Lotería de Medellín","7768"],["2023-06-09","Lotería de Medellín","1258"],["2023-06-16","Lotería de Medellín","9557"],["2023-06-23","Lotería de Medellín","5987"],["2023-06-30","Lotería de Medellín","1279"],["2023-07-07","Lotería de Medellín","7318"],["2023-07-14","Lotería de Medellín","3803"],["2023-07-21","Lotería de Medellín","6539"],["2023-07-28","Lotería de Medellín","2013"],["2023-08-04","Lotería de Medellín","3728"],["2023-08-11","Lotería de Medellín","5328"],["2023-08-18","Lotería de Medellín","3267"],["2023-08-25","Lotería de Medellín","2780"],["2023-09-01","Lotería de Medellín","8716"],["2023-09-08","Lotería de Medellín","1876"],["2023-09-15","Lotería de Medellín","1480"],["2023-09-22","Lotería de Medellín","1666"],["2023-09-29","Lotería de Medellín","1767"],["2023-10-06","Lotería de Medellín","8058"],["2023-10-13","Lotería de Medellín","6313"],["2023-10-20","Lotería de Medellín","0204"],["2023-10-27","Lotería de Medellín","1090"],["2023-11-03","Lotería de Medellín","2410"],["2023-11-10","Lotería de Medellín","0247"],["2023-11-17","Lotería de Medellín","9234"],["2023-11-24","Lotería de Medellín","5938"],["2023-12-01","Lotería de Medellín","2518"],["2023-12-07","Lotería de Medellín","1597"],["2023-12-15","Lotería de Medellín","7630"],["2023-12-22","Lotería de Medellín","8645"],["2023-12-29","Lotería de Medellín","9867"],["2023-12-31","Lotería de Medellín","7105"],["2024-01-05","Lotería de Medellín","2864"],["2024-01-12","Lotería de Medellín","4180"],["2024-01-19","Lotería de Medellín","6543"],["2024-01-26","Lotería de Medellín","9490"],["2024-02-02","Lotería de Medellín","9533"],["2024-02-09","Lotería de Medellín","2079"],["2024-02-16","Lotería de Medellín","2067"],["2024-02-23","Lotería de Medellín","0447"],["2024-03-01","Lotería de Medellín","3863"],["2024-03-08","Lotería de Medellín","7087"],["2024-03-15","Lotería de Medellín","7128"],["2024-03-22","Lotería de Medellín","3332"],["2024-03-30","Lotería de Medellín","2570"],["2024-04-05","Lotería de Medellín","0123"],["2024-04-12","Lotería de Medellín","9690"],["2024-04-19","Lotería de Medellín","7611"],["2024-04-26","Lotería de Medellín","8323"],["2024-05-03","Lotería de Medellín","2218"],["2024-05-10","Lotería de Medellín","6633"],["2024-05-17","Lotería de Medellín","1243"],["2024-05-24","Lotería de Medellín","5701"],["2024-05-31","Lotería de Medellín","5217"],["2024-06-07","Lotería de Medellín","5855"],["2024-06-14","Lotería de Medellín","6860"],["2024-06-15","Lotería de Medellín","9895"],["2024-06-21","Lotería de Medellín","3248"],["2024-06-28","Lotería de Medellín","1736"],["2024-07-05","Lotería de Medellín","7905"],["2024-07-12","Lotería de Medellín","9288"],["2024-07-19","Lotería de Medellín","4022"],["2024-07-26","Lotería de Medellín","9125"],["2024-08-02","Lotería de Medellín","4480"],["2024-08-09","Lotería de Medellín","2530"],["2024-08-16","Lotería de Medellín","7311"],["2024-08-23","Lotería de Medellín","5559"],["2024-08-30","Lotería de Medellín","0845"],["2024-09-06","Lotería de Medellín","7737"],["2024-09-13","Lotería de Medellín","0083"],["2024-09-20","Lotería de Medellín","8724"],["2024-09-27","Lotería de Medellín","8347"],["2024-10-04","Lotería de Medellín","9937"],["2024-10-11","Lotería de Medellín","8441"],["2024-10-18","Lotería de Medellín","8650"],["2024-10-25","Lotería de Medellín","5318"],["2024-11-01","Lotería de Medellín","5972"],["2024-11-08","Lotería de Medellín","7175"],["2024-11-15","Lotería de Medellín","0966"],["2024-11-22","Lotería de Medellín","0852"],["2024-11-29","Lotería de Medellín","1916"],["2024-12-06","Lotería de Medellín","8901"],["2024-12-13","Lotería de Medellín","6540"],["2024-12-20","Lotería de Medellín","4085"],["2024-12-21","Lotería de Medellín","7833"],["2024-12-27","Lotería de Medellín","5536"],["2025-01-03","Lotería de Medellín","0423"],["2025-01-10","Lotería de Medellín","0728"],["2025-01-17","Lotería de Medellín","7025"],["2025-01-24","Lotería de Medellín","2678"],["2025-01-31","Lotería de Medellín","5740"],["2025-02-07","Lotería de Medellín","0185"],["2025-02-14","Lotería de Medellín","3686"],["2025-02-21","Lotería de Medellín","2185"],["2025-02-28","Lotería de Medellín","0492"],["2025-03-07","Lotería de Medellín","5359"],["2025-03-14","Lotería de Medellín","1682"],["2025-03-21","Lotería de Medellín","7290"],["2025-03-28","Lotería de Medellín","2097"],["2025-04-04","Lotería de Medellín","3484"],["2025-04-11","Lotería de Medellín","4020"],["2025-04-19","Lotería de Medellín","9060"],["2025-04-25","Lotería de Medellín","4266"],["2025-05-02","Lotería de Medellín","0071"],["2025-05-09","Lotería de Medellín","5329"],["2025-05-16","Lotería de Medellín","9405"],["2025-05-23","Lotería de Medellín","9798"],["2025-05-30","Lotería de Medellín","0624"],["2025-06-06","Lotería de Medellín","6840"],["2025-06-13","Lotería de Medellín","6138"],["2025-06-20","Lotería de Medellín","0539"],["2025-06-27","Lotería de Medellín","9190"],["2025-07-04","Lotería de Medellín","9408"],["2025-07-11","Lotería de Medellín","7653"],["2025-07-18","Lotería de Medellín","7800"],["2025-07-19","Lotería de Medellín","2974"],["2025-07-25","Lotería de Medellín","6641"],["2025-08-01","Lotería de Medellín","5334"],["2025-08-08","Lotería de Medellín","9844"],["2025-08-15","Lotería de Medellín","7739"],["2025-08-22","Lotería de Medellín","4918"],["2025-08-29","Lotería de Medellín","8388"],["2025-09-05","Lotería de Medellín","8417"],["2025-09-12","Lotería de Medellín","3472"],["2025-09-19","Lotería de Medellín","5321"],["2025-09-26","Lotería de Medellín","0174"],["2025-10-03","Lotería de Medellín","9860"],["2025-10-10","Lotería de Medellín","2619"],["2025-10-17","Lotería de Medellín","0903"],["2025-10-24","Lotería de Medellín","1651"],["2025-10-31","Lotería de Medellín","1279"],["2025-11-07","Lotería de Medellín","6958"],["2025-11-14","Lotería de Medellín","2953"],["2025-11-15","Lotería de Medellín","4318"],["2025-11-21","Lotería de Medellín","6192"],["2025-11-28","Lotería de Medellín","1433"],["2025-12-05","Lotería de Medellín","9736"],["2025-12-12","Lotería de Medellín","1546"],["2025-12-19","Lotería de Medellín","7114"],["2025-12-26","Lotería de Medellín","9690"],["2026-01-02","Lotería de Medellín","2541"],["2026-01-09","Lotería de Medellín","0256"],["2026-01-16","Lotería de Medellín","4771"],["2026-01-23","Lotería de Medellín","0372"],["2026-01-30","Lotería de Medellín","7506"],["2026-02-06","Lotería de Medellín","7002"],["2026-02-13","Lotería de Medellín","4547"],["2026-02-20","Lotería de Medellín","5264"],["2026-02-27","Lotería de Medellín","8885"],["2026-03-06","Lotería de Medellín","8857"],["2026-03-13","Lotería de Medellín","7048"],["2026-03-20","Lotería de Medellín","6535"],["2026-03-27","Lotería de Medellín","8021"],["2026-04-04","Lotería de Medellín","9656"],["2026-04-10","Lotería de Medellín","3904"],["2026-04-17","Lotería de Medellín","9370"],["2026-04-24","Lotería de Medellín","8395"],["2026-05-02","Lotería de Medellín","0708"],["2026-05-08","Lotería de Medellín","1967"],["2026-05-15","Lotería de Medellín","6136"],["2026-05-22","Lotería de Medellín","5241"],["2026-05-29","Lotería de Medellín","3298"],["2026-06-05","Lotería de Medellín","2924"],["2026-06-12","Lotería de Medellín","7863"],["2026-06-19","Lotería de Medellín","3190"],["2026-06-24","Astro Luna","4091"],["2026-06-24","Astro Sol","4851"],["2026-06-24","Cafeterito Día","1250"],["2026-06-24","Cafeterito Noche","9796"],["2026-06-24","Chontico Millonario","3964"],["2026-06-24","Chontico Noche","1855"],["2026-06-24","Dorado Mañana","7032"],["2026-06-24","Dorado Tarde","8281"],["2026-06-24","El Motilon 1","5651"],["2026-06-24","El Motilon 2","1800"],["2026-06-24","El Pijao de Oro","2891"],["2026-06-24","El saman de la suerte","7047"],["2026-06-24","La Antioqueñita 1","2792"],["2026-06-24","La Antioqueñita 2","5648"],["2026-06-24","La Caribeña 1","9377"],["2026-06-24","La Caribeña 2","3084"],["2026-06-24","La Culona Día","4111"],["2026-06-24","La Culona Noche","0517"],["2026-06-24","La Fantastica 1","7880"],["2026-06-24","La Fantastica 2","5632"],["2026-06-24","Manizales","2053"],["2026-06-24","Meta","5975"],["2026-06-24","Paisita 1","9666"],["2026-06-24","Paisita 2","1558"],["2026-06-24","Pick 3 Día","0261"],["2026-06-24","Pick 3 Noche","0262"],["2026-06-24","Pick 4 Día","3740"],["2026-06-24","Pick 4 Noche","1840"],["2026-06-24","Sinuano Día","7685"],["2026-06-24","Sinuano Noche","6444"],["2026-06-24","Valle","3392"],["2026-06-25","Astro Luna","5600"],["2026-06-25","Astro Sol","0583"],["2026-06-25","Bogotá","0554"],["2026-06-25","Cafeterito Día","9690"],["2026-06-25","Cafeterito Noche","0987"],["2026-06-25","Chontico Millonario","8229"],["2026-06-25","Chontico Noche","3803"],["2026-06-25","Dorado Mañana","9388"],["2026-06-25","Dorado Noche","0674"],["2026-06-25","Dorado Tarde","7494"],["2026-06-25","El Motilon 1","8736"],["2026-06-25","El Motilon 2","8244"],["2026-06-25","El Pijao de Oro","5152"],["2026-06-25","El saman de la suerte","9689"],["2026-06-25","La Antioqueñita 1","2394"],["2026-06-25","La Antioqueñita 2","1249"],["2026-06-25","La Caribeña 1","7352"],["2026-06-25","La Caribeña 2","7392"],["2026-06-25","La Culona Día","5561"],["2026-06-25","La Culona Noche","4774"],["2026-06-25","La Fantastica 1","7400"],["2026-06-25","La Fantastica 2","9050"],["2026-06-25","Paisita 1","6767"],["2026-06-25","Paisita 2","9692"],["2026-06-25","Pick 3 Día","0378"],["2026-06-25","Pick 3 Noche","0243"],["2026-06-25","Pick 4 Día","7916"],["2026-06-25","Pick 4 Noche","3278"],["2026-06-25","Sinuano Día","3695"],["2026-06-25","Sinuano Noche","0865"],["2026-06-25","Super Chontico Noche Millonario","8925"],["2026-06-26","Astro Luna","3230"],["2026-06-26","Astro Sol","0594"],["2026-06-26","Cafeterito Día","5290"],["2026-06-26","Cafeterito Noche","1674"],["2026-06-26","Chontico Millonario","2943"],["2026-06-26","Chontico Noche","8819"],["2026-06-26","Dorado Mañana","8826"],["2026-06-26","Dorado Tarde","3485"],["2026-06-26","El Motilon 1","7836"],["2026-06-26","El Motilon 2","7577"],["2026-06-26","El Pijao de Oro","5263"],["2026-06-26","El saman de la suerte","6693"],["2026-06-26","La Antioqueñita 1","2362"],["2026-06-26","La Antioqueñita 2","1300"],["2026-06-26","La Caribeña 1","9827"],["2026-06-26","La Caribeña 2","5056"],["2026-06-26","La Culona Día","0913"],["2026-06-26","La Culona Noche","7503"],["2026-06-26","La Fantastica 1","7099"],["2026-06-26","La Fantastica 2","8157"],["2026-06-26","Paisita 1","0853"],["2026-06-26","Paisita 2","1220"],["2026-06-26","Pick 3 Día","0287"],["2026-06-26","Pick 3 Noche","0704"],["2026-06-26","Pick 4 Día","3490"],["2026-06-26","Pick 4 Noche","4274"],["2026-06-26","Risaralda","7164"],["2026-06-26","Santander","3884"],["2026-06-26","Sinuano Día","9455"],["2026-06-26","Sinuano Noche","3238"],["2026-06-26","Lotería de Medellín","3656"],["2026-06-27","Astro Luna","0569"],["2026-06-27","Astro Sol","6154"],["2026-06-27","Boyacá","4224"],["2026-06-27","Cafeterito Día","5388"],["2026-06-27","Cafeterito Noche","2030"],["2026-06-27","Cauca","8753"],["2026-06-27","Chontico Millonario","4616"],["2026-06-27","Chontico Noche","7062"],["2026-06-27","Dorado Mañana","3646"],["2026-06-27","Dorado Noche","1187"],["2026-06-27","Dorado Tarde","4407"],["2026-06-27","El Motilon 1","6318"],["2026-06-27","El Motilon 2","4009"],["2026-06-27","El Pijao de Oro","5835"],["2026-06-27","El saman de la suerte","4435"],["2026-06-27","Extra de Colombia","3960"],["2026-06-27","La Antioqueñita 1","8480"],["2026-06-27","La Antioqueñita 2","4866"],["2026-06-27","La Caribeña 1","1155"],["2026-06-27","La Caribeña 2","7662"],["2026-06-27","La Culona Día","5485"],["2026-06-27","La Culona Noche","4466"],["2026-06-27","La Fantastica 1","1020"],["2026-06-27","La Fantastica 2","0210"],["2026-06-27","Paisita 1","0096"],["2026-06-27","Paisita 2","9743"],["2026-06-27","Paisita 3","4909"],["2026-06-27","Pick 3 Día","0978"],["2026-06-27","Pick 3 Noche","0658"],["2026-06-27","Pick 4 Día","3789"],["2026-06-27","Pick 4 Noche","4097"],["2026-06-27","Sinuano Día","9382"],["2026-06-27","Sinuano Noche","2869"],["2026-06-28","Astro Luna","0035"],["2026-06-28","Cafeterito Noche","7868"],["2026-06-28","Chontico Millonario","5190"],["2026-06-28","Chontico Noche","1555"],["2026-06-28","Dorado Noche","2043"],["2026-06-28","El Motilon 1","0900"],["2026-06-28","El Motilon 2","3507"],["2026-06-28","El Pijao de Oro","3126"],["2026-06-28","El saman de la suerte","3336"],["2026-06-28","La Antioqueñita 1","8359"],["2026-06-28","La Antioqueñita 2","0453"],["2026-06-28","La Caribeña 1","0212"],["2026-06-28","La Caribeña 2","6451"],["2026-06-28","La Culona Día","8271"],["2026-06-28","La Culona Noche","8502"],["2026-06-28","La Fantastica 2","9428"],["2026-06-28","Paisita 1","6027"],["2026-06-28","Paisita 2","6716"],["2026-06-28","Pick 3 Día","0548"],["2026-06-28","Pick 3 Noche","0421"],["2026-06-28","Pick 4 Día","8903"],["2026-06-28","Pick 4 Noche","1463"],["2026-06-28","Sinuano Día","9310"],["2026-06-28","Sinuano Noche","4429"],["2026-06-29","Astro Luna","1193"],["2026-06-29","Cafeterito Noche","1929"],["2026-06-29","Chontico Millonario","7005"],["2026-06-29","Chontico Noche","2554"],["2026-06-29","Dorado Noche","7351"],["2026-06-29","El Motilon 1","6139"],["2026-06-29","El Motilon 2","4519"],["2026-06-29","El Pijao de Oro","5538"],["2026-06-29","El saman de la suerte","6490"],["2026-06-29","La Antioqueñita 1","8566"],["2026-06-29","La Antioqueñita 2","9520"],["2026-06-29","La Caribeña 1","4861"],["2026-06-29","La Caribeña 2","1987"],["2026-06-29","La Culona Día","8780"],["2026-06-29","La Culona Noche","5697"],["2026-06-29","La Fantastica 2","4589"],["2026-06-29","Paisita 1","4952"],["2026-06-29","Paisita 2","1293"],["2026-06-29","Pick 3 Día","0703"],["2026-06-29","Pick 3 Noche","0295"],["2026-06-29","Pick 4 Día","9667"],["2026-06-29","Pick 4 Noche","2032"],["2026-06-29","Sinuano Día","4299"],["2026-06-29","Sinuano Noche","6166"],["2026-06-30","Astro Luna","8432"],["2026-06-30","Astro Sol","9163"],["2026-06-30","Cafeterito Día","7289"],["2026-06-30","Cafeterito Noche","7107"],["2026-06-30","Chontico Millonario","3527"],["2026-06-30","Chontico Noche","1984"],["2026-06-30","Cruz Roja","9289"],["2026-06-30","Cundinamarca","5191"],["2026-06-30","Dorado Mañana","4268"],["2026-06-30","Dorado Tarde","5206"],["2026-06-30","El Motilon 1","0733"],["2026-06-30","El Motilon 2","5480"],["2026-06-30","El Pijao de Oro","0896"],["2026-06-30","El saman de la suerte","3200"],["2026-06-30","Huila","8858"],["2026-06-30","La Antioqueñita 1","7558"],["2026-06-30","La Antioqueñita 2","5513"],["2026-06-30","La Caribeña 1","0696"],["2026-06-30","La Caribeña 2","0008"],["2026-06-30","La Culona Día","3600"],["2026-06-30","La Culona Noche","1705"],["2026-06-30","La Fantastica 1","2198"],["2026-06-30","La Fantastica 2","9525"],["2026-06-30","Paisita 1","7159"],["2026-06-30","Paisita 2","0008"],["2026-06-30","Pick 3 Día","0366"],["2026-06-30","Pick 3 Noche","0802"],["2026-06-30","Pick 4 Día","6404"],["2026-06-30","Pick 4 Noche","7574"],["2026-06-30","Sinuano Día","4403"],["2026-06-30","Sinuano Noche","7431"],["2026-06-30","Tolima","5678"],["2026-07-01","Astro Luna","6444"],["2026-07-01","Astro Sol","7157"],["2026-07-01","Cafeterito Día","2935"],["2026-07-01","Cafeterito Noche","1495"],["2026-07-01","Chontico Millonario","1410"],["2026-07-01","Chontico Noche","1603"],["2026-07-01","Dorado Mañana","8254"],["2026-07-01","Dorado Tarde","5072"],["2026-07-01","El Motilon 1","9476"],["2026-07-01","El Motilon 2","9930"],["2026-07-01","El Pijao de Oro","4905"],["2026-07-01","El saman de la suerte","3212"],["2026-07-01","La Antioqueñita 1","0546"],["2026-07-01","La Antioqueñita 2","4904"],["2026-07-01","La Caribeña 1","9206"],["2026-07-01","La Caribeña 2","9203"],["2026-07-01","La Culona Día","0322"],["2026-07-01","La Culona Noche","6958"],["2026-07-01","La Fantastica 1","3454"],["2026-07-01","La Fantastica 2","7060"],["2026-07-01","Manizales","3926"],["2026-07-01","Meta","3736"],["2026-07-01","Paisita 1","0593"],["2026-07-01","Paisita 2","0274"],["2026-07-01","Pick 3 Día","0627"],["2026-07-01","Pick 3 Noche","0291"],["2026-07-01","Pick 4 Día","0591"],["2026-07-01","Pick 4 Noche","9740"],["2026-07-01","Sinuano Día","4252"],["2026-07-01","Sinuano Noche","6679"],["2026-07-01","Valle","2725"],["2026-07-02","Astro Luna","5880"],["2026-07-02","Astro Sol","7452"],["2026-07-02","Bogotá","3134"],["2026-07-02","Cafeterito Día","5441"],["2026-07-02","Cafeterito Noche","5888"],["2026-07-02","Chontico Millonario","1598"],["2026-07-02","Chontico Noche","3335"],["2026-07-02","Dorado Mañana","2679"],["2026-07-02","Dorado Noche","6770"],["2026-07-02","Dorado Tarde","8742"],["2026-07-02","El Motilon 1","4642"],["2026-07-02","El Motilon 2","9724"],["2026-07-02","El Pijao de Oro","5829"],["2026-07-02","El saman de la suerte","4126"],["2026-07-02","La Antioqueñita 1","1187"],["2026-07-02","La Antioqueñita 2","5649"],["2026-07-02","La Caribeña 1","8817"],["2026-07-02","La Caribeña 2","8813"],["2026-07-02","La Culona Día","2020"],["2026-07-02","La Culona Noche","2279"],["2026-07-02","La Fantastica 1","6669"],["2026-07-02","La Fantastica 2","2365"],["2026-07-02","Paisita 1","0233"],["2026-07-02","Paisita 2","2754"],["2026-07-02","Pick 3 Día","0208"],["2026-07-02","Pick 3 Noche","0564"],["2026-07-02","Pick 4 Día","8191"],["2026-07-02","Pick 4 Noche","7224"],["2026-07-02","Sinuano Día","0686"],["2026-07-02","Sinuano Noche","0852"],["2026-07-02","Super Chontico Noche Millonario","5349"],["2026-07-03","Astro Luna","5868"],["2026-07-03","Astro Sol","3460"],["2026-07-03","Cafeterito Día","2598"],["2026-07-03","Cafeterito Noche","8908"],["2026-07-03","Chontico Millonario","4816"],["2026-07-03","Chontico Noche","1391"],["2026-07-03","Dorado Mañana","0188"],["2026-07-03","Dorado Tarde","8609"],["2026-07-03","El Motilon 1","5651"],["2026-07-03","El Motilon 2","1553"],["2026-07-03","El Pijao de Oro","1275"],["2026-07-03","El saman de la suerte","3693"],["2026-07-03","La Antioqueñita 1","1412"],["2026-07-03","La Antioqueñita 2","8754"],["2026-07-03","La Caribeña 1","8382"],["2026-07-03","La Caribeña 2","4132"],["2026-07-03","La Culona Día","5484"],["2026-07-03","La Culona Noche","2252"],["2026-07-03","La Fantastica 1","6260"],["2026-07-03","La Fantastica 2","1632"],["2026-07-03","Paisita 1","6502"],["2026-07-03","Paisita 2","2357"],["2026-07-03","Pick 3 Día","0460"],["2026-07-03","Pick 3 Noche","0361"],["2026-07-03","Pick 4 Día","8938"],["2026-07-03","Pick 4 Noche","7576"],["2026-07-03","Risaralda","5430"],["2026-07-03","Santander","3084"],["2026-07-03","Sinuano Día","9854"],["2026-07-03","Sinuano Noche","9351"],["2026-07-03","Lotería de Medellín","0492"],["2026-07-04","Astro Luna","3287"],["2026-07-04","Astro Sol","4761"],["2026-07-04","Boyacá","8116"],["2026-07-04","Cafeterito Día","2546"],["2026-07-04","Cafeterito Noche","1174"],["2026-07-04","Cauca","0562"],["2026-07-04","Chontico Millonario","4419"],["2026-07-04","Chontico Noche","5205"],["2026-07-04","Dorado Mañana","0150"],["2026-07-04","Dorado Noche","5659"],["2026-07-04","Dorado Tarde","7252"],["2026-07-04","El Motilon 1","8160"],["2026-07-04","El Motilon 2","3663"],["2026-07-04","El Pijao de Oro","5694"],["2026-07-04","El saman de la suerte","4873"],["2026-07-04","Extra de Cruz Roja","4865"],["2026-07-04","La Antioqueñita 1","4056"],["2026-07-04","La Antioqueñita 2","9684"],["2026-07-04","La Caribeña 1","9998"],["2026-07-04","La Caribeña 2","7521"],["2026-07-04","La Culona Día","7304"],["2026-07-04","La Culona Noche","4135"],["2026-07-04","La Fantastica 1","9821"],["2026-07-04","La Fantastica 2","2453"],["2026-07-04","Paisita 1","1592"],["2026-07-04","Paisita 2","0846"],["2026-07-04","Paisita 3","7887"],["2026-07-04","Pick 3 Día","0672"],["2026-07-04","Pick 3 Noche","0206"],["2026-07-04","Pick 4 Día","3251"],["2026-07-04","Pick 4 Noche","7878"],["2026-07-04","Sinuano Día","2506"],["2026-07-04","Sinuano Noche","7087"],["2026-07-05","Astro Luna","5282"],["2026-07-05","Cafeterito Noche","2632"],["2026-07-05","Chontico Millonario","0563"],["2026-07-05","Chontico Noche","5042"],["2026-07-05","Dorado Noche","8703"],["2026-07-05","El Motilon 1","7905"],["2026-07-05","El Motilon 2","0473"],["2026-07-05","El Pijao de Oro","7428"],["2026-07-05","El saman de la suerte","0059"],["2026-07-05","La Antioqueñita 1","3860"],["2026-07-05","La Antioqueñita 2","9616"],["2026-07-05","La Caribeña 1","3204"],["2026-07-05","La Caribeña 2","5762"],["2026-07-05","La Culona Día","6393"],["2026-07-05","La Culona Noche","4622"],["2026-07-05","La Fantastica 2","1331"],["2026-07-05","Paisita 1","9409"],["2026-07-05","Paisita 2","0786"],["2026-07-05","Pick 3 Día","0490"],["2026-07-05","Pick 3 Noche","0019"],["2026-07-05","Pick 4 Día","8687"],["2026-07-05","Pick 4 Noche","4421"],["2026-07-05","Sinuano Día","8666"],["2026-07-05","Sinuano Noche","1539"],["2026-07-06","Astro Luna","9516"],["2026-07-06","Astro Sol","8820"],["2026-07-06","Cafeterito Día","8508"],["2026-07-06","Cafeterito Noche","2014"],["2026-07-06","Chontico Millonario","0740"],["2026-07-06","Chontico Noche","8941"],["2026-07-06","Cundinamarca","8209"],["2026-07-06","Dorado Mañana","4446"],["2026-07-06","Dorado Tarde","2910"],["2026-07-06","El Motilon 1","9587"],["2026-07-06","El Motilon 2","0698"],["2026-07-06","El Pijao de Oro","5140"],["2026-07-06","El saman de la suerte","4904"],["2026-07-06","La Antioqueñita 1","8963"],["2026-07-06","La Antioqueñita 2","2434"],["2026-07-06","La Caribeña 1","2631"],["2026-07-06","La Caribeña 2","7883"],["2026-07-06","La Culona Día","4855"],["2026-07-06","La Culona Noche","4426"],["2026-07-06","La Fantastica 1","3533"],["2026-07-06","La Fantastica 2","7750"],["2026-07-06","Paisita 1","4905"],["2026-07-06","Paisita 2","9723"],["2026-07-06","Pick 3 Día","0756"],["2026-07-06","Pick 3 Noche","0177"],["2026-07-06","Pick 4 Día","9792"],["2026-07-06","Pick 4 Noche","9066"],["2026-07-06","Sinuano Día","0668"],["2026-07-06","Sinuano Noche","9685"],["2026-07-06","Tolima","2318"],["2026-07-07","Astro Luna","5949"],["2026-07-07","Astro Sol","5622"],["2026-07-07","Cafeterito Día","7084"],["2026-07-07","Cafeterito Noche","6418"],["2026-07-07","Chontico Millonario","8606"],["2026-07-07","Chontico Noche","9437"],["2026-07-07","Cruz Roja","5049"],["2026-07-07","Dorado Mañana","5136"],["2026-07-07","Dorado Tarde","2199"],["2026-07-07","El Motilon 1","1479"],["2026-07-07","El Motilon 2","9138"],["2026-07-07","El Pijao de Oro","6297"],["2026-07-07","El saman de la suerte","3898"],["2026-07-07","Huila","0142"],["2026-07-07","La Antioqueñita 1","3141"],["2026-07-07","La Antioqueñita 2","7444"],["2026-07-07","La Caribeña 1","8381"],["2026-07-07","La Caribeña 2","2313"],["2026-07-07","La Culona Día","1352"],["2026-07-07","La Culona Noche","0614"],["2026-07-07","La Fantastica 1","7803"],["2026-07-07","La Fantastica 2","2537"],["2026-07-07","Paisita 1","8217"],["2026-07-07","Paisita 2","4447"],["2026-07-07","Pick 3 Día","0759"],["2026-07-07","Pick 3 Noche","0527"],["2026-07-07","Pick 4 Día","7339"],["2026-07-07","Pick 4 Noche","0108"],["2026-07-07","Sinuano Día","1765"],["2026-07-07","Sinuano Noche","6765"],["2026-07-08","Astro Luna","0157"],["2026-07-08","Astro Sol","9423"],["2026-07-08","Cafeterito Día","2820"],["2026-07-08","Cafeterito Noche","9577"],["2026-07-08","Chontico Millonario","8382"],["2026-07-08","Chontico Noche","2967"],["2026-07-08","Dorado Mañana","2836"],["2026-07-08","Dorado Tarde","8063"],["2026-07-08","El Motilon 1","9198"],["2026-07-08","El Motilon 2","0423"],["2026-07-08","El Pijao de Oro","1720"],["2026-07-08","El saman de la suerte","0150"],["2026-07-08","La Antioqueñita 1","9782"],["2026-07-08","La Antioqueñita 2","7581"],["2026-07-08","La Caribeña 1","0603"],["2026-07-08","La Caribeña 2","9729"],["2026-07-08","La Culona Día","3169"],["2026-07-08","La Culona Noche","2675"],["2026-07-08","La Fantastica 1","6921"],["2026-07-08","La Fantastica 2","4444"],["2026-07-08","Manizales","5704"],["2026-07-08","Meta","8006"],["2026-07-08","Paisita 1","4448"],["2026-07-08","Paisita 2","3624"],["2026-07-08","Pick 3 Día","0559"],["2026-07-08","Pick 3 Noche","0569"],["2026-07-08","Pick 4 Día","0250"],["2026-07-08","Pick 4 Noche","1322"],["2026-07-08","Sinuano Día","5932"],["2026-07-08","Sinuano Noche","1476"],["2026-07-08","Valle","3329"],["2026-07-09","Astro Luna","0929"],["2026-07-09","Astro Sol","3112"],["2026-07-09","Bogotá","7396"],["2026-07-09","Cafeterito Día","7812"],["2026-07-09","Cafeterito Noche","9562"],["2026-07-09","Chontico Millonario","6751"],["2026-07-09","Chontico Noche","9510"],["2026-07-09","Dorado Mañana","0521"],["2026-07-09","Dorado Noche","1426"],["2026-07-09","Dorado Tarde","4260"],["2026-07-09","El Motilon 1","7849"],["2026-07-09","El Motilon 2","8606"],["2026-07-09","El Pijao de Oro","7208"],["2026-07-09","El saman de la suerte","4786"],["2026-07-09","La Antioqueñita 1","4302"],["2026-07-09","La Antioqueñita 2","4105"],["2026-07-09","La Caribeña 1","0480"],["2026-07-09","La Caribeña 2","5187"],["2026-07-09","La Culona Día","3762"],["2026-07-09","La Culona Noche","6326"],["2026-07-09","La Fantastica 1","8489"],["2026-07-09","La Fantastica 2","0621"],["2026-07-09","Paisita 1","8076"],["2026-07-09","Paisita 2","1404"],["2026-07-09","Pick 3 Día","0378"],["2026-07-09","Pick 3 Noche","0421"],["2026-07-09","Pick 4 Día","5557"],["2026-07-09","Pick 4 Noche","9937"],["2026-07-09","Sinuano Día","8998"],["2026-07-09","Sinuano Noche","9911"],["2026-07-09","Super Chontico Noche Millonario","0517"],["2026-07-10","Astro Luna","9155"],["2026-07-10","Astro Sol","2898"],["2026-07-10","Cafeterito Día","0767"],["2026-07-10","Cafeterito Noche","8347"],["2026-07-10","Chontico Millonario","8339"],["2026-07-10","Chontico Noche","6750"],["2026-07-10","Dorado Mañana","1393"],["2026-07-10","Dorado Tarde","0591"],["2026-07-10","El Motilon 1","0228"],["2026-07-10","El Motilon 2","3428"],["2026-07-10","El Pijao de Oro","5023"],["2026-07-10","El saman de la suerte","3346"],["2026-07-10","La Antioqueñita 1","9554"],["2026-07-10","La Antioqueñita 2","6424"],["2026-07-10","La Caribeña 1","5568"],["2026-07-10","La Caribeña 2","4037"],["2026-07-10","La Culona Día","7221"],["2026-07-10","La Culona Noche","6392"],["2026-07-10","La Fantastica 1","9581"],["2026-07-10","La Fantastica 2","9415"],["2026-07-10","Paisita 1","7704"],["2026-07-10","Paisita 2","6458"],["2026-07-10","Pick 3 Día","0753"],["2026-07-10","Pick 3 Noche","0581"],["2026-07-10","Pick 4 Día","2242"],["2026-07-10","Pick 4 Noche","0441"],["2026-07-10","Risaralda","1233"],["2026-07-10","Santander","9093"],["2026-07-10","Sinuano Día","4653"],["2026-07-10","Sinuano Noche","5085"],["2026-07-10","Lotería de Medellín","8326"],["2026-07-11","Astro Luna","8335"],["2026-07-11","Astro Sol","9824"],["2026-07-11","Boyacá","2243"],["2026-07-11","Cafeterito Día","9094"],["2026-07-11","Cafeterito Noche","6897"],["2026-07-11","Cauca","0232"],["2026-07-11","Chontico Millonario","6716"],["2026-07-11","Chontico Noche","0020"],["2026-07-11","Dorado Mañana","0568"],["2026-07-11","Dorado Noche","8531"],["2026-07-11","Dorado Tarde","4327"],["2026-07-11","El Motilon 1","6197"],["2026-07-11","El Motilon 2","8996"],["2026-07-11","El Pijao de Oro","1740"],["2026-07-11","El saman de la suerte","4096"],["2026-07-11","Extra de Colombia Risaralda","6321"],["2026-07-11","La Antioqueñita 1","1117"],["2026-07-11","La Antioqueñita 2","6890"],["2026-07-11","La Caribeña 1","2241"],["2026-07-11","La Caribeña 2","2139"],["2026-07-11","La Culona Día","6858"],["2026-07-11","La Culona Noche","2126"],["2026-07-11","La Fantastica 1","9094"],["2026-07-11","La Fantastica 2","3061"],["2026-07-11","Paisita 1","4603"],["2026-07-11","Paisita 2","9699"],["2026-07-11","Paisita 3","9170"],["2026-07-11","Pick 3 Día","0713"],["2026-07-11","Pick 3 Noche","0275"],["2026-07-11","Pick 4 Día","8750"],["2026-07-11","Pick 4 Noche","1514"],["2026-07-11","Sinuano Día","9394"],["2026-07-11","Sinuano Noche","3188"],["2026-07-12","Astro Luna","3574"],["2026-07-12","Cafeterito Noche","1085"],["2026-07-12","Chontico Millonario","4189"],["2026-07-12","Chontico Noche","8311"],["2026-07-12","Dorado Noche","4751"],["2026-07-12","El Motilon 1","7651"],["2026-07-12","El Motilon 2","0420"],["2026-07-12","El Pijao de Oro","7051"],["2026-07-12","El saman de la suerte","6480"],["2026-07-12","La Antioqueñita 1","4741"],["2026-07-12","La Antioqueñita 2","4004"],["2026-07-12","La Caribeña 1","3385"],["2026-07-12","La Caribeña 2","0198"],["2026-07-12","La Culona Día","1352"],["2026-07-12","La Culona Noche","9517"],["2026-07-12","La Fantastica 2","6966"],["2026-07-12","Paisita 1","0579"],["2026-07-12","Paisita 2","0467"],["2026-07-12","Pick 3 Día","0490"],["2026-07-12","Pick 3 Noche","0118"],["2026-07-12","Pick 4 Día","6823"],["2026-07-12","Pick 4 Noche","3818"],["2026-07-12","Sinuano Día","3595"],["2026-07-12","Sinuano Noche","7575"],["2026-07-13","Astro Luna","9808"],["2026-07-13","Cafeterito Noche","5304"],["2026-07-13","Chontico Millonario","4348"],["2026-07-13","Chontico Noche","8149"],["2026-07-13","Dorado Noche","2928"],["2026-07-13","El Motilon 1","1662"],["2026-07-13","El Motilon 2","6301"],["2026-07-13","El Pijao de Oro","8539"],["2026-07-13","El saman de la suerte","0606"],["2026-07-13","La Antioqueñita 1","0349"],["2026-07-13","La Antioqueñita 2","5626"],["2026-07-13","La Caribeña 1","3262"],["2026-07-13","La Caribeña 2","5069"],["2026-07-13","La Culona Día","5962"],["2026-07-13","La Culona Noche","9750"],["2026-07-13","La Fantastica 2","2682"],["2026-07-13","Paisita 1","7167"],["2026-07-13","Paisita 2","6487"],["2026-07-13","Pick 3 Día","0793"],["2026-07-13","Pick 3 Noche","0980"],["2026-07-13","Pick 4 Día","1650"],["2026-07-13","Pick 4 Noche","7906"],["2026-07-13","Sinuano Día","9889"],["2026-07-13","Sinuano Noche","7247"],["2026-07-13","Tolima","9575"]];
+
+// ==ENGINE==
+function posicionesDe(sel){ return sel.indexOf('Pick 3') === 0 ? [1,2,3] : [0,1,2,3]; }
+
+function predecir(prev, posiciones){
+  const out = {caliente:[], rezagado:[], frio:[]};
+  for (const p of posiciones){
+    const freq = new Array(10).fill(0), ult = new Array(10).fill(-1);
+    for (let j = 0; j < prev.length; j++){
+      const d = prev[j].charCodeAt(p) - 48;
+      freq[d]++; ult[d] = j;
+    }
+    let iMax = 0, iMin = 0, iRez = 0, mejorRez = -1;
+    for (let d = 0; d < 10; d++){
+      if (freq[d] > freq[iMax]) iMax = d;
+      if (freq[d] < freq[iMin]) iMin = d;
+      const rez = ult[d] >= 0 ? prev.length - 1 - ult[d] : prev.length;
+      if (rez > mejorRez){ mejorRez = rez; iRez = d; }
+    }
+    out.caliente.push(iMax); out.frio.push(iMin); out.rezagado.push(iRez);
+  }
+  return out;
+}
+
+function backtest(nums, posiciones, warmup){
+  const met = ['caliente','rezagado','frio'];
+  const res = {caliente:{scores:[],exactos:0,dosUlt:0,hits:[]}, rezagado:{scores:[],exactos:0,dosUlt:0,hits:[]}, frio:{scores:[],exactos:0,dosUlt:0,hits:[]}};
+  for (let i = warmup; i < nums.length; i++){
+    const pred = predecir(nums.slice(0, i), posiciones);
+    for (const m of met){
+      let aciertos = 0;
+      for (let k = 0; k < posiciones.length; k++){
+        if (pred[m][k] === nums[i].charCodeAt(posiciones[k]) - 48) aciertos++;
+      }
+      res[m].scores.push(aciertos);
+      const esExacto = aciertos === posiciones.length;
+      if (esExacto) res[m].exactos++;
+      const n2 = posiciones.slice(-2);
+      const esDosUlt = pred[m][posiciones.length-2] === nums[i].charCodeAt(n2[0]) - 48 &&
+                       pred[m][posiciones.length-1] === nums[i].charCodeAt(n2[1]) - 48;
+      if (esDosUlt) res[m].dosUlt++;
+      if (esExacto) res[m].hits.push({idx:i, tipo:'exacto', pred:pred[m].slice()});
+      else if (esDosUlt) res[m].hits.push({idx:i, tipo:'dosUlt', pred:pred[m].slice()});
+    }
+  }
+  return res;
+}
+function clasificarAcierto(pred, numStr, posiciones){
+  let ac = 0;
+  const n = posiciones.length;
+  for (let k = 0; k < n; k++) if (pred[k] === numStr.charCodeAt(posiciones[k]) - 48) ac++;
+  const u2 = pred[n-2] === numStr.charCodeAt(posiciones[n-2]) - 48 && pred[n-1] === numStr.charCodeAt(posiciones[n-1]) - 48;
+  const u3 = n >= 3 && u2 && pred[n-3] === numStr.charCodeAt(posiciones[n-3]) - 48;
+  if (ac === n) return {tipo:'exacto', aciertos:ac};
+  if (u3) return {tipo:'tresUlt', aciertos:ac};
+  if (u2) return {tipo:'dosUlt', aciertos:ac};
+  if (ac >= 2) return {tipo:'parcial', aciertos:ac};
+  return {tipo:'nada', aciertos:ac};
+}
+// ==/ENGINE==
+
+const LOTS = {};
+let NUEVOS = [];
+let persistente = false;
+let chart = null;
+
+function baseCompleta(){
+  const todo = DATOS.concat(NUEVOS.map(r => [r[0], r[1], r[2]]));
+  todo.sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  return todo;
+}
+function registrosDe(sel){
+  const todo = baseCompleta();
+  if (sel === '__TODAS__') return todo.filter(r => r[1].indexOf('Pick 3') !== 0 && r[1] !== 'Lotería de Medellín');
+  return todo.filter(r => r[1] === sel);
+}
+
+function pintarBalotas(idCont, digitos){
+  const cont = document.getElementById(idCont);
+  cont.innerHTML = digitos.map(d => '<div class="balota">' + d + '</div>').join('');
+}
+
+function fmt(x, dec){ return Number(x).toFixed(dec === undefined ? 3 : dec); }
+
+function actualizar(){
+  const sel = document.getElementById('selLot').value;
+  const regs = registrosDe(sel);
+  const nums = regs.map(r => r[2]);
+  const pos = sel === '__TODAS__' ? [0,1,2,3] : posicionesDe(sel);
+  const esPick3 = pos.length === 3;
+  const warmup = (sel === '__TODAS__' || nums.length >= 100) ? 30 : 8;
+
+  document.getElementById('stTotal').textContent = baseCompleta().length;
+  const b = baseCompleta();
+  document.getElementById('stRango').textContent = b.length ? b[0][0] + ' → ' + b[b.length-1][0] : '—';
+  document.getElementById('subPron').textContent = 'Calculado con los ' + nums.length + ' sorteos disponibles de la selección' + (esPick3 ? ' (juego de 3 cifras).' : '.');
+
+  if (nums.length === 0){
+    ['balCal','balRez','balFri'].forEach(id => document.getElementById(id).innerHTML = '<span style="color:var(--muted)">sin datos</span>');
+    document.getElementById('tarjetas').innerHTML = '';
+    document.getElementById('subBack').textContent = 'No hay sorteos para esta selección.';
+    document.getElementById('veredicto').textContent = '—';
+    if (chart) { chart.destroy(); chart = null; }
+    return;
+  }
+
+  const pron = predecir(nums, pos);
+  pintarBalotas('balCal', pron.caliente);
+  pintarBalotas('balRez', pron.rezagado);
+  pintarBalotas('balFri', pron.frio);
+
+  if (nums.length <= warmup + 3){
+    document.getElementById('subBack').textContent = 'Se necesitan más de ' + (warmup + 3) + ' sorteos para un backtest con sentido (hay ' + nums.length + '). Registra más resultados abajo.';
+    document.getElementById('tarjetas').innerHTML = '';
+    document.getElementById('veredicto').textContent = 'Datos insuficientes para evaluar métodos en esta selección.';
+    if (chart) { chart.destroy(); chart = null; }
+    return;
+  }
+
+  const bt = backtest(nums, pos, warmup);
+  const nEv = bt.caliente.scores.length;
+  const k = pos.length;
+  const esperado = 0.1 * k;
+  const sd = Math.sqrt(k * 0.1 * 0.9);
+  document.getElementById('subBack').textContent = nEv + ' evaluaciones caminando el histórico (cada pronóstico usa solo los sorteos anteriores). Esperado por azar: ' + fmt(esperado,2) + ' cifras en posición por sorteo, 1 acierto de 2 últimas cada 100.';
+
+  const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío'};
+  const colores = {caliente:'var(--caliente)', rezagado:'var(--rezagado)', frio:'var(--frio)'};
+  let html = '';
+  const zs = {};
+  for (const m of ['caliente','rezagado','frio']){
+    const media = bt[m].scores.reduce((a,c) => a + c, 0) / nEv;
+    const z = (media - esperado) * Math.sqrt(nEv) / sd;
+    zs[m] = z;
+    html += '<div class="tarjeta"><div class="etq" style="color:' + colores[m] + '">' + nombres[m] + '</div>' +
+      '<div class="valor">' + fmt(media, 2) + '</div>' +
+      '<div class="comp">cifras/sorteo · esperado <b>' + fmt(esperado,2) + '</b> · z = <b>' + fmt(z,2) + '</b></div>' +
+      '<div class="comp">2 últimas: <b>' + bt[m].dosUlt + '</b> (esp. ' + fmt(nEv/100,1) + ') · exactos: <b>' + bt[m].exactos + '</b></div></div>';
+  }
+  document.getElementById('tarjetas').innerHTML = html;
+
+  let mejor = 'caliente';
+  for (const m of ['rezagado','frio']) if (Math.abs(zs[m]) > Math.abs(zs[mejor])) mejor = m;
+  const zMax = Math.abs(zs[mejor]);
+  let vtxt;
+  if (zMax < 2) vtxt = 'Los tres métodos están <b>dentro del rango del azar</b> (|z| máximo = ' + fmt(zMax,2) + ', umbral 3.0). Con los datos actuales, ninguno muestra ventaja real sobre elegir números al azar.';
+  else if (zMax < 3) vtxt = 'El método <b>' + nombres[mejor] + '</b> se desvía moderadamente (z = ' + fmt(zs[mejor],2) + '), pero por debajo del umbral de 3.0: con muestras así de pequeñas, lo más probable es que sea varianza. Sigue registrando sorteos para confirmar o descartar.';
+  else vtxt = 'El método <b>' + nombres[mejor] + '</b> supera el umbral estadístico (z = ' + fmt(zs[mejor],2) + ' > 3.0). Antes de celebrarlo: verifica los datos de esta lotería y confirma que la desviación se sostiene al agregar sorteos nuevos.';
+  document.getElementById('veredicto').innerHTML = vtxt;
+
+  const aciertos = [];
+  for (const m of ['caliente','rezagado','frio']){
+    for (const h of bt[m].hits){
+      aciertos.push({ fecha: regs[h.idx][0], lot: regs[h.idx][1], metodo: nombres[m],
+        tipo: h.tipo, pred: h.pred.join(''), real: pos.map(p => nums[h.idx][p]).join('') });
+    }
+  }
+  aciertos.sort((a,b) => a.fecha < b.fecha ? 1 : -1);
+  const logEl = document.getElementById('aciertosLog');
+  if (aciertos.length === 0){
+    logEl.innerHTML = '<div class="aviso">Sin aciertos exactos ni de 2 últimas cifras en las ' + nEv + ' evaluaciones del backtest (por azar se esperan ~' + fmt(nEv/100,1) + ' de 2 últimas por método).</div>';
+  } else {
+    logEl.innerHTML = '<div class="sub" style="margin-bottom:8px"><b style="font-family:Archivo">Aciertos destacados del backtest</b> (' + aciertos.length + ' en total, se muestran los últimos 12)</div>' +
+      aciertos.slice(0, 12).map(a =>
+        '<div class="acierto-item"><span class="tag">' + (a.tipo === 'exacto' ? 'EXACTO' : '2 ÚLTIMAS') + '</span>' +
+        '<span>' + a.fecha + '</span><span style="flex:1">' + a.lot + '</span>' +
+        '<span>' + a.metodo + ' pronosticó <b>' + a.pred + '</b> · salió <b>' + a.real + '</b></span></div>').join('');
+  }
+
+  const labels = [], serie = {caliente:[], rezagado:[], frio:[]};
+  const acum = {caliente:0, rezagado:0, frio:0};
+  for (let i = 0; i < nEv; i++){
+    labels.push(i + 1);
+    for (const m of ['caliente','rezagado','frio']){
+      acum[m] += bt[m].scores[i];
+      serie[m].push(acum[m] / (i + 1));
+    }
+  }
+  const cfg = {
+    type: 'line',
+    data: { labels: labels, datasets: [
+      { label:'Caliente', data:serie.caliente, borderColor:'#D85A30', borderWidth:2, pointRadius:0, tension:.25 },
+      { label:'Rezagado', data:serie.rezagado, borderColor:'#6C5FD3', borderWidth:2, borderDash:[6,3], pointRadius:0, tension:.25 },
+      { label:'Frío', data:serie.frio, borderColor:'#0F6E56', borderWidth:2, borderDash:[2,3], pointRadius:0, tension:.25 },
+      { label:'Esperado', data:labels.map(() => esperado), borderColor:'#9CA3AF', borderWidth:1.5, borderDash:[8,5], pointRadius:0 }
+    ]},
+    options: { responsive:true, maintainAspectRatio:false, animation:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: c => c.dataset.label + ': ' + fmt(c.parsed.y,3) } } },
+      scales:{ x:{ title:{display:true, text:'Evaluación #', color:'#6B7280', font:{size:12}}, ticks:{color:'#6B7280', maxTicksLimit:12}, grid:{display:false} },
+               y:{ min:0, title:{display:true, text:'Promedio acumulado de cifras en posición', color:'#6B7280', font:{size:12}}, ticks:{color:'#6B7280'}, grid:{color:'#EEEBE2'} } } }
+  };
+  if (chart) chart.destroy();
+  chart = new Chart(document.getElementById('chartAcum'), cfg);
+}
+
+function poblarFiltroHist(){
+  const set = {};
+  for (const r of baseCompleta()) set[r[1]] = 1;
+  const sel = document.getElementById('filtroHist');
+  const previo = sel.value;
+  sel.innerHTML = '<option value="__TODOS__">Todas</option>' +
+    Object.keys(set).sort().map(l => '<option value="' + l.replace(/"/g,'&quot;') + '">' + l + '</option>').join('');
+  if (previo && (previo === '__TODOS__' || set[previo])) sel.value = previo;
+  const b = baseCompleta();
+  if (b.length && !document.getElementById('histFin').value){
+    const fin = b[b.length - 1][0];
+    const d = new Date(fin + 'T12:00:00');
+    d.setDate(d.getDate() - 6);
+    document.getElementById('histFin').value = fin;
+    document.getElementById('histIni').value = d.toISOString().slice(0, 10);
+  }
+}
+function pintarHistorico(){
+  const filtro = document.getElementById('filtroHist').value || '__TODOS__';
+  const ini = document.getElementById('histIni').value;
+  const fin = document.getElementById('histFin').value;
+  let regs = baseCompleta();
+  if (ini) regs = regs.filter(r => r[0] >= ini);
+  if (fin) regs = regs.filter(r => r[0] <= fin);
+  if (filtro !== '__TODOS__') regs = regs.filter(r => r[1] === filtro);
+  document.getElementById('histCuenta').textContent = regs.length + ' registros en el rango elegido.';
+  const porFecha = {};
+  for (const r of regs) (porFecha[r[0]] = porFecha[r[0]] || []).push(r);
+  const fechas = Object.keys(porFecha).sort().reverse();
+  let html = '';
+  for (const f of fechas){
+    const p = f.split('-');
+    html += '<div class="dia"><div class="dia-h">' + p[2] + '/' + p[1] + '/' + p[0] + '</div>' +
+      porFecha[f].slice().sort((a,b) => a[1] < b[1] ? -1 : 1)
+        .map(r => '<div class="dia-r"><span>' + r[1] + '</span><b>' + r[2] + '</b></div>').join('') +
+      '</div>';
+  }
+  document.getElementById('histLista').innerHTML = html || '<div class="aviso">Sin registros para esa lotería y rango de fechas.</div>';
+}
+document.getElementById('filtroHist').onchange = pintarHistorico;
+document.getElementById('histIni').onchange = pintarHistorico;
+document.getElementById('histFin').onchange = pintarHistorico;
+
+function poblarSelector(){
+  const cuentas = {};
+  for (const r of baseCompleta()) cuentas[r[1]] = (cuentas[r[1]] || 0) + 1;
+  const lots = Object.keys(cuentas).sort();
+  const sel = document.getElementById('selLot');
+  const previo = sel.value;
+  let html = '<option value="__TODAS__">TODO EL CHANCE (sin Pick 3)</option>';
+  for (const l of lots) html += '<option value="' + l.replace(/"/g,'&quot;') + '">' + l + ' (' + cuentas[l] + ')</option>';
+  sel.innerHTML = html;
+  if (previo && (previo === '__TODAS__' || cuentas[previo])) sel.value = previo;
+  const dl = document.getElementById('listaLots');
+  dl.innerHTML = lots.map(l => '<option value="' + l.replace(/"/g,'&quot;') + '">').join('');
+}
+
+function pintarNuevos(){
+  const ul = document.getElementById('listaNuevos');
+  ul.innerHTML = NUEVOS.map((r, i) =>
+    '<li><span>' + r[0] + '</span><span style="flex:1">' + r[1] + '</span><b style="font-family:Archivo">' + r[2] + '</b>' +
+    '<button data-i="' + i + '">Quitar</button></li>').join('');
+  ul.querySelectorAll('button').forEach(btn => btn.onclick = async () => {
+    NUEVOS.splice(Number(btn.dataset.i), 1);
+    await guardarNuevos(); poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  });
+}
+
+async function cargarNuevos(){
+  try {
+    const r = await window.storage.get('chance-nuevos');
+    NUEVOS = r && r.value ? JSON.parse(r.value) : [];
+    persistente = true;
+  } catch (e) { NUEVOS = NUEVOS || []; persistente = (typeof window.storage !== 'undefined'); }
+  document.getElementById('avisoStorage').textContent = persistente
+    ? 'Guardado activo: tus registros persisten entre sesiones.'
+    : 'Aviso: en esta vista no hay almacenamiento persistente; los registros agregados viven solo mientras la página esté abierta.';
+}
+async function guardarNuevos(){
+  try { await window.storage.set('chance-nuevos', JSON.stringify(NUEVOS)); }
+  catch (e) { /* modo en memoria */ }
+}
+
+function reaccionar(lot, numStr){
+  const el = document.getElementById('bannerAcierto');
+  const prev = registrosDe(lot).map(r => r[2]);
+  if (prev.length < 3){ el.style.display = 'none'; return; }
+  const pos = posicionesDe(lot);
+  const pron = predecir(prev, pos);
+  const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío'};
+  const orden = {exacto:5, tresUlt:4, dosUlt:3, parcial:2, nada:1};
+  let mejor = null, metodoM = null, resAll = {};
+  for (const m of ['caliente','rezagado','frio']){
+    const r = clasificarAcierto(pron[m], numStr, pos);
+    resAll[m] = r;
+    if (!mejor || orden[r.tipo] > orden[mejor.tipo]){ mejor = r; metodoM = m; }
+  }
+  const numMostrar = pos.map(p => numStr.charCodeAt(p) - 48).join('');
+  const predMostrar = pron[metodoM].join('');
+  let clase, html;
+  if (mejor.tipo === 'exacto'){
+    clase = 'b-exacto';
+    html = '<b>¡ACIERTO EXACTO EN ' + lot.toUpperCase() + '!</b> El método ' + nombres[metodoM] + ' pronosticaba <b>' + predMostrar + '</b> y salió <b>' + numMostrar + '</b>. Verifica el registro y sigue alimentando la base: un exacto aislado entra dentro del azar (1 en ' + Math.pow(10, pos.length).toLocaleString() + ').';
+  } else if (mejor.tipo === 'tresUlt' || mejor.tipo === 'dosUlt'){
+    clase = 'b-exacto';
+    const cu = mejor.tipo === 'tresUlt' ? '3 últimas cifras' : '2 últimas cifras';
+    html = '<b>Acierto de ' + cu + ' en ' + lot + ':</b> ' + nombres[metodoM] + ' pronosticaba <b>' + predMostrar + '</b> y salió <b>' + numMostrar + '</b>. Quedó contabilizado en el backtest.';
+  } else if (mejor.tipo === 'parcial'){
+    clase = 'b-parcial';
+    html = '<b>Coincidencia parcial en ' + lot + ':</b> ' + nombres[metodoM] + ' acertó ' + mejor.aciertos + ' cifras en su posición (pronosticaba <b>' + predMostrar + '</b>, salió <b>' + numMostrar + '</b>).';
+  } else {
+    clase = 'b-nada';
+    html = 'Registrado <b>' + numMostrar + '</b> en ' + lot + '. Sin coincidencias relevantes con los pronósticos vigentes — el resultado más probable, y ya quedó dentro de las estadísticas.';
+  }
+  el.className = 'banner ' + clase;
+  el.innerHTML = html;
+  el.style.display = 'block';
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+document.getElementById('btnAgregar').onclick = async () => {
+  const f = document.getElementById('fFecha').value;
+  const l = document.getElementById('fLot').value.trim();
+  let n = document.getElementById('fNum').value.trim();
+  if (!f || !l || !/^\d{3,4}$/.test(n)) { alert('Completa fecha, lotería y un número de 3 o 4 cifras.'); return; }
+  n = n.padStart(4, '0');
+  reaccionar(l, n);
+  NUEVOS.push([f, l, n]);
+  await guardarNuevos();
+  document.getElementById('fNum').value = '';
+  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+};
+document.getElementById('btnLimpiar').onclick = async () => {
+  if (!NUEVOS.length) return;
+  if (!confirm('¿Borrar los ' + NUEVOS.length + ' registros agregados?')) return;
+  NUEVOS = [];
+  try { await window.storage.delete('chance-nuevos'); } catch (e) {}
+  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+};
+document.getElementById('selLot').onchange = actualizar;
+
+(async function init(){
+  document.getElementById('fFecha').value = new Date().toISOString().slice(0, 10);
+  await cargarNuevos();
+  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+})();
+</script>
+</body>
+</html>
