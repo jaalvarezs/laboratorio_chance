@@ -65,6 +65,10 @@
   .dia-r{display:flex; justify-content:space-between; gap:12px; padding:3px 0; font-size:13.5px; border-bottom:1px dashed #F0EDE4}
   .dia-r:last-child{border-bottom:none}
   .dia-r b{font-family:'Archivo'; font-weight:700; letter-spacing:.06em}
+  #tablaPanorama th, #tablaPanorama td, #tablaJugadas th, #tablaJugadas td{padding:7px 10px; border-bottom:1px solid var(--borde); white-space:nowrap}
+  #tablaPanorama thead th, #tablaJugadas thead th{background:var(--tinta); color:#fff; font-family:'Archivo'; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; position:sticky; top:0}
+  #tablaPanorama tbody tr:nth-child(even), #tablaJugadas tbody tr:nth-child(even){background:#FAF8F2}
+  #tablaPanorama td.lot, #tablaJugadas td.lot{text-align:left; font-weight:600; max-width:170px; overflow:hidden; text-overflow:ellipsis}
   .banner{border-radius:14px; padding:16px 18px; margin-bottom:16px; font-size:14.5px; border:2px solid}
   .banner.b-exacto{background:#FDF3D7; border-color:var(--oro); color:#5B4A1E}
   .banner.b-parcial{background:#E7F3EE; border-color:var(--frio); color:#0A4A3A}
@@ -107,6 +111,36 @@
   <div class="sub" id="subBack">—</div>
   <div class="tarjetas" id="tarjetas"></div>
   <div id="aciertosLog" style="margin-top:14px"></div>
+</section>
+
+<section>
+  <h2>Panorama por lotería</h2>
+  <div class="sub">Compara todas las loterías a la vez frente al azar teórico (0.40 cifras/sorteo en 4 posiciones, 0.30 en Pick 3). Estar cerca de ese valor confirma que el sorteo se comporta como un juego limpio — no indica ventaja para apostar, es la lectura contraria: ningún método muestra sesgo explotable ahí.</div>
+  <div class="fila-form" style="margin-bottom:12px">
+    <button id="btnPanorama">Calcular panorama</button>
+    <div class="campo"><label for="panOrden">Ordenar por</label>
+      <select id="panOrden">
+        <option value="cercania">Más cercanas al azar</option>
+        <option value="desviacion">Mayor desviación (z máximo)</option>
+        <option value="evaluaciones">Más evaluaciones (más confiables)</option>
+        <option value="alfabetico">Alfabético</option>
+      </select>
+    </div>
+  </div>
+  <div class="aviso" id="panAviso">Pulsa "Calcular panorama" — recorre el backtest de cada lotería en tu dispositivo, puede tardar unos segundos.</div>
+  <div style="overflow-x:auto"><table id="tablaPanorama" style="width:100%; border-collapse:collapse; font-size:13px"></table></div>
+</section>
+
+<section>
+  <h2>Mejor jugada empírica</h2>
+  <div class="sub">Escanea todas las combinaciones de ámbito × tipo de apuesta × valor y encuentra la de mayor probabilidad observada, con ajuste estadístico por selección múltiple. Las loterías entran al escaneo cuando superan 30 sorteos en la base.</div>
+  <div class="fila-form" style="margin-bottom:12px"><button id="btnJugada">Buscar mejor jugada</button></div>
+  <div id="jugadaCard"></div>
+  <div style="overflow-x:auto"><table id="tablaJugadas" style="width:100%; border-collapse:collapse; font-size:13px"></table></div>
+  <div class="fila-form" style="margin-top:14px; align-items:center">
+    <div class="campo"><label for="pagoInput">Pago por unidad (2 últimas; ajústalo a tu operador)</label><input type="text" id="pagoInput" value="50" style="min-width:110px"></div>
+    <div class="aviso" id="evTexto" style="flex:1"></div>
+  </div>
 </section>
 
 <section>
@@ -251,6 +285,29 @@ function predTernas(prev, posiciones){
   const d0 = freq0.indexOf(Math.max(...freq0));
   if (posiciones.length === 3) return [parseInt(bestTer[0]),parseInt(bestTer[1]),parseInt(bestTer[2])];
   return [d0,parseInt(bestTer[0]),parseInt(bestTer[1]),parseInt(bestTer[2])];
+}
+function analizarCombos(nums, tipo){
+  const total = nums.length;
+  const base = tipo === 'par' ? 0.01 : 0.1;
+  const counts = {};
+  for (const s of nums){
+    const k = tipo === 'par' ? s.slice(2) : s.slice(3);
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  const out = [];
+  for (const k in counts){
+    const c = counts[k], p = c / total;
+    const z = (p - base) / Math.sqrt(base * (1 - base) / total);
+    out.push({valor: k, count: c, n: total, obs: p, base: base, z: z});
+  }
+  out.sort((a,b) => b.z - a.z || b.count - a.count || (a.valor < b.valor ? -1 : 1));
+  return out;
+}
+function wilson(c, n){
+  const z = 1.96, ph = c / n, d = 1 + z*z/n;
+  const ctr = (ph + z*z/(2*n)) / d;
+  const hw = z * Math.sqrt(ph*(1-ph)/n + z*z/(4*n*n)) / d;
+  return [Math.max(0, ctr - hw), Math.min(1, ctr + hw)];
 }
 function clasificarAcierto(pred, numStr, posiciones){
   let ac = 0;
@@ -425,6 +482,140 @@ function actualizar(){
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('chartAcum'), cfg);
 }
+
+let JUGADAS_CACHE = null;
+
+function buscarJugadas(){
+  const scopes = [['TODO EL CHANCE (sin Pick 3)','__TODAS__']];
+  const cuentas = {};
+  for (const r of baseCompleta()) cuentas[r[1]] = (cuentas[r[1]]||0)+1;
+  for (const l of Object.keys(cuentas).sort()) if (cuentas[l] >= 30) scopes.push([l, l]);
+  const res = []; let tests = 0;
+  for (const [nombre, id] of scopes){
+    const nums = registrosDe(id).map(r => r[2]);
+    if (nums.length < 30) continue;
+    for (const [tipo, etq, top] of [['par','2 últimas',3], ['digito','última cifra',2]]){
+      const lista = analizarCombos(nums, tipo);
+      tests += lista.length;
+      for (const c of lista.slice(0, top)) res.push(Object.assign({ambito:nombre, tipo:etq}, c));
+    }
+  }
+  res.sort((a,b) => b.z - a.z || b.count - a.count || (a.valor < b.valor ? -1 : 1));
+  const umbral = Math.sqrt(2 * Math.log(Math.max(tests, 2)));
+  JUGADAS_CACHE = {res, tests, umbral};
+  renderJugadas();
+}
+
+function renderJugadas(){
+  const {res, tests, umbral} = JUGADAS_CACHE;
+  if (!res.length){ document.getElementById('jugadaCard').innerHTML = '<div class="aviso">Ningún ámbito tiene aún 30+ sorteos.</div>'; return; }
+  const top = res[0];
+  const ic = wilson(top.count, top.n);
+  const veredicto = top.z >= umbral
+    ? '<b style="color:#C4443A">supera el umbral de selección — verifica los datos de ese ámbito</b>'
+    : top.z >= 3
+      ? 'desviación notable, pero bajo el umbral por selección múltiple (' + umbral.toFixed(2) + ')'
+      : 'compatible con azar puro (umbral por ' + tests + ' combinaciones probadas ≈ z ' + umbral.toFixed(2) + ')';
+  document.getElementById('jugadaCard').innerHTML =
+    '<div class="banner b-exacto" style="display:block; margin-bottom:14px">' +
+    '<div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">' +
+    '<div class="balotas">' + top.valor.split('').map(d => '<div class="balota">' + d + '</div>').join('') + '</div>' +
+    '<div><b>MEJOR JUGADA EMPÍRICA:</b> ' + top.tipo + ' <b>' + top.valor + '</b> en ' + top.ambito + '<br>' +
+    'Observado: <b>' + (top.obs*100).toFixed(2) + '%</b> (' + top.count + ' de ' + top.n + ') · base de azar: ' + (top.base*100).toFixed(top.base < 0.05 ? 2 : 1) + '% · IC95%: ' + (ic[0]*100).toFixed(2) + '–' + (ic[1]*100).toFixed(2) + '%<br>' +
+    'z = <b>' + top.z.toFixed(2) + '</b> → ' + veredicto + '</div></div></div>';
+  let html = '<thead><tr><th style="text-align:left">Ámbito</th><th>Apuesta</th><th>Valor</th><th>Frec.</th><th>Obs.</th><th>Base</th><th>z</th></tr></thead><tbody>';
+  for (const r of res.slice(0, 10)){
+    const az = Math.abs(r.z);
+    const color = az < 2 ? '#0F6E56' : az < 3 ? '#B45309' : '#C4443A';
+    html += '<tr><td class="lot" title="' + r.ambito + '">' + r.ambito + '</td><td style="text-align:center">' + r.tipo + '</td>' +
+      '<td style="text-align:center; font-family:Archivo; font-weight:700">' + r.valor + '</td>' +
+      '<td style="text-align:center">' + r.count + '/' + r.n + '</td>' +
+      '<td style="text-align:center">' + (r.obs*100).toFixed(2) + '%</td>' +
+      '<td style="text-align:center">' + (r.base*100).toFixed(r.base < 0.05 ? 2 : 1) + '%</td>' +
+      '<td style="text-align:center; color:' + color + '">' + r.z.toFixed(2) + '</td></tr>';
+  }
+  document.getElementById('tablaJugadas').innerHTML = html + '</tbody>';
+  calcularEV();
+}
+
+function calcularEV(){
+  if (!JUGADAS_CACHE || !JUGADAS_CACHE.res.length) return;
+  const top = JUGADAS_CACHE.res[0];
+  const pago = parseFloat(document.getElementById('pagoInput').value) || 0;
+  const evObs = (top.obs * pago - 1) * 1000;
+  const evBase = (top.base * pago - 1) * 1000;
+  const nota = top.tipo === '2 últimas' ? '' : ' (la mejor jugada actual es de tipo "' + top.tipo + '": ajusta el pago a ese tipo)';
+  document.getElementById('evTexto').innerHTML =
+    'Por cada <b>$1.000</b> apostados a esta jugada con pago ' + pago + '×' + nota + ': resultado esperado con la frecuencia observada = <b>' +
+    (evObs >= 0 ? '+' : '') + evObs.toFixed(0) + '</b> · con la probabilidad de un sorteo justo = <b>' + evBase.toFixed(0) + '</b>.';
+}
+
+document.getElementById('btnJugada').onclick = buscarJugadas;
+document.getElementById('pagoInput').onchange = calcularEV;
+
+let PANORAMA_CACHE = null;
+
+function evaluarLoteria(nombre){
+  const pos = posicionesDe(nombre);
+  const nums = baseCompleta().filter(r => r[1] === nombre).map(r => r[2]);
+  const warmup = nums.length >= 100 ? 30 : 8;
+  if (nums.length <= warmup + 3) return null;
+  const bt = backtest(nums, pos, warmup);
+  const nEv = bt.caliente.scores.length;
+  const k = pos.length;
+  const esperado = 0.1 * k;
+  const sd = Math.sqrt(k * 0.1 * 0.9);
+  const metodos = {}; let distProm = 0, zMax = 0, metodoZMax = null;
+  for (const m of ['caliente','rezagado','frio','pares','ternas']){
+    const media = bt[m].scores.reduce((a,c) => a + c, 0) / nEv;
+    const z = (media - esperado) * Math.sqrt(nEv) / sd;
+    metodos[m] = { media, z };
+    distProm += Math.abs(media - esperado);
+    if (Math.abs(z) > zMax){ zMax = Math.abs(z); metodoZMax = m; }
+  }
+  return { nombre, nEv, esperado, metodos, distProm: distProm / 5, zMax, metodoZMax };
+}
+
+function calcularPanorama(){
+  document.getElementById('panAviso').textContent = 'Calculando…';
+  setTimeout(() => {
+    const nombres = [...new Set(baseCompleta().map(r => r[1]))].sort();
+    PANORAMA_CACHE = nombres.map(evaluarLoteria).filter(Boolean);
+    document.getElementById('panAviso').textContent =
+      PANORAMA_CACHE.length + ' loterías con suficientes sorteos evaluadas (de ' + nombres.length + ' totales en la base).';
+    renderPanorama();
+  }, 30);
+}
+
+function renderPanorama(){
+  if (!PANORAMA_CACHE) return;
+  const orden = document.getElementById('panOrden').value;
+  const filas = PANORAMA_CACHE.slice();
+  if (orden === 'cercania') filas.sort((a,b) => a.distProm - b.distProm);
+  else if (orden === 'desviacion') filas.sort((a,b) => b.zMax - a.zMax);
+  else if (orden === 'evaluaciones') filas.sort((a,b) => b.nEv - a.nEv);
+  else filas.sort((a,b) => a.nombre.localeCompare(b.nombre));
+
+  const cols = [['caliente','Cal'],['rezagado','Rez'],['frio','Frío'],['pares','Par'],['ternas','Ter']];
+  let html = '<thead><tr><th style="text-align:left">Lotería</th><th>Sorteos</th>' +
+    cols.map(c => '<th>' + c[1] + '</th>').join('') + '<th>Lectura</th></tr></thead><tbody>';
+  for (const f of filas){
+    html += '<tr><td class="lot" title="' + f.nombre + '">' + f.nombre + '</td><td style="text-align:center">' + f.nEv + '</td>';
+    for (const [m] of cols){
+      const { media, z } = f.metodos[m];
+      const az = Math.abs(z);
+      const color = az < 2 ? '#0F6E56' : az < 3 ? '#B45309' : '#C4443A';
+      const peso = az >= 3 ? 'font-weight:700' : '';
+      html += '<td style="text-align:center; color:' + color + ';' + peso + '">' + media.toFixed(2) + '</td>';
+    }
+    const lectura = f.zMax < 2 ? 'Dentro del azar' : f.zMax < 3 ? 'Desviación leve' : 'Vigilar (z≥3)';
+    html += '<td style="text-align:center; font-size:12px; color:var(--muted)">' + lectura + '</td></tr>';
+  }
+  html += '</tbody>';
+  document.getElementById('tablaPanorama').innerHTML = html;
+}
+document.getElementById('btnPanorama').onclick = calcularPanorama;
+document.getElementById('panOrden').onchange = renderPanorama;
 
 function poblarFiltroHist(){
   const set = {};
