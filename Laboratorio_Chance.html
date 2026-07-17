@@ -115,6 +115,8 @@
       <span><span class="chip" style="border-color:var(--caliente)"></span>Caliente</span>
       <span><span class="chip" style="border-color:var(--rezagado); border-top-style:dashed"></span>Rezagado</span>
       <span><span class="chip" style="border-color:var(--frio); border-top-style:dotted"></span>Frío</span>
+      <span><span class="chip" style="border-color:#0A6E9B; border-top-style:dashed"></span>Pares</span>
+      <span><span class="chip" style="border-color:#7B3FA0; border-top-style:dotted"></span>Ternas</span>
       <span><span class="chip" style="border-color:#9CA3AF; border-top-style:dashed"></span>Esperado por azar</span>
     </div>
     <div style="position:relative; height:300px"><canvas id="chartAcum" role="img" aria-label="Promedio acumulado de cifras acertadas en posición por método, comparado con la línea del azar"></canvas></div>
@@ -369,7 +371,7 @@ function actualizar(){
   document.getElementById('tarjetas').innerHTML = html;
 
   let mejor = 'caliente';
-  for (const m of ['rezagado','frio']) if (Math.abs(zs[m]) > Math.abs(zs[mejor])) mejor = m;
+  for (const m of ['rezagado','frio','pares','ternas']) if (Math.abs(zs[m]) > Math.abs(zs[mejor])) mejor = m;
   const zMax = Math.abs(zs[mejor]);
   let vtxt;
   if (zMax < 2) vtxt = 'Los tres métodos están <b>dentro del rango del azar</b> (|z| máximo = ' + fmt(zMax,2) + ', umbral 3.0). Con los datos actuales, ninguno muestra ventaja real sobre elegir números al azar.';
@@ -396,8 +398,8 @@ function actualizar(){
         '<span>' + a.metodo + ' pronosticó <b>' + a.pred + '</b> · salió <b>' + a.real + '</b></span></div>').join('');
   }
 
-  const labels = [], serie = {caliente:[], rezagado:[], frio:[]};
-  const acum = {caliente:0, rezagado:0, frio:0};
+  const labels = [], serie = {caliente:[], rezagado:[], frio:[], pares:[], ternas:[]};
+  const acum = {caliente:0, rezagado:0, frio:0, pares:0, ternas:0};
   for (let i = 0; i < nEv; i++){
     labels.push(i + 1);
     for (const m of ['caliente','rezagado','frio','pares','ternas']){
@@ -411,6 +413,8 @@ function actualizar(){
       { label:'Caliente', data:serie.caliente, borderColor:'#D85A30', borderWidth:2, pointRadius:0, tension:.25 },
       { label:'Rezagado', data:serie.rezagado, borderColor:'#6C5FD3', borderWidth:2, borderDash:[6,3], pointRadius:0, tension:.25 },
       { label:'Frío', data:serie.frio, borderColor:'#0F6E56', borderWidth:2, borderDash:[2,3], pointRadius:0, tension:.25 },
+      { label:'Pares', data:serie.pares, borderColor:'#0A6E9B', borderWidth:2, borderDash:[12,4], pointRadius:0, tension:.25 },
+      { label:'Ternas', data:serie.ternas, borderColor:'#7B3FA0', borderWidth:2, borderDash:[2,6], pointRadius:0, tension:.25 },
       { label:'Esperado', data:labels.map(() => esperado), borderColor:'#9CA3AF', borderWidth:1.5, borderDash:[8,5], pointRadius:0 }
     ]},
     options: { responsive:true, maintainAspectRatio:false, animation:false,
