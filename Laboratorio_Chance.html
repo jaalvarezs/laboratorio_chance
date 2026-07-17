@@ -38,7 +38,7 @@
   .metodo .nombre span{display:block; font-size:12.5px; color:var(--muted)}
   .balotas{display:flex; gap:10px}
   .balota{width:52px; height:52px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #FFF6E3, #FDEBC4 55%, #F3D390); border:3px solid var(--oro-oscuro); display:flex; align-items:center; justify-content:center; font-family:'Archivo'; font-weight:900; font-size:24px; color:var(--tinta); box-shadow:inset 0 -4px 8px rgba(184,125,14,.25)}
-  .metodo.m-cal .nombre b{color:var(--caliente)} .metodo.m-rez .nombre b{color:var(--rezagado)} .metodo.m-fri .nombre b{color:var(--frio)}
+  .metodo.m-cal .nombre b{color:var(--caliente)} .metodo.m-rez .nombre b{color:var(--rezagado)} .metodo.m-fri .nombre b{color:var(--frio)} .metodo.m-par .nombre b{color:#0A6E9B} .metodo.m-ter .nombre b{color:#7B3FA0}
   .tarjetas{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px}
   .tarjeta{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:16px 18px}
   .tarjeta .etq{font-size:12px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
@@ -97,6 +97,8 @@
     <div class="metodo m-cal"><div class="nombre"><b>CALIENTE</b><span>dígito más frecuente por posición</span></div><div class="balotas" id="balCal"></div></div>
     <div class="metodo m-rez"><div class="nombre"><b>REZAGADO</b><span>dígito con más sorteos sin salir</span></div><div class="balotas" id="balRez"></div></div>
     <div class="metodo m-fri"><div class="nombre"><b>FRÍO</b><span>dígito menos frecuente por posición</span></div><div class="balotas" id="balFri"></div></div>
+    <div class="metodo m-par"><div class="nombre"><b>PARES</b><span>par de últimas 2 cifras más frecuente</span></div><div class="balotas" id="balPar"></div></div>
+    <div class="metodo m-ter"><div class="nombre"><b>TERNAS</b><span>terna de últimas 3 cifras más frecuente</span></div><div class="balotas" id="balTer"></div></div>
   </div>
 </section>
 
@@ -188,10 +190,12 @@ function predecir(prev, posiciones){
 }
 
 function backtest(nums, posiciones, warmup){
-  const met = ['caliente','rezagado','frio'];
-  const res = {caliente:{scores:[],exactos:0,dosUlt:0,hits:[]}, rezagado:{scores:[],exactos:0,dosUlt:0,hits:[]}, frio:{scores:[],exactos:0,dosUlt:0,hits:[]}};
+  const met = ['caliente','rezagado','frio','pares','ternas'];
+  const res = {caliente:{scores:[],exactos:0,dosUlt:0,tresUlt:0,hits:[]}, rezagado:{scores:[],exactos:0,dosUlt:0,tresUlt:0,hits:[]}, frio:{scores:[],exactos:0,dosUlt:0,tresUlt:0,hits:[]}, pares:{scores:[],exactos:0,dosUlt:0,tresUlt:0,hits:[]}, ternas:{scores:[],exactos:0,dosUlt:0,tresUlt:0,hits:[]}};
   for (let i = warmup; i < nums.length; i++){
     const pred = predecir(nums.slice(0, i), posiciones);
+    pred['pares']  = predPares(nums.slice(0, i), posiciones);
+    pred['ternas'] = predTernas(nums.slice(0, i), posiciones);
     for (const m of met){
       let aciertos = 0;
       for (let k = 0; k < posiciones.length; k++){
@@ -200,15 +204,51 @@ function backtest(nums, posiciones, warmup){
       res[m].scores.push(aciertos);
       const esExacto = aciertos === posiciones.length;
       if (esExacto) res[m].exactos++;
-      const n2 = posiciones.slice(-2);
-      const esDosUlt = pred[m][posiciones.length-2] === nums[i].charCodeAt(n2[0]) - 48 &&
-                       pred[m][posiciones.length-1] === nums[i].charCodeAt(n2[1]) - 48;
-      if (esDosUlt) res[m].dosUlt++;
-      if (esExacto) res[m].hits.push({idx:i, tipo:'exacto', pred:pred[m].slice()});
-      else if (esDosUlt) res[m].hits.push({idx:i, tipo:'dosUlt', pred:pred[m].slice()});
+      const nPos = posiciones.length;
+      const esTresUlt = nPos>=3 &&
+        pred[m][nPos-3]===nums[i].charCodeAt(posiciones[nPos-3])-48 &&
+        pred[m][nPos-2]===nums[i].charCodeAt(posiciones[nPos-2])-48 &&
+        pred[m][nPos-1]===nums[i].charCodeAt(posiciones[nPos-1])-48;
+      const esDosUlt =
+        pred[m][nPos-2]===nums[i].charCodeAt(posiciones[nPos-2])-48 &&
+        pred[m][nPos-1]===nums[i].charCodeAt(posiciones[nPos-1])-48;
+      if (esTresUlt) res[m].tresUlt++;
+      if (esDosUlt)  res[m].dosUlt++;
+      if (esExacto)        res[m].hits.push({idx:i,tipo:'exacto', pred:pred[m].slice()});
+      else if (esTresUlt)  res[m].hits.push({idx:i,tipo:'tresUlt',pred:pred[m].slice()});
+      else if (esDosUlt)   res[m].hits.push({idx:i,tipo:'dosUlt', pred:pred[m].slice()});
     }
   }
   return res;
+}
+function predPares(prev, posiciones){
+  const parFreq = {};
+  const freq = posiciones.map(() => new Array(10).fill(0));
+  for (const s of prev){
+    const n = posiciones.length;
+    const p2 = s[posiciones[n-2]] + s[posiciones[n-1]];
+    parFreq[p2] = (parFreq[p2]||0)+1;
+    for (let k=0;k<n;k++) freq[k][parseInt(s[posiciones[k]])]++;
+  }
+  const bestPar = Object.entries(parFreq).sort((a,b)=>b[1]-a[1])[0]?.[0]||'00';
+  const out = [];
+  for (let k=0;k<posiciones.length-2;k++) out.push(freq[k].indexOf(Math.max(...freq[k])));
+  out.push(parseInt(bestPar[0]), parseInt(bestPar[1]));
+  return out;
+}
+function predTernas(prev, posiciones){
+  const terFreq = {};
+  const freq0 = new Array(10).fill(0);
+  for (const s of prev){
+    const n = posiciones.length;
+    const t3 = s[posiciones[n-3]] + s[posiciones[n-2]] + s[posiciones[n-1]];
+    terFreq[t3] = (terFreq[t3]||0)+1;
+    freq0[parseInt(s[posiciones[0]])]++;
+  }
+  const bestTer = Object.entries(terFreq).sort((a,b)=>b[1]-a[1])[0]?.[0]||'000';
+  const d0 = freq0.indexOf(Math.max(...freq0));
+  if (posiciones.length === 3) return [parseInt(bestTer[0]),parseInt(bestTer[1]),parseInt(bestTer[2])];
+  return [d0,parseInt(bestTer[0]),parseInt(bestTer[1]),parseInt(bestTer[2])];
 }
 function clasificarAcierto(pred, numStr, posiciones){
   let ac = 0;
@@ -295,6 +335,8 @@ function actualizar(){
   pintarBalotas('balCal', pron.caliente);
   pintarBalotas('balRez', pron.rezagado);
   pintarBalotas('balFri', pron.frio);
+  pintarBalotas('balPar', predPares(nums, pos));
+  pintarBalotas('balTer', predTernas(nums, pos));
 
   if (nums.length <= warmup + 3){
     document.getElementById('subBack').textContent = 'Se necesitan más de ' + (warmup + 3) + ' sorteos para un backtest con sentido (hay ' + nums.length + '). Registra más resultados abajo.';
@@ -311,18 +353,18 @@ function actualizar(){
   const sd = Math.sqrt(k * 0.1 * 0.9);
   document.getElementById('subBack').textContent = nEv + ' evaluaciones caminando el histórico (cada pronóstico usa solo los sorteos anteriores). Esperado por azar: ' + fmt(esperado,2) + ' cifras en posición por sorteo, 1 acierto de 2 últimas cada 100.';
 
-  const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío'};
-  const colores = {caliente:'var(--caliente)', rezagado:'var(--rezagado)', frio:'var(--frio)'};
+  const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío', pares:'Pares', ternas:'Ternas'};
+  const colores = {caliente:'var(--caliente)', rezagado:'var(--rezagado)', frio:'var(--frio)', pares:'#0A6E9B', ternas:'#7B3FA0'};
   let html = '';
   const zs = {};
-  for (const m of ['caliente','rezagado','frio']){
+  for (const m of ['caliente','rezagado','frio','pares','ternas']){
     const media = bt[m].scores.reduce((a,c) => a + c, 0) / nEv;
     const z = (media - esperado) * Math.sqrt(nEv) / sd;
     zs[m] = z;
     html += '<div class="tarjeta"><div class="etq" style="color:' + colores[m] + '">' + nombres[m] + '</div>' +
       '<div class="valor">' + fmt(media, 2) + '</div>' +
       '<div class="comp">cifras/sorteo · esperado <b>' + fmt(esperado,2) + '</b> · z = <b>' + fmt(z,2) + '</b></div>' +
-      '<div class="comp">2 últimas: <b>' + bt[m].dosUlt + '</b> (esp. ' + fmt(nEv/100,1) + ') · exactos: <b>' + bt[m].exactos + '</b></div></div>';
+      '<div class="comp">2últ: <b>'+bt[m].dosUlt+'</b> (esp.'+fmt(nEv/100,1)+') · 3últ: <b>'+bt[m].tresUlt+'</b> (esp.'+fmt(nEv/1000,1)+')</div>'+'<div class="comp">exactos: <b>'+bt[m].exactos+'</b></div></div>';
   }
   document.getElementById('tarjetas').innerHTML = html;
 
@@ -336,7 +378,7 @@ function actualizar(){
   document.getElementById('veredicto').innerHTML = vtxt;
 
   const aciertos = [];
-  for (const m of ['caliente','rezagado','frio']){
+  for (const m of ['caliente','rezagado','frio','pares','ternas']){
     for (const h of bt[m].hits){
       aciertos.push({ fecha: regs[h.idx][0], lot: regs[h.idx][1], metodo: nombres[m],
         tipo: h.tipo, pred: h.pred.join(''), real: pos.map(p => nums[h.idx][p]).join('') });
@@ -349,7 +391,7 @@ function actualizar(){
   } else {
     logEl.innerHTML = '<div class="sub" style="margin-bottom:8px"><b style="font-family:Archivo">Aciertos destacados del backtest</b> (' + aciertos.length + ' en total, se muestran los últimos 12)</div>' +
       aciertos.slice(0, 12).map(a =>
-        '<div class="acierto-item"><span class="tag">' + (a.tipo === 'exacto' ? 'EXACTO' : '2 ÚLTIMAS') + '</span>' +
+        '<div class="acierto-item"><span class="tag">' + (a.tipo === 'exacto' ? 'EXACTO' : a.tipo === 'tresUlt' ? '3 ÚLTIMAS' : '2 ÚLTIMAS') + '</span>' +
         '<span>' + a.fecha + '</span><span style="flex:1">' + a.lot + '</span>' +
         '<span>' + a.metodo + ' pronosticó <b>' + a.pred + '</b> · salió <b>' + a.real + '</b></span></div>').join('');
   }
@@ -358,7 +400,7 @@ function actualizar(){
   const acum = {caliente:0, rezagado:0, frio:0};
   for (let i = 0; i < nEv; i++){
     labels.push(i + 1);
-    for (const m of ['caliente','rezagado','frio']){
+    for (const m of ['caliente','rezagado','frio','pares','ternas']){
       acum[m] += bt[m].scores[i];
       serie[m].push(acum[m] / (i + 1));
     }
@@ -469,10 +511,10 @@ function reaccionar(lot, numStr){
   if (prev.length < 3){ el.style.display = 'none'; return; }
   const pos = posicionesDe(lot);
   const pron = predecir(prev, pos);
-  const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío'};
+  const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío', pares:'Pares', ternas:'Ternas'};
   const orden = {exacto:5, tresUlt:4, dosUlt:3, parcial:2, nada:1};
   let mejor = null, metodoM = null, resAll = {};
-  for (const m of ['caliente','rezagado','frio']){
+  for (const m of ['caliente','rezagado','frio','pares','ternas']){
     const r = clasificarAcierto(pron[m], numStr, pos);
     resAll[m] = r;
     if (!mejor || orden[r.tipo] > orden[mejor.tipo]){ mejor = r; metodoM = m; }
