@@ -60,8 +60,24 @@
   button:hover{background:var(--tinta-suave)}
   button.sec{background:transparent; color:var(--tinta)}
   .nuevos{margin-top:14px; font-size:13.5px}
-  .nuevos li{display:flex; gap:10px; align-items:center; padding:6px 0; border-bottom:1px dashed var(--borde); list-style:none}
-  .nuevos button{padding:2px 10px; font-size:12px; border-color:#C4443A; background:transparent; color:#C4443A}
+  .grupo-nuevo{background:var(--carta); border:1px solid var(--borde); border-radius:12px; margin-bottom:8px; overflow:hidden}
+  .grupo-h{display:flex; align-items:center; gap:8px; padding:10px 14px; cursor:pointer; font-family:'Archivo'; font-weight:700; font-size:13.5px; user-select:none}
+  .grupo-h .cuenta{font-weight:500; color:var(--muted); font-size:12.5px}
+  .grupo-h .flecha{margin-left:auto; transition:transform .15s; color:var(--muted); font-size:12px}
+  .grupo-nuevo.abierto .flecha{transform:rotate(180deg)}
+  .grupo-nuevo .filas{display:none; border-top:1px solid var(--borde)}
+  .grupo-nuevo.abierto .filas{display:block}
+  .fila-nuevo{display:flex; align-items:center; gap:10px; padding:7px 14px; border-bottom:1px dashed #F0EDE4; font-size:13px}
+  .fila-nuevo:last-child{border-bottom:none}
+  .fn-lot{flex:1}
+  .fn-num{font-family:'Archivo'; letter-spacing:.04em}
+  .fn-acc{display:flex; gap:6px}
+  button.mini{padding:2px 10px; font-size:11.5px; border-radius:6px}
+  button.mini.editar{border-color:var(--tinta); background:transparent; color:var(--tinta)}
+  button.mini.quitar{border-color:#C4443A; background:transparent; color:#C4443A}
+  button.mini.guardar{border-color:var(--ok); background:var(--ok); color:#fff}
+  button.mini.cancelar{border-color:var(--borde); background:transparent; color:var(--muted)}
+  .fila-nuevo input{font:12.5px 'Inter'; padding:4px 8px; border:1px solid var(--borde); border-radius:6px}
   .aviso{font-size:12.5px; color:var(--muted); margin-top:8px}
   .nota-honesta{background:#FBF3E2; border:1px solid #EAD9AE; border-radius:14px; padding:16px 18px; font-size:13.5px; color:#5B4A1E}
     .dia{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:12px 16px; margin-bottom:12px}
@@ -179,7 +195,7 @@
 <section>
   <div id="bannerAcierto" style="display:none"></div>
   <h2>Registrar resultados nuevos</h2>
-  <div class="sub">Los sorteos que agregues se guardan y entran de inmediato al pronóstico y al backtest.</div>
+  <div class="sub">Cada sorteo que agregues entra de inmediato al pronóstico, al backtest, al panorama y a la mejor jugada — no hay un paso aparte de "guardarlo en la base"; ya lo está desde que lo agregas.</div>
   <div class="fila-form">
     <div class="campo"><label for="fFecha">Fecha</label><input type="date" id="fFecha"></div>
     <div class="campo"><label for="fLot">Lotería</label><input type="text" id="fLot" list="listaLots" placeholder="Ej: Sinuano Noche"><datalist id="listaLots"></datalist></div>
@@ -188,7 +204,13 @@
     <button class="sec" id="btnLimpiar">Borrar agregados</button>
   </div>
   <div class="aviso" id="avisoStorage"></div>
-  <ul class="nuevos" id="listaNuevos"></ul>
+  <div class="fila-form" style="margin-top:16px">
+    <div class="campo"><label for="filtroNuevos">Buscar en lo agregado</label><input type="text" id="filtroNuevos" placeholder="Lotería, número o fecha..." style="min-width:220px"></div>
+    <button class="sec" id="btnExpandirTodo">Expandir todo</button>
+    <button class="sec" id="btnContraerTodo">Contraer todo</button>
+  </div>
+  <div class="aviso" id="contadorNuevos" style="margin:8px 0"></div>
+  <div id="nuevosCont"></div>
   <div style="margin-top:24px">
     <b style="font-family:Archivo">Importación masiva (tablero completo)</b>
     <div class="sub" style="margin:4px 0 10px">Pega una lista con formato <b>fecha,lotería,número</b> — una por línea; si una línea no trae fecha se usa la del campo de arriba. Flujo recomendado: toma la foto del tablero, envíamela en Claude y te devuelvo la lista lista para pegar aquí.</div>
@@ -678,16 +700,76 @@ function poblarSelector(){
   dl.innerHTML = lots.map(l => '<option value="' + l.replace(/"/g,'&quot;') + '">').join('');
 }
 
-function pintarNuevos(){
-  const ul = document.getElementById('listaNuevos');
-  ul.innerHTML = NUEVOS.map((r, i) =>
-    '<li><span>' + r[0] + '</span><span style="flex:1">' + r[1] + '</span><b style="font-family:Archivo">' + r[2] + '</b>' +
-    '<button data-i="' + i + '">Quitar</button></li>').join('');
-  ul.querySelectorAll('button').forEach(btn => btn.onclick = async () => {
-    NUEVOS.splice(Number(btn.dataset.i), 1);
-    await guardarNuevos(); poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
-  });
+function refrescarTodo(){
+  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
 }
+
+function pintarNuevos(){
+  const filtro = (document.getElementById('filtroNuevos').value || '').toLowerCase().trim();
+  const conIdx = NUEVOS.map((r, i) => ({r, i}));
+  const filtrados = filtro
+    ? conIdx.filter(o => o.r[1].toLowerCase().includes(filtro) || o.r[0].includes(filtro) || o.r[2].includes(filtro))
+    : conIdx;
+  document.getElementById('contadorNuevos').textContent =
+    NUEVOS.length + ' registro' + (NUEVOS.length === 1 ? '' : 's') + ' agregado' + (NUEVOS.length === 1 ? '' : 's') +
+    (filtro ? ' · ' + filtrados.length + ' coinciden con el filtro' : '') + '.';
+  const cont = document.getElementById('nuevosCont');
+  if (!filtrados.length){
+    cont.innerHTML = '<div class="aviso">' + (NUEVOS.length ? 'Sin coincidencias para ese filtro.' : 'Aún no has agregado registros — usa el formulario o la importación masiva de abajo.') + '</div>';
+    return;
+  }
+  const porFecha = {};
+  for (const o of filtrados) (porFecha[o.r[0]] = porFecha[o.r[0]] || []).push(o);
+  const fechas = Object.keys(porFecha).sort().reverse();
+  let html = '';
+  fechas.forEach((f, gi) => {
+    const filas = porFecha[f];
+    const p = f.split('-');
+    const abiertoClase = (gi === 0 || filtro) ? ' abierto' : '';
+    html += '<div class="grupo-nuevo' + abiertoClase + '"><div class="grupo-h">' +
+      (p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : f) +
+      ' <span class="cuenta">(' + filas.length + ')</span><span class="flecha">▾</span></div><div class="filas">';
+    for (const {r, i} of filas){
+      html += '<div class="fila-nuevo" data-idx="' + i + '"><span class="fn-lot">' + r[1] + '</span>' +
+        '<b class="fn-num">' + r[2] + '</b><span class="fn-acc">' +
+        '<button class="mini editar" data-idx="' + i + '">Editar</button>' +
+        '<button class="mini quitar" data-idx="' + i + '">Quitar</button></span></div>';
+    }
+    html += '</div></div>';
+  });
+  cont.innerHTML = html;
+  cont.querySelectorAll('.grupo-h').forEach(h => h.onclick = () => h.parentElement.classList.toggle('abierto'));
+  cont.querySelectorAll('.quitar').forEach(b => b.onclick = async () => {
+    NUEVOS.splice(Number(b.dataset.idx), 1);
+    await guardarNuevos();
+    refrescarTodo();
+  });
+  cont.querySelectorAll('.editar').forEach(b => b.onclick = () => activarEdicion(Number(b.dataset.idx)));
+}
+
+function activarEdicion(idx){
+  const fila = document.querySelector('.fila-nuevo[data-idx="' + idx + '"]');
+  if (!fila) return;
+  const [f, l, n] = NUEVOS[idx];
+  fila.innerHTML =
+    '<input type="date" class="ed-fecha" value="' + f + '">' +
+    '<input type="text" class="ed-lot" value="' + l.replace(/"/g, '&quot;') + '" style="flex:1; min-width:140px">' +
+    '<input type="text" class="ed-num" value="' + n + '" maxlength="4" style="width:64px">' +
+    '<span class="fn-acc"><button class="mini guardar">Guardar</button><button class="mini cancelar">Cancelar</button></span>';
+  fila.querySelector('.guardar').onclick = async () => {
+    const nf = fila.querySelector('.ed-fecha').value;
+    const nl = fila.querySelector('.ed-lot').value.trim();
+    let nn = fila.querySelector('.ed-num').value.trim();
+    if (!nf || !nl || !/^\d{3,4}$/.test(nn)){ alert('Revisa fecha, lotería y número (3 o 4 cifras).'); return; }
+    NUEVOS[idx] = [nf, nl, nn.padStart(4, '0')];
+    await guardarNuevos();
+    refrescarTodo();
+  };
+  fila.querySelector('.cancelar').onclick = () => pintarNuevos();
+}
+document.getElementById('filtroNuevos').oninput = pintarNuevos;
+document.getElementById('btnExpandirTodo').onclick = () => document.querySelectorAll('.grupo-nuevo').forEach(g => g.classList.add('abierto'));
+document.getElementById('btnContraerTodo').onclick = () => document.querySelectorAll('.grupo-nuevo').forEach(g => g.classList.remove('abierto'));
 
 async function cargarNuevos(){
   NUEVOS = []; persistente = false; let modo = 'memoria';
@@ -710,6 +792,8 @@ function reaccionar(lot, numStr){
   if (prev.length < 3){ el.style.display = 'none'; return; }
   const pos = posicionesDe(lot);
   const pron = predecir(prev, pos);
+  pron.pares  = predPares(prev, pos);
+  pron.ternas = predTernas(prev, pos);
   const nombres = {caliente:'Caliente', rezagado:'Rezagado', frio:'Frío', pares:'Pares', ternas:'Ternas'};
   const orden = {exacto:5, tresUlt:4, dosUlt:3, parcial:2, nada:1};
   let mejor = null, metodoM = null, resAll = {};
@@ -751,7 +835,7 @@ document.getElementById('btnAgregar').onclick = async () => {
   NUEVOS.push([f, l, n]);
   await guardarNuevos();
   document.getElementById('fNum').value = '';
-  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  refrescarTodo();
 };
 document.getElementById('btnImportar').onclick = async () => {
   const texto = document.getElementById('impTexto').value;
@@ -761,7 +845,7 @@ document.getElementById('btnImportar').onclick = async () => {
   const r = parsearImportacion(texto, fechaDef, existentes);
   for (const reg of r.ok) NUEVOS.push(reg);
   if (r.ok.length) await guardarNuevos();
-  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  refrescarTodo();
   let msj = 'Importados: ' + r.ok.length + ' registros.';
   if (r.duplicados.length) msj += ' Omitidos por duplicado (misma fecha y lotería): ' + r.duplicados.length + '.';
   if (r.errores.length) msj += ' Líneas con error: ' + r.errores.join(', ') + '.';
@@ -775,14 +859,14 @@ document.getElementById('btnLimpiar').onclick = async () => {
   NUEVOS = [];
   if (typeof window.storage !== 'undefined') { try { await window.storage.delete('chance-nuevos'); } catch (e) {} }
   try { localStorage.removeItem('chance-nuevos'); } catch (e) {}
-  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  refrescarTodo();
 };
 document.getElementById('selLot').onchange = actualizar;
 
 (async function init(){
   document.getElementById('fFecha').value = new Date().toISOString().slice(0, 10);
   await cargarNuevos();
-  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  refrescarTodo();
 })();
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
 </script>
