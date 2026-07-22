@@ -198,6 +198,7 @@
     <div class="campo"><label for="fNum">Número (4 cifras)</label><input type="text" id="fNum" placeholder="Ej: 0492" maxlength="4" style="min-width:120px"></div>
     <button id="btnAgregar">Agregar sorteo</button>
     <button class="sec" id="btnLimpiar">Borrar agregados</button>
+    <button class="sec" id="btnDepurar">Depurar duplicados</button>
   </div>
   <div class="aviso" id="avisoStorage"></div>
   <div class="fila-form" style="margin-top:16px">
@@ -847,6 +848,35 @@ document.getElementById('btnImportar').onclick = async () => {
   if (r.errores.length) msj += ' Líneas con error: ' + r.errores.join(', ') + '.';
   document.getElementById('impResultado').textContent = msj;
   if (r.ok.length && !r.errores.length) document.getElementById('impTexto').value = '';
+};
+
+document.getElementById('btnDepurar').onclick = async () => {
+  const todos = baseCompleta();
+  // Indexar por lotería -> lista de {fecha(ms), num, esNuevo, idxNuevo}
+  const porLot = {};
+  const parse = f => { const p = f.split('-'); return Date.UTC(+p[0], +p[1]-1, +p[2]); };
+  todos.forEach(r => {
+    (porLot[r[1]] = porLot[r[1]] || []).push({ ms: parse(r[0]), num: r[2], fecha: r[0] });
+  });
+  // Para cada registro NUEVO, ver si colisiona con OTRO (de cualquier origen) del
+  // mismo número y lotería a <=5 días. Si sí, es candidato a duplicado.
+  const sospechosos = [];
+  NUEVOS.forEach((r, idx) => {
+    const lista = porLot[r[1]] || [];
+    const msN = parse(r[0]);
+    const colisiona = lista.some(o =>
+      o.num === r[2] && o.fecha !== r[0] && Math.abs(o.ms - msN) <= 5*86400000
+    );
+    if (colisiona) sospechosos.push({ idx, r });
+  });
+  if (!sospechosos.length){ alert('No se encontraron duplicados sospechosos en los registros agregados.'); return; }
+  const lista = sospechosos.map(s => '• ' + s.r[0] + '  ' + s.r[1] + '  ' + s.r[2]).join('\n');
+  if (!confirm('Se detectaron ' + sospechosos.length + ' registros agregados que parecen duplicados (mismo número y lotería a menos de 5 días de otro sorteo):\n\n' + lista + '\n\n¿Eliminarlos?')) return;
+  // Eliminar de mayor a menor índice para no descuadrar
+  sospechosos.sort((a,b) => b.idx - a.idx).forEach(s => NUEVOS.splice(s.idx, 1));
+  await guardarNuevos();
+  refrescarTodo();
+  alert(sospechosos.length + ' duplicados eliminados. Base depurada.');
 };
 
 document.getElementById('btnLimpiar').onclick = async () => {
