@@ -206,6 +206,16 @@
   <div id="bannerAcierto" style="display:none"></div>
   <h2>Registrar resultados nuevos</h2>
   <div class="sub">Cada sorteo que agregues entra de inmediato al pronóstico, al backtest, al panorama y a la mejor jugada — no hay un paso aparte de "guardarlo en la base"; ya lo está desde que lo agregas.</div>
+  <div style="margin-top:24px">
+    <b style="font-family:Archivo">Importación masiva (tablero completo)</b>
+    <div class="sub" style="margin:4px 0 10px">Pega una lista con formato <b>fecha,lotería,número</b> — una por línea; si una línea no trae fecha se usa la del campo de arriba. Flujo recomendado: toma la foto del tablero, envíamela en Claude y te devuelvo la lista lista para pegar aquí.</div>
+    <textarea id="impTexto" rows="6" style="width:100%; font:13px ui-monospace,monospace; border:1px solid var(--borde); border-radius:8px; padding:10px; color:var(--tinta)" placeholder="2026-07-14,Sinuano Día,8298&#10;2026-07-14,Astro Luna,5099"></textarea>
+    <div class="fila-form" style="margin-top:10px"><button id="btnImportar">Importar lista</button></div>
+    <div class="aviso" id="impResultado"></div>
+  </div>
+  <div style="margin-top:26px; padding-top:20px; border-top:1px solid var(--borde)">
+    <b style="font-family:Archivo; font-size:13.5px; letter-spacing:.03em; text-transform:uppercase; color:var(--muted)">Agregar sorteo individual</b>
+  </div>
   <div class="fila-form">
     <div class="campo"><label for="fFecha">Fecha</label><input type="date" id="fFecha"></div>
     <div class="campo"><label for="fLot">Lotería</label><input type="text" id="fLot" list="listaLots" placeholder="Ej: Sinuano Noche"><datalist id="listaLots"></datalist></div>
@@ -225,13 +235,6 @@
   </div>
   <div class="aviso" id="contadorNuevos" style="margin:8px 0"></div>
   <div id="nuevosCont"></div>
-  <div style="margin-top:24px">
-    <b style="font-family:Archivo">Importación masiva (tablero completo)</b>
-    <div class="sub" style="margin:4px 0 10px">Pega una lista con formato <b>fecha,lotería,número</b> — una por línea; si una línea no trae fecha se usa la del campo de arriba. Flujo recomendado: toma la foto del tablero, envíamela en Claude y te devuelvo la lista lista para pegar aquí.</div>
-    <textarea id="impTexto" rows="6" style="width:100%; font:13px ui-monospace,monospace; border:1px solid var(--borde); border-radius:8px; padding:10px; color:var(--tinta)" placeholder="2026-07-14,Sinuano Día,8298&#10;2026-07-14,Astro Luna,5099"></textarea>
-    <div class="fila-form" style="margin-top:10px"><button id="btnImportar">Importar lista</button></div>
-    <div class="aviso" id="impResultado"></div>
-  </div>
 </section>
 
 </div>
