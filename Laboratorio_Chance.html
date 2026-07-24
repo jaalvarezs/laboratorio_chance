@@ -28,6 +28,10 @@
   .pastilla{background:#24365C; border:1px solid #44557A; border-radius:8px; padding:9px 14px; font-size:13px; color:#C7CEDD}
   .pastilla b{color:#fff; font-family:'Archivo'; font-weight:700}
   main{padding:30px 0 50px}
+  .tabs{display:flex; gap:4px; margin-top:20px; border-bottom:1px solid var(--borde)}
+  .tab-btn{font:inherit; font-family:'Archivo'; font-weight:700; font-size:13.5px; letter-spacing:.02em; background:none; border:none; padding:11px 18px; color:var(--muted); cursor:pointer; border-bottom:3px solid transparent; margin-bottom:-1px}
+  .tab-btn.activo{color:var(--tinta); border-bottom-color:var(--oro)}
+  .tab-btn:hover{color:var(--tinta)}
   section{margin-bottom:34px}
   h2{font-family:'Archivo'; font-weight:700; font-size:19px; margin-bottom:4px}
   .sub{color:var(--muted); font-size:13.5px; margin-bottom:16px}
@@ -108,8 +112,15 @@
     </div>
   </div>
 </header>
+<div class="cont">
+  <nav class="tabs">
+    <button class="tab-btn activo" id="tabBtnLab" data-tab="lab">Laboratorio</button>
+    <button class="tab-btn" id="tabBtnReg" data-tab="registro">Registrar datos</button>
+  </nav>
+</div>
 <main class="cont">
 
+<div class="panel panel-lab">
 <section>
   <h2>Pronóstico para el próximo sorteo</h2>
   <div class="sub" id="subPron">Calculado con todos los sorteos disponibles de la selección.</div>
@@ -188,6 +199,9 @@
   <div id="histLista"></div>
 </section>
 
+</div>
+
+<div class="panel panel-registro" style="display:none">
 <section>
   <div id="bannerAcierto" style="display:none"></div>
   <h2>Registrar resultados nuevos</h2>
@@ -220,9 +234,13 @@
   </div>
 </section>
 
+</div>
+
+<div class="panel panel-lab">
 <section>
   <div class="nota-honesta"><b>Lectura honesta del laboratorio:</b> cada sorteo es independiente y uniforme, así que lo esperado es que los tres métodos converjan a la línea del azar a medida que acumulas evaluaciones. Con muestras pequeñas (~20 sorteos por lotería) verás métodos "ganando" o "perdiendo" temporalmente — eso es varianza, no señal. La brecha se considera real solo si |z| supera 3 de forma sostenida al crecer los datos. Nota: en Pick 3 el análisis usa solo las 3 cifras del juego.</div>
 </section>
+</div>
 
 </main>
 <script>
@@ -870,6 +888,16 @@ document.getElementById('btnImportar').onclick = async () => {
   document.getElementById('impResultado').textContent = msj;
   if (r.ok.length && !r.errores.length) document.getElementById('impTexto').value = '';
 };
+
+function activarTab(tab){
+  document.querySelectorAll('.panel-lab').forEach(el => el.style.display = tab === 'lab' ? '' : 'none');
+  document.querySelectorAll('.panel-registro').forEach(el => el.style.display = tab === 'registro' ? '' : 'none');
+  document.getElementById('tabBtnLab').classList.toggle('activo', tab === 'lab');
+  document.getElementById('tabBtnReg').classList.toggle('activo', tab === 'registro');
+  window.scrollTo({top:0, behavior:'instant'});
+}
+document.getElementById('tabBtnLab').onclick = () => activarTab('lab');
+document.getElementById('tabBtnReg').onclick = () => activarTab('registro');
 
 document.getElementById('btnExportar').onclick = () => {
   if (!NUEVOS.length){ alert('No tienes registros agregados para exportar. La base incluida en la app no necesita respaldo.'); return; }
