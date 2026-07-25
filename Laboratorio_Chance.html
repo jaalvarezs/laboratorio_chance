@@ -137,7 +137,19 @@
   <h2>Backtest · ¿algún método le gana al azar?</h2>
   <div class="sub" id="subBack">—</div>
   <div class="tarjetas" id="tarjetas"></div>
+  <div id="tendDigitos" style="margin-top:14px"></div>
   <div id="aciertosLog" style="margin-top:14px"></div>
+</section>
+
+<section>
+  <h2>Analizar un número</h2>
+  <div class="sub">Escribe cualquier número de 4 cifras y elige la lotería: te muestro qué dice la historia sobre esos dígitos — sin importar posición, con el mismo chequeo de persistencia que usa toda la app. Esto describe tendencias observadas, no predice el próximo sorteo.</div>
+  <div class="fila-form">
+    <select id="analLot"></select>
+    <input type="text" id="analNum" maxlength="4" placeholder="Ej: 4192" style="width:100px">
+    <button id="btnAnalizar">Analizar</button>
+  </div>
+  <div id="analResultado"></div>
 </section>
 
 <section>
@@ -386,6 +398,48 @@ function chequearPersistencia(nums, posiciones){
   return { primera: out[0], segunda: out[1] };
 }
 
+function tendenciaDigitos(nums, posiciones){
+  // Frecuencia de cada dígito 0-9 SIN IMPORTAR posición: se cuentan las
+  // apariciones en las k posiciones juntas, no por separado como Caliente.
+  const k = posiciones.length;
+  const N = nums.length;
+  function frecPorDigito(serie){
+    const f = new Array(10).fill(0);
+    for (const s of serie) for (const p of posiciones) f[s.charCodeAt(p)-48]++;
+    return f;
+  }
+  const total = frecPorDigito(nums);
+  const esperado = N * k * 0.1;
+  const sd = Math.sqrt(N * k * 0.1 * 0.9);
+  const zs = total.map((c,d) => ({ digito:d, obs:c, esperado, z:(c-esperado)/sd }));
+  zs.sort((a,b) => Math.abs(b.z) - Math.abs(a.z));
+
+  // Corrección por 10 comparaciones simultáneas (un dígito por cada 0-9)
+  const zUmbral = Math.sqrt(2*Math.log(10));
+
+  // Solo se calcula persistencia para dígitos que ya cruzan z≥2 (evita
+  // hacer trabajo de más para lo que de entrada está dentro del azar)
+  const destacados = zs.filter(x => Math.abs(x.z) >= 2);
+  if (!destacados.length) return { zs, destacados: [], zUmbral };
+
+  const mitad = Math.floor(N/2);
+  const mitades = [nums.slice(0,mitad), nums.slice(mitad)];
+  for (const d of destacados){
+    if (mitades[0].length < 20 || mitades[1].length < 20){ d.persistencia = null; continue; }
+    d.persistencia = mitades.map(serie => {
+      const n = serie.length;
+      const f = frecPorDigito(serie);
+      const esp = n * k * 0.1;
+      const sdM = Math.sqrt(n * k * 0.1 * 0.9);
+      return { n, z: (f[d.digito]-esp)/sdM };
+    });
+    const [p1,p2] = d.persistencia;
+    d.sostenida = Math.sign(p1.z)===Math.sign(d.z) && Math.abs(p1.z)>=1.5 &&
+                  Math.sign(p2.z)===Math.sign(d.z) && Math.abs(p2.z)>=1.5;
+  }
+  return { zs, destacados, zUmbral };
+}
+
 function clasificarAcierto(pred, numStr, posiciones){
   let ac = 0;
   const n = posiciones.length;
@@ -526,6 +580,31 @@ function actualizar(){
       bloquePersist + '</div>';
   }
   document.getElementById('tarjetas').innerHTML = html;
+
+  const td = tendenciaDigitos(nums, pos);
+  if (!td.destacados.length){
+    document.getElementById('tendDigitos').innerHTML = '';
+  } else {
+    let htmlTd = '<div class="tarjeta" style="border-color:var(--oro)">' +
+      '<div class="etq" style="color:var(--oro-oscuro)">TENDENCIA DE DÍGITOS (sin importar posición)</div>' +
+      '<div class="comp" style="margin-top:4px">Umbral por 10 comparaciones simultáneas: z≥' + fmt(td.zUmbral,2) + '</div>';
+    for (const d of td.destacados){
+      htmlTd += '<div class="comp" style="margin-top:10px"><b>Dígito ' + d.digito + '</b>: observado ' + d.obs +
+        ' (esperado ' + fmt(d.esperado,1) + ') · z = <b>' + fmt(d.z,2) + '</b></div>';
+      if (d.persistencia === null){
+        htmlTd += '<div class="comp" style="color:var(--muted)">Persistencia: aún no hay suficiente historia para dividir en dos y comprobar.</div>';
+      } else {
+        const [p1,p2] = d.persistencia;
+        const color = d.sostenida ? 'var(--ok)' : 'var(--alerta)';
+        const texto = d.sostenida ? 'Sostenida en ambas mitades — merece seguir de cerca'
+                                   : 'No sostenida — probablemente ruido concentrado en una parte de la historia';
+        htmlTd += '<div class="comp">Persistencia: mitad 1 z=' + fmt(p1.z,2) + ' · mitad 2 z=' + fmt(p2.z,2) +
+          ' · <b style="color:' + color + '">' + texto + '</b></div>';
+      }
+    }
+    htmlTd += '</div>';
+    document.getElementById('tendDigitos').innerHTML = htmlTd;
+  }
 
   let mejor = 'caliente';
   for (const m of ['rezagado','frio','pares','ternas']) if (Math.abs(zs[m]) > Math.abs(zs[mejor])) mejor = m;
@@ -787,8 +866,20 @@ function poblarSelector(){
   dl.innerHTML = lots.map(l => '<option value="' + l.replace(/"/g,'&quot;') + '">').join('');
 }
 
+function poblarSelectorAnalisis(){
+  const cuentas = {};
+  for (const r of baseCompleta()) cuentas[r[1]] = (cuentas[r[1]] || 0) + 1;
+  const lots = Object.keys(cuentas).filter(l => l.indexOf('Pick 3') !== 0 && cuentas[l] >= MUESTRA_MINIMA).sort();
+  const sel = document.getElementById('analLot');
+  const previo = sel.value;
+  sel.innerHTML = lots.length
+    ? lots.map(l => '<option value="' + l.replace(/"/g,'&quot;') + '">' + l + ' (' + cuentas[l] + ')</option>').join('')
+    : '<option value="">Aún ninguna lotería con muestra suficiente</option>';
+  if (previo && cuentas[previo]) sel.value = previo;
+}
+
 function refrescarTodo(){
-  poblarSelector(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
+  poblarSelector(); poblarSelectorAnalisis(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
 }
 
 function pintarNuevos(){
@@ -949,6 +1040,56 @@ function activarTab(tab){
 }
 document.getElementById('tabBtnLab').onclick = () => activarTab('lab');
 document.getElementById('tabBtnReg').onclick = () => activarTab('registro');
+
+document.getElementById('btnAnalizar').onclick = () => {
+  const lot = document.getElementById('analLot').value;
+  const numRaw = document.getElementById('analNum').value.trim();
+  const resDiv = document.getElementById('analResultado');
+  if (!/^[0-9]{4}$/.test(numRaw)){
+    resDiv.innerHTML = '<div class="aviso" style="color:#C4443A">Escribe un número de exactamente 4 cifras (0000 a 9999).</div>';
+    return;
+  }
+  if (!lot){
+    resDiv.innerHTML = '<div class="aviso" style="color:#C4443A">Elige una lotería con muestra suficiente.</div>';
+    return;
+  }
+  const pos = posicionesDe(lot);
+  const nums = baseCompleta().filter(r => r[1] === lot).map(r => r[2]);
+  const N = nums.length;
+  if (N < MUESTRA_MINIMA){
+    resDiv.innerHTML = '<div class="aviso" style="color:#C4443A">Esta lotería aún no tiene muestra suficiente (' + N + ' < ' + MUESTRA_MINIMA + ').</div>';
+    return;
+  }
+
+  const td = tendenciaDigitos(nums, pos);
+  const digitosUnicos = [...new Set(numRaw.split('').map(Number))];
+  const vecesExacto = nums.filter(n => n === numRaw).length;
+
+  let html = '<div class="tarjeta" style="margin-top:14px; border-color:var(--oro)">';
+  html += '<div class="etq" style="color:var(--oro-oscuro)">' + numRaw + ' en ' + lot + '</div>';
+  html += '<div class="comp" style="margin-top:6px">Este número exacto ' +
+    (vecesExacto ? 'ya salió <b>' + vecesExacto + '</b> ' + (vecesExacto === 1 ? 'vez' : 'veces') + ' en la historia registrada.'
+                 : 'nunca ha salido en la historia registrada.') + '</div>';
+  html += '<div class="comp" style="margin-top:10px"><b>Tendencia de sus dígitos (sin importar posición):</b></div>';
+  for (const d of digitosUnicos){
+    const info = td.zs.find(x => x.digito === d);
+    html += '<div class="comp">Dígito ' + d + ': observado ' + info.obs + ' (esperado ' + fmt(info.esperado,1) + ') · z = <b>' + fmt(info.z,2) + '</b></div>';
+    if (Math.abs(info.z) >= 2){
+      const destacado = td.destacados.find(x => x.digito === d);
+      if (destacado && destacado.persistencia){
+        const [p1,p2] = destacado.persistencia;
+        const color = destacado.sostenida ? 'var(--ok)' : 'var(--alerta)';
+        const texto = destacado.sostenida ? 'Sostenida en ambas mitades' : 'No sostenida — probable ruido concentrado en una parte';
+        html += '<div class="comp" style="margin-left:14px">Persistencia: mitad 1 z=' + fmt(p1.z,2) + ' · mitad 2 z=' + fmt(p2.z,2) + ' · <b style="color:' + color + '">' + texto + '</b></div>';
+      } else {
+        html += '<div class="comp" style="margin-left:14px; color:var(--muted)">Persistencia: aún no hay suficiente historia para dividir en dos y comprobar.</div>';
+      }
+    }
+  }
+  html += '<div class="comp" style="margin-top:10px; color:var(--muted)">Esto describe lo que ya pasó, no predice el próximo sorteo. La mayoría de dígitos, en la mayoría de loterías, están dentro del azar.</div>';
+  html += '</div>';
+  resDiv.innerHTML = html;
+};
 
 document.getElementById('btnExportar').onclick = () => {
   if (!NUEVOS.length){ alert('No tienes registros agregados para exportar. La base incluida en la app no necesita respaldo.'); return; }
