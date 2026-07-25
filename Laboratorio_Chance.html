@@ -359,6 +359,33 @@ function wilson(c, n){
   const hw = z * Math.sqrt(ph*(1-ph)/n + z*z/(4*n*n)) / d;
   return [Math.max(0, ctr - hw), Math.min(1, ctr + hw)];
 }
+function chequearPersistencia(nums, posiciones){
+  // Parte la historia en dos mitades y corre un backtest walk-forward
+  // INDEPENDIENTE en cada una (con su propio warmup), para ver si la
+  // desviación de un método se sostiene en ambas o si está concentrada
+  // en una sola parte de la historia (firma típica de un falso positivo).
+  const mitad = Math.floor(nums.length / 2);
+  const mitades = [nums.slice(0, mitad), nums.slice(mitad)];
+  const k = posiciones.length;
+  const esperado = 0.1 * k;
+  const sd = Math.sqrt(k * 0.1 * 0.9);
+  const out = [];
+  for (const serie of mitades){
+    const n = serie.length;
+    const w = n >= 100 ? 30 : 8;
+    if (n <= w + 3){ out.push(null); continue; }
+    const bt = backtest(serie, posiciones, w);
+    const nEv = bt.caliente.scores.length;
+    const z = {};
+    for (const m of ['caliente','rezagado','frio','pares','ternas']){
+      const media = bt[m].scores.reduce((a,c) => a + c, 0) / nEv;
+      z[m] = (media - esperado) * Math.sqrt(nEv) / sd;
+    }
+    out.push({ n, nEv, z });
+  }
+  return { primera: out[0], segunda: out[1] };
+}
+
 function clasificarAcierto(pred, numStr, posiciones){
   let ac = 0;
   const n = posiciones.length;
@@ -468,14 +495,35 @@ function actualizar(){
   const colores = {caliente:'var(--caliente)', rezagado:'var(--rezagado)', frio:'var(--frio)', pares:'#0A6E9B', ternas:'#7B3FA0'};
   let html = '';
   const zs = {};
+  let persistencia = null;
   for (const m of ['caliente','rezagado','frio','pares','ternas']){
     const media = bt[m].scores.reduce((a,c) => a + c, 0) / nEv;
     const z = (media - esperado) * Math.sqrt(nEv) / sd;
     zs[m] = z;
+    let bloquePersist = '';
+    if (Math.abs(z) >= 2){
+      if (!persistencia) persistencia = chequearPersistencia(nums, pos);
+      const p1 = persistencia.primera, p2 = persistencia.segunda;
+      if (!p1 || !p2){
+        bloquePersist = '<div class="comp" style="color:var(--muted)">Persistencia: aún no hay suficiente historia para dividir en dos y comprobar.</div>';
+      } else {
+        const z1 = p1.z[m], z2 = p2.z[m];
+        const mismoSigno1 = Math.sign(z1) === Math.sign(z) && Math.abs(z1) >= 1.5;
+        const mismoSigno2 = Math.sign(z2) === Math.sign(z) && Math.abs(z2) >= 1.5;
+        const sostenida = mismoSigno1 && mismoSigno2;
+        const color = sostenida ? 'var(--ok)' : 'var(--alerta)';
+        const texto = sostenida
+          ? 'Sostenida en ambas mitades — merece seguir de cerca'
+          : 'No sostenida — probablemente ruido concentrado en una parte de la historia';
+        bloquePersist = '<div class="comp">Persistencia: mitad 1 z=' + fmt(z1,2) + ' · mitad 2 z=' + fmt(z2,2) +
+          ' · <b style="color:' + color + '">' + texto + '</b></div>';
+      }
+    }
     html += '<div class="tarjeta"><div class="etq" style="color:' + colores[m] + '">' + nombres[m] + '</div>' +
       '<div class="valor">' + fmt(media, 2) + '</div>' +
       '<div class="comp">cifras/sorteo · esperado <b>' + fmt(esperado,2) + '</b> · z = <b>' + fmt(z,2) + '</b></div>' +
-      '<div class="comp">2últ: <b>'+bt[m].dosUlt+'</b> (esp.'+fmt(nEv/100,1)+') · 3últ: <b>'+bt[m].tresUlt+'</b> (esp.'+fmt(nEv/1000,1)+')</div>'+'<div class="comp">exactos: <b>'+bt[m].exactos+'</b></div></div>';
+      '<div class="comp">2últ: <b>'+bt[m].dosUlt+'</b> (esp.'+fmt(nEv/100,1)+') · 3últ: <b>'+bt[m].tresUlt+'</b> (esp.'+fmt(nEv/1000,1)+')</div>'+'<div class="comp">exactos: <b>'+bt[m].exactos+'</b></div>' +
+      bloquePersist + '</div>';
   }
   document.getElementById('tarjetas').innerHTML = html;
 
@@ -990,4 +1038,3 @@ document.getElementById('selLot').onchange = actualizar;
 </script>
 </body>
 </html>
-
