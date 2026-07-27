@@ -265,6 +265,31 @@ const DATOS = [["2007-01-05","Lotería de Medellín","3652"],["2007-01-12","Lote
 // Umbral de muestra representativa: mínimo de sorteos para análisis por lotería.
 // Basado en análisis de poder estadístico (n·p≥5 para dígitos de azar 10%).
 const MUESTRA_MINIMA = 100;
+
+// Nombres antiguos o alternativos que corresponden al MISMO sorteo que un
+// nombre canónico ya usado en la app. Curado a mano y validado uno por uno
+// a lo largo del proyecto — NO es coincidencia de texto "difusa": mezclar
+// nombres por parecido sería peligroso (Chontico Día y Chontico Noche se
+// parecen como texto pero son sorteos distintos). Solo entran aquí pares
+// confirmados empíricamente como el mismo sorteo real.
+const ALIAS_LOTERIA = {
+  'Paisita Día': 'Paisita 1', 'Paisita Noche': 'Paisita 2',
+  'Caribeña Día': 'La Caribeña 1', 'Caribeña Noche': 'La Caribeña 2',
+  'La Caribeña Día': 'La Caribeña 1', 'La Caribeña Noche': 'La Caribeña 2',
+  'Fantastica Día': 'La Fantastica 1', 'Fantastica Noche': 'La Fantastica 2',
+  'La Fantastica Día': 'La Fantastica 1', 'La Fantastica Noche': 'La Fantastica 2',
+  'Motilon Tarde': 'El Motilon 1', 'Motilon Noche': 'El Motilon 2',
+  'El Motilon Tarde': 'El Motilon 1', 'El Motilon Noche': 'El Motilon 2',
+  'Motilón Tarde': 'El Motilon 1', 'Motilón Noche': 'El Motilon 2',
+  'Chontico Día': 'Chontico Millonario',
+  'Dorado Día': 'Dorado Mañana',
+  'Cafeterito Tarde': 'Cafeterito Día',
+  'Medellín': 'Lotería de Medellín', 'Loteria de Medellin': 'Lotería de Medellín',
+  'Loteria de Bogota': 'Bogotá', 'Lotería de Bogotá': 'Bogotá',
+  'Saman': 'El saman de la suerte',
+  'Pijao': 'El Pijao de Oro', 'Pijao de Oro': 'El Pijao de Oro'
+};
+function normalizarLoteria(nombre){ return ALIAS_LOTERIA[nombre] || nombre; }
 function posicionesDe(sel){ return sel.indexOf('Pick 3') === 0 ? [1,2,3] : [0,1,2,3]; }
 
 function predecir(prev, posiciones){
@@ -464,7 +489,7 @@ function parsearImportacion(texto, fechaDefecto, existentes){
     if (/^\d{4}-\d{2}-\d{2}$/.test(partes[0])){ fecha = partes[0]; ini = 1; }
     if (partes.length - ini < 2){ out.errores.push(i + 1); continue; }
     let num = partes[partes.length - 1].split('-')[0].trim();
-    const lot = partes.slice(ini, partes.length - 1).join(' ');
+    const lot = normalizarLoteria(partes.slice(ini, partes.length - 1).join(' '));
     if (!/^\d{3,4}$/.test(num) || !lot || !fecha){ out.errores.push(i + 1); continue; }
     num = num.padStart(4, '0');
     const clave = fecha + '|' + lot;
@@ -484,7 +509,7 @@ let chart = null;
 function baseCompleta(){
   const todo = DATOS.concat(NUEVOS.map(r => [r[0], r[1], r[2]]));
   todo.sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  return todo;
+  return todo.map(r => [r[0], normalizarLoteria(r[1]), r[2]]);
 }
 function registrosDe(sel){
   const todo = baseCompleta();
@@ -1134,27 +1159,33 @@ document.getElementById('archivoRespaldo').onchange = (ev) => {
 };
 
 document.getElementById('btnDepurar').onclick = async () => {
-  const todos = baseCompleta();
-  // Indexar por lotería -> lista de {fecha(ms), num, esNuevo, idxNuevo}
-  const porLot = {};
+  // Normalizar TODO antes de indexar, para detectar duplicados aunque
+  // estén guardados bajo nombres distintos del mismo sorteo (ej. "Cafeterito
+  // Tarde" vs "Cafeterito Día"). La exclusión de auto-coincidencia es por
+  // índice exacto, no por fecha, porque dos alias del mismo sorteo pueden
+  // compartir la fecha exacta (no solo fechas cercanas).
+  const embebidos = DATOS.map(r => [r[0], normalizarLoteria(r[1]), r[2]]);
+  const nuevosNorm = NUEVOS.map(r => [r[0], normalizarLoteria(r[1]), r[2]]);
   const parse = f => { const p = f.split('-'); return Date.UTC(+p[0], +p[1]-1, +p[2]); };
-  todos.forEach(r => {
-    (porLot[r[1]] = porLot[r[1]] || []).push({ ms: parse(r[0]), num: r[2], fecha: r[0] });
-  });
-  // Para cada registro NUEVO, ver si colisiona con OTRO (de cualquier origen) del
-  // mismo número y lotería a <=5 días. Si sí, es candidato a duplicado.
+  const porLot = {};
+  embebidos.forEach(r => { (porLot[r[1]] = porLot[r[1]] || []).push({ ms: parse(r[0]), num: r[2], fecha: r[0], esNuevo:false, idx:-1 }); });
+  nuevosNorm.forEach((r, i) => { (porLot[r[1]] = porLot[r[1]] || []).push({ ms: parse(r[0]), num: r[2], fecha: r[0], esNuevo:true, idx:i }); });
+
   const sospechosos = [];
-  NUEVOS.forEach((r, idx) => {
+  nuevosNorm.forEach((r, idx) => {
     const lista = porLot[r[1]] || [];
     const msN = parse(r[0]);
+    // Solo cuenta como colisión un embebido, o un NUEVOS con índice ANTERIOR
+    // (no uno posterior) — así, entre dos duplicados que chocan entre sí,
+    // se conserva el primero y se marca el resto, en vez de marcar ambos.
     const colisiona = lista.some(o =>
-      o.num === r[2] && o.fecha !== r[0] && Math.abs(o.ms - msN) <= 5*86400000
+      o.num === r[2] && (!o.esNuevo || o.idx < idx) && Math.abs(o.ms - msN) <= 5*86400000
     );
-    if (colisiona) sospechosos.push({ idx, r });
+    if (colisiona) sospechosos.push({ idx, r: NUEVOS[idx] });
   });
   if (!sospechosos.length){ alert('No se encontraron duplicados sospechosos en los registros agregados.'); return; }
   const lista = sospechosos.map(s => '• ' + s.r[0] + '  ' + s.r[1] + '  ' + s.r[2]).join('\n');
-  if (!confirm('Se detectaron ' + sospechosos.length + ' registros agregados que parecen duplicados (mismo número y lotería a menos de 5 días de otro sorteo):\n\n' + lista + '\n\n¿Eliminarlos?')) return;
+  if (!confirm('Se detectaron ' + sospechosos.length + ' registros agregados que parecen duplicados (mismo número y lotería —incluyendo nombres equivalentes— a menos de 5 días de otro sorteo):\n\n' + lista + '\n\n¿Eliminarlos?')) return;
   // Eliminar de mayor a menor índice para no descuadrar
   sospechosos.sort((a,b) => b.idx - a.idx).forEach(s => NUEVOS.splice(s.idx, 1));
   await guardarNuevos();
