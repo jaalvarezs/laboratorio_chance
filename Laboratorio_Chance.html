@@ -85,10 +85,10 @@
   .dia-r{display:flex; justify-content:space-between; gap:12px; padding:3px 0; font-size:13.5px; border-bottom:1px dashed #F0EDE4}
   .dia-r:last-child{border-bottom:none}
   .dia-r b{font-family:'Archivo'; font-weight:700; letter-spacing:.06em}
-  #tablaPanorama th, #tablaPanorama td, #tablaJugadas th, #tablaJugadas td{padding:7px 10px; border-bottom:1px solid var(--borde); white-space:nowrap}
-  #tablaPanorama thead th, #tablaJugadas thead th{background:var(--tinta); color:#fff; font-family:'Archivo'; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; position:sticky; top:0}
-  #tablaPanorama tbody tr:nth-child(even), #tablaJugadas tbody tr:nth-child(even){background:#FAF8F2}
-  #tablaPanorama td.lot, #tablaJugadas td.lot{text-align:left; font-weight:600; max-width:170px; overflow:hidden; text-overflow:ellipsis}
+  #tablaPanorama th, #tablaPanorama td, #tablaJugadas th, #tablaJugadas td, #tablaParesBal th, #tablaParesBal td{padding:7px 10px; border-bottom:1px solid var(--borde); white-space:nowrap}
+  #tablaPanorama thead th, #tablaJugadas thead th, #tablaParesBal thead th{background:var(--tinta); color:#fff; font-family:'Archivo'; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; position:sticky; top:0}
+  #tablaPanorama tbody tr:nth-child(even), #tablaJugadas tbody tr:nth-child(even), #tablaParesBal tbody tr:nth-child(even){background:#FAF8F2}
+  #tablaPanorama td.lot, #tablaJugadas td.lot, #tablaParesBal td.lot{text-align:left; font-weight:600; max-width:170px; overflow:hidden; text-overflow:ellipsis}
   .banner{border-radius:14px; padding:16px 18px; margin-bottom:16px; font-size:14.5px; border:2px solid}
   .banner.b-exacto{background:#FDF3D7; border-color:var(--oro); color:#5B4A1E}
   .banner.b-parcial{background:#E7F3EE; border-color:var(--frio); color:#0A4A3A}
@@ -116,6 +116,7 @@
   <nav class="tabs">
     <button class="tab-btn activo" id="tabBtnLab" data-tab="lab">Laboratorio</button>
     <button class="tab-btn" id="tabBtnReg" data-tab="registro">Registrar datos</button>
+    <button class="tab-btn" id="tabBtnBal" data-tab="balotas">Balotas</button>
   </nav>
 </div>
 <main class="cont">
@@ -259,6 +260,72 @@
 
 </div>
 
+<div class="panel panel-balotas" style="display:none">
+<section>
+  <h2>Balotas · MiLoto y Baloto</h2>
+  <div class="sub">Estos sorteos extraen 5 números de un rango de 43 (y Baloto suma una superbalota de 1 a 16) — no son el mismo tipo de juego que chance, así que usan sus propios métodos: frecuencia por número, rezago, pares y, en Baloto, la superbalota aparte.</div>
+  <div class="fila-sel" style="margin-top:0">
+    <div class="campo"><label for="selLotBal">Lotería</label><select id="selLotBal"></select></div>
+    <div class="pastilla">Sorteos totales: <b id="stTotalBal">—</b></div>
+    <div class="pastilla">Rango: <b id="stRangoBal">—</b></div>
+  </div>
+</section>
+
+<section>
+  <h2>Frecuencia por número</h2>
+  <div class="sub" id="subFrecBal">—</div>
+  <div id="frecBalCont"></div>
+</section>
+
+<section>
+  <h2>Alertas · números que se desvían del azar</h2>
+  <div class="sub">Solo se listan números con |z|≥2, con chequeo de persistencia (primera mitad vs segunda mitad del historial) igual que en chance — sin eso, un z alto aislado no significa nada.</div>
+  <div id="alertasBalCont"></div>
+</section>
+
+<section>
+  <h2>Pares más frecuentes</h2>
+  <div class="sub">Las 12 parejas de números que más veces han salido juntas en el mismo sorteo, contra lo esperado por azar.</div>
+  <div style="overflow-x:auto"><table id="tablaParesBal" style="width:100%; border-collapse:collapse; font-size:13px"></table></div>
+</section>
+
+<section id="seccionComplementarioBal" style="display:none">
+  <h2>Superbalota</h2>
+  <div class="sub">Serie independiente de 1 a 16 — sale de una urna distinta a los 5 números principales, así que se analiza aparte.</div>
+  <div id="compBalCont"></div>
+</section>
+
+<section>
+  <div class="nota-honesta"><b>Lectura honesta:</b> aquí cada sorteo extrae 5 números sin reemplazo de un rango fijo — es un espacio combinatorio distinto al de chance, no una variación del mismo juego. Con el volumen actual de sorteos transcritos esta sección está muy por debajo de una muestra confiable (umbral de referencia: <b id="umbralMuestraBalTxt">100</b> sorteos por lotería); ningún resultado de aquí debe tomarse como señal todavía.</div>
+</section>
+
+<section style="margin-top:26px; padding-top:20px; border-top:1px solid var(--borde)">
+  <h2>Registrar sorteos de balotas</h2>
+  <div class="sub">Importación masiva — formato <b>fecha,lotería,n1-n2-n3-n4-n5</b> (agrega <b>,complementario</b> al final para Baloto y Baloto Revancha). Una línea por sorteo.</div>
+  <textarea id="impTextoBal" rows="6" style="width:100%; font:13px ui-monospace,monospace; border:1px solid var(--borde); border-radius:8px; padding:10px; color:var(--tinta)" placeholder="2026-07-01,MiLoto,4-8-23-26-30&#10;2026-07-01,Baloto,6-8-9-32-40,13"></textarea>
+  <div class="fila-form" style="margin-top:10px"><button id="btnImportarBal">Importar lista</button></div>
+  <div class="aviso" id="impResultadoBal"></div>
+
+  <div style="margin-top:26px; padding-top:20px; border-top:1px solid var(--borde)">
+    <b style="font-family:Archivo; font-size:13.5px; letter-spacing:.03em; text-transform:uppercase; color:var(--muted)">Agregar sorteo individual</b>
+  </div>
+  <div class="fila-form">
+    <div class="campo"><label for="fFechaBal">Fecha</label><input type="date" id="fFechaBal"></div>
+    <div class="campo"><label for="fLotBalSel">Lotería</label><select id="fLotBalSel"></select></div>
+    <div class="campo"><label for="fNumsBal">5 números (guiones)</label><input type="text" id="fNumsBal" placeholder="Ej: 4-8-23-26-30" style="min-width:160px"></div>
+    <div class="campo" id="campoCompBal"><label for="fCompBal">Superbalota</label><input type="text" id="fCompBal" placeholder="Ej: 13" style="width:90px"></div>
+    <button id="btnAgregarBal">Agregar sorteo</button>
+  </div>
+  <div class="fila-form" style="margin-top:12px">
+    <button class="sec" id="btnLimpiarBal">Borrar agregados</button>
+    <button class="sec" id="btnExportarBal">Exportar respaldo</button>
+    <button class="sec" id="btnImportarArchivoBal">Importar respaldo</button>
+    <input type="file" id="archivoRespaldoBal" accept=".csv,.txt" style="display:none">
+  </div>
+  <div class="aviso" id="avisoStorageBal"></div>
+</section>
+</div>
+
 <div class="panel panel-lab">
 <section>
   <div class="nota-honesta"><b>Lectura honesta del laboratorio:</b> cada sorteo es independiente y uniforme, así que lo esperado es que los tres métodos converjan a la línea del azar a medida que acumulas evaluaciones. Con muestras pequeñas (~20 sorteos por lotería) verás métodos "ganando" o "perdiendo" temporalmente — eso es varianza, no señal. La brecha se considera real solo si |z| supera 3 de forma sostenida al crecer los datos. Nota: en Pick 3 el análisis usa solo las 3 cifras del juego.</div>
@@ -281,15 +348,6 @@ const MUESTRA_MINIMA = 100;
 // parecen como texto pero son sorteos distintos). Solo entran aquí pares
 // confirmados empíricamente como el mismo sorteo real.
 const ALIAS_LOTERIA = {
-  'La Fantástica 1': 'La Fantastica 1', 'La Fantástica 2': 'La Fantastica 2',
-  'Fantástica Día': 'La Fantastica 1', 'Fantástica Noche': 'La Fantastica 2',
-  'Lotería del Cauca': 'Cauca', 'Loteria del Cauca': 'Cauca',
-  'Lotería del Huila': 'Huila', 'Lotería del Tolima': 'Tolima',
-  'Lotería del Valle': 'Valle', 'Lotería del Meta': 'Meta',
-  'Lotería del Quindío': 'Quindío', 'Lotería de Boyacá': 'Boyacá',
-  'Lotería de Manizales': 'Manizales', 'Lotería de Santander': 'Santander',
-  'Lotería de Risaralda': 'Risaralda', 'Lotería de Cundinamarca': 'Cundinamarca',
-  'Lotería de la Cruz Roja': 'Cruz Roja', 'Motilón Tarde': 'El Motilon 1',
   'Paisita Día': 'Paisita 1', 'Paisita Noche': 'Paisita 2',
   'Caribeña Día': 'La Caribeña 1', 'Caribeña Noche': 'La Caribeña 2',
   'La Caribeña Día': 'La Caribeña 1', 'La Caribeña Noche': 'La Caribeña 2',
@@ -306,29 +364,7 @@ const ALIAS_LOTERIA = {
   'Saman': 'El saman de la suerte',
   'Pijao': 'El Pijao de Oro', 'Pijao de Oro': 'El Pijao de Oro'
 };
-function repararMojibake(nombre){
-  // "La AntioqueÃ±ita" -> "La Antioqueñita". Ocurre cuando un texto guardado
-  // en UTF-8 se lee como Latin-1 (típico al pasar el respaldo por Excel o
-  // entre equipos). Solo se intenta si aparecen las marcas delatoras Ã/Â, y
-  // solo se acepta si el resultado decodifica limpio como UTF-8.
-  if (!/[\u00C3\u00C2]/.test(nombre)) return nombre;
-  try {
-    const bytes = new Uint8Array(nombre.length);
-    for (let i = 0; i < nombre.length; i++){
-      const c = nombre.charCodeAt(i);
-      if (c > 255) return nombre;   // caracteres fuera de Latin-1: no aplica
-      bytes[i] = c;
-    }
-    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-  } catch (e) {
-    return nombre;  // no era mojibake reparable; se deja igual
-  }
-}
-
-function normalizarLoteria(nombre){
-  const limpio = repararMojibake(String(nombre).trim());
-  return ALIAS_LOTERIA[limpio] || limpio;
-}
+function normalizarLoteria(nombre){ return ALIAS_LOTERIA[nombre] || nombre; }
 function posicionesDe(sel){ return sel.indexOf('Pick 3') === 0 ? [1,2,3] : [0,1,2,3]; }
 
 function predecir(prev, posiciones){
@@ -595,6 +631,149 @@ function parsearImportacion(texto, fechaDefecto, existentes){
   return out;
 }
 // ==/ENGINE==
+
+// ==BALOTAS ENGINE==
+// Loterías de combinación (MiLoto, Baloto, Baloto Revancha): 5 números sin
+// repetición de un rango fijo, no dígitos por posición como en chance. Por
+// eso usan su propio motor estadístico, separado del de arriba.
+const RANGO_BALOTAS = {
+  'MiLoto':          { max: 43, k: 5, complementario: null },
+  'Baloto':          { max: 43, k: 5, complementario: 16 },
+  'Baloto Revancha': { max: 43, k: 5, complementario: 16 }
+};
+const MUESTRA_MINIMA_BALOTAS = 100;
+const LOTERIAS_BALOTAS = Object.keys(RANGO_BALOTAS);
+
+// [fecha, lotería, [n1..n5] ordenados, complementario|null]
+const DATOS_BALOTAS = [["2026-06-01", "MiLoto", [4, 8, 23, 26, 30], null], ["2026-06-02", "MiLoto", [4, 5, 8, 31, 35], null], ["2026-06-03", "Baloto", [26, 29, 35, 38, 41], 11], ["2026-06-03", "Baloto Revancha", [4, 12, 13, 31, 35], 9], ["2026-06-04", "MiLoto", [3, 7, 12, 17, 36], null], ["2026-06-05", "MiLoto", [2, 14, 22, 36, 38], null], ["2026-06-06", "Baloto", [5, 15, 19, 28, 32], 1], ["2026-06-06", "Baloto Revancha", [7, 11, 25, 32, 36], 8], ["2026-06-08", "Baloto", [6, 8, 9, 32, 40], 13], ["2026-06-08", "Baloto Revancha", [14, 26, 30, 37, 39], 2], ["2026-06-09", "MiLoto", [6, 10, 14, 17, 27], null], ["2026-06-10", "Baloto", [3, 5, 17, 18, 27], 7], ["2026-06-10", "Baloto Revancha", [7, 14, 22, 35, 41], 6], ["2026-06-11", "MiLoto", [19, 23, 26, 27, 36], null], ["2026-06-12", "MiLoto", [1, 15, 18, 22, 29], null], ["2026-06-13", "Baloto", [13, 18, 26, 28, 29], 10], ["2026-06-13", "Baloto Revancha", [22, 35, 37, 38, 42], 12], ["2026-06-15", "MiLoto", [11, 16, 28, 33, 38], null], ["2026-06-16", "MiLoto", [6, 16, 27, 30, 34], null], ["2026-06-17", "Baloto", [16, 20, 34, 37, 39], 13], ["2026-06-17", "Baloto Revancha", [7, 12, 19, 34, 35], 9], ["2026-06-18", "MiLoto", [6, 7, 11, 14, 21], null], ["2026-06-19", "MiLoto", [2, 22, 35, 36, 37], null], ["2026-06-20", "Baloto", [31, 34, 37, 38, 43], 14], ["2026-06-20", "Baloto Revancha", [8, 17, 26, 29, 32], 7], ["2026-06-22", "MiLoto", [4, 12, 22, 30, 31], null], ["2026-06-23", "MiLoto", [3, 5, 7, 34, 38], null], ["2026-06-24", "Baloto", [12, 14, 30, 36, 43], 14], ["2026-06-24", "Baloto Revancha", [8, 17, 31, 36, 41], 8], ["2026-06-25", "MiLoto", [3, 15, 25, 30, 35], null], ["2026-06-26", "MiLoto", [21, 29, 32, 36, 38], null], ["2026-06-27", "Baloto", [15, 23, 29, 33, 41], 16], ["2026-06-27", "Baloto Revancha", [13, 17, 18, 30, 35], 14], ["2026-06-30", "MiLoto", [3, 12, 29, 32, 39], null]];
+
+let NUEVOS_BALOTAS = [];
+let persistenteBalotas = false;
+
+function baseCompletaBalotas(){
+  const todo = DATOS_BALOTAS.concat(NUEVOS_BALOTAS);
+  todo.sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  return todo;
+}
+function registrosDeBalotas(lot){
+  return baseCompletaBalotas().filter(r => r[1] === lot);
+}
+
+// Formato: fecha,lotería,n1-n2-n3-n4-n5[,complementario]
+function parsearImportacionBalotas(texto, fechaDefecto, existentes){
+  const out = {ok:[], errores:[], duplicados:[]};
+  const lineas = texto.split(/\r?\n/);
+  for (let i = 0; i < lineas.length; i++){
+    const cruda = lineas[i].trim();
+    if (!cruda || cruda[0] === '#') continue;
+    const partes = cruda.split(/[,;\t]/).map(s => s.trim()).filter(s => s !== '');
+    if (partes.length < 2){ out.errores.push(i + 1); continue; }
+    let fecha = fechaDefecto, ini = 0;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(partes[0])){ fecha = partes[0]; ini = 1; }
+    if (partes.length - ini < 2 || !fecha){ out.errores.push(i + 1); continue; }
+    const lot = partes[ini];
+    const cfg = RANGO_BALOTAS[lot];
+    if (!cfg){ out.errores.push(i + 1); continue; }
+    const resto = partes.slice(ini + 1);
+    const nums = (resto[0] || '').split('-').map(s => parseInt(s.trim(), 10));
+    if (nums.length !== cfg.k || nums.some(n => !Number.isInteger(n) || n < 1 || n > cfg.max)){ out.errores.push(i + 1); continue; }
+    if (new Set(nums).size !== nums.length){ out.errores.push(i + 1); continue; }
+    let comp = null;
+    if (cfg.complementario){
+      if (resto.length < 2 || resto[1] === ''){ out.errores.push(i + 1); continue; }
+      comp = parseInt(resto[1], 10);
+      if (!Number.isInteger(comp) || comp < 1 || comp > cfg.complementario){ out.errores.push(i + 1); continue; }
+    }
+    const clave = fecha + '|' + lot;
+    if (existentes.has(clave)){ out.duplicados.push(lot); continue; }
+    existentes.add(clave);
+    out.ok.push([fecha, lot, nums.slice().sort((a,b) => a-b), comp]);
+  }
+  return out;
+}
+
+// Frecuencia por número: cada sorteo extrae k números sin reemplazo de
+// 1..max, así que la probabilidad de que un número específico salga en un
+// sorteo dado es k/max. Se aproxima la varianza entre sorteos como binomial
+// (la dependencia dentro de un mismo sorteo es de segundo orden para este
+// chequeo de detección, igual criterio que ya usa tendenciaDigitos arriba).
+function frecuenciaNumerosBalotas(regs, cfg){
+  const N = regs.length;
+  const max = cfg.max, k = cfg.k;
+  const f = new Array(max + 1).fill(0);
+  const ultima = new Array(max + 1).fill(-1);
+  regs.forEach((r, idx) => { r[2].forEach(n => { f[n]++; ultima[n] = idx; }); });
+  const p = k / max;
+  const esperado = N * p;
+  const sd = Math.sqrt(N * p * (1 - p));
+  const items = [];
+  for (let n = 1; n <= max; n++){
+    items.push({ numero:n, obs:f[n], esperado, z: sd > 0 ? (f[n]-esperado)/sd : 0, rezago: ultima[n] >= 0 ? N-1-ultima[n] : N });
+  }
+  const zUmbral = Math.sqrt(2 * Math.log(max)); // corrección por 'max' comparaciones simultáneas
+  const destacados = items.filter(x => Math.abs(x.z) >= 2).sort((a,b) => Math.abs(b.z) - Math.abs(a.z));
+  if (N >= 40){
+    const mitad = Math.floor(N/2);
+    const mitades = [regs.slice(0, mitad), regs.slice(mitad)];
+    for (const it of destacados){
+      if (mitades[0].length < 20 || mitades[1].length < 20){ it.persistencia = null; continue; }
+      it.persistencia = mitades.map(serie => {
+        const n = serie.length;
+        let c = 0;
+        serie.forEach(r => { if (r[2].indexOf(it.numero) !== -1) c++; });
+        const esp = n * p, sdM = Math.sqrt(n * p * (1 - p));
+        return { n, z: sdM > 0 ? (c-esp)/sdM : 0 };
+      });
+      const p1 = it.persistencia[0], p2 = it.persistencia[1];
+      it.sostenida = Math.sign(p1.z) === Math.sign(it.z) && Math.abs(p1.z) >= 1.5 &&
+                      Math.sign(p2.z) === Math.sign(it.z) && Math.abs(p2.z) >= 1.5;
+    }
+  } else {
+    destacados.forEach(it => { it.persistencia = null; });
+  }
+  return { items, destacados, zUmbral, N };
+}
+
+// Superbalota: serie independiente 1..complementario, una por sorteo.
+function frecuenciaComplementarioBalotas(regs, cfg){
+  if (!cfg.complementario) return null;
+  const N = regs.length;
+  const max = cfg.complementario;
+  const f = new Array(max + 1).fill(0);
+  const ultima = new Array(max + 1).fill(-1);
+  regs.forEach((r, idx) => { if (r[3] != null){ f[r[3]]++; ultima[r[3]] = idx; } });
+  const p = 1 / max;
+  const esperado = N * p, sd = Math.sqrt(N * p * (1 - p));
+  const items = [];
+  for (let n = 1; n <= max; n++){
+    items.push({ numero:n, obs:f[n], esperado, z: sd > 0 ? (f[n]-esperado)/sd : 0, rezago: ultima[n] >= 0 ? N-1-ultima[n] : N });
+  }
+  return { items, N };
+}
+
+// Co-ocurrencia de pares dentro del mismo sorteo.
+function paresFrecuentesBalotas(regs, cfg){
+  const cont = {};
+  regs.forEach(r => {
+    const nums = r[2];
+    for (let i = 0; i < nums.length; i++) for (let j = i+1; j < nums.length; j++){
+      const clave = nums[i] + '-' + nums[j];
+      cont[clave] = (cont[clave] || 0) + 1;
+    }
+  });
+  const N = regs.length, max = cfg.max, k = cfg.k;
+  const totalPares = max * (max - 1) / 2;
+  const pPar = totalPares > 0 ? (k * (k - 1) / 2) / totalPares : 0;
+  const esperado = N * pPar;
+  const sd = Math.sqrt(N * pPar * (1 - pPar));
+  const items = Object.keys(cont).map(clave => {
+    const obs = cont[clave];
+    return { par: clave, obs, esperado, z: sd > 0 ? (obs-esperado)/sd : 0 };
+  });
+  items.sort((a,b) => b.obs - a.obs || Math.abs(b.z) - Math.abs(a.z));
+  return items.slice(0, 12);
+}
+// ==/BALOTAS ENGINE==
 
 const LOTS = {};
 let NUEVOS = [];
@@ -1151,15 +1330,211 @@ document.getElementById('btnImportar').onclick = async () => {
   if (r.ok.length && !r.errores.length) document.getElementById('impTexto').value = '';
 };
 
+// ==BALOTAS UI==
+function poblarSelectorBalotas(){
+  const cuentas = {};
+  baseCompletaBalotas().forEach(r => cuentas[r[1]] = (cuentas[r[1]] || 0) + 1);
+
+  const sel = document.getElementById('selLotBal');
+  const valPrevio = sel.value;
+  sel.innerHTML = LOTERIAS_BALOTAS.map(l => '<option value="' + l + '">' + l + ' (' + (cuentas[l] || 0) + ')</option>').join('');
+  if (LOTERIAS_BALOTAS.indexOf(valPrevio) !== -1) sel.value = valPrevio;
+
+  const selReg = document.getElementById('fLotBalSel');
+  const valPrevioReg = selReg.value;
+  selReg.innerHTML = LOTERIAS_BALOTAS.map(l => '<option value="' + l + '">' + l + '</option>').join('');
+  if (LOTERIAS_BALOTAS.indexOf(valPrevioReg) !== -1) selReg.value = valPrevioReg;
+  selReg.onchange = () => {
+    document.getElementById('campoCompBal').style.display = RANGO_BALOTAS[selReg.value].complementario ? '' : 'none';
+  };
+  selReg.onchange();
+
+  document.getElementById('umbralMuestraBalTxt').textContent = MUESTRA_MINIMA_BALOTAS;
+}
+
+function actualizarBalotas(){
+  const lot = document.getElementById('selLotBal').value;
+  if (!lot) return;
+  const cfg = RANGO_BALOTAS[lot];
+  const regs = registrosDeBalotas(lot);
+  const N = regs.length;
+  const b = baseCompletaBalotas();
+  document.getElementById('stTotalBal').textContent = b.length;
+  document.getElementById('stRangoBal').textContent = b.length ? b[0][0] + ' → ' + b[b.length-1][0] : '—';
+
+  const muestraChica = N < MUESTRA_MINIMA_BALOTAS;
+  document.getElementById('subFrecBal').innerHTML = 'Calculado con ' + N + ' sorteos de ' + lot + '.' +
+    (muestraChica ? ' <b style="color:#C4443A">⚠ Muestra pequeña (' + N + ' < ' + MUESTRA_MINIMA_BALOTAS + '): estos resultados no son estadísticamente confiables y reflejan solo ruido — no juegues con base en esto.</b>' : '');
+
+  document.getElementById('seccionComplementarioBal').style.display = cfg.complementario ? '' : 'none';
+
+  if (N === 0){
+    document.getElementById('frecBalCont').innerHTML = '<div class="aviso">Sin sorteos registrados para ' + lot + '.</div>';
+    document.getElementById('alertasBalCont').innerHTML = '';
+    document.getElementById('tablaParesBal').innerHTML = '';
+    document.getElementById('compBalCont').innerHTML = '';
+    return;
+  }
+
+  const frec = frecuenciaNumerosBalotas(regs, cfg);
+  const porZ = frec.items.slice().sort((a,b) => b.z - a.z);
+  const calientes = porZ.slice(0, 5);
+  const frios = porZ.slice(-5).reverse();
+  const porRezago = frec.items.slice().sort((a,b) => b.rezago - a.rezago).slice(0, 5);
+  const pintarGrupo = arr => arr.map(x => '<div class="balota" title="' + x.obs + ' veces, z=' + fmt(x.z,2) + '">' + x.numero + '</div>').join('');
+
+  document.getElementById('frecBalCont').innerHTML =
+    '<div class="tarjetas">' +
+    '<div class="tarjeta"><div class="etq">Más calientes</div><div class="balotas" style="margin-top:8px">' + pintarGrupo(calientes) + '</div></div>' +
+    '<div class="tarjeta"><div class="etq">Más fríos</div><div class="balotas" style="margin-top:8px">' + pintarGrupo(frios) + '</div></div>' +
+    '<div class="tarjeta"><div class="etq">Más rezagados</div><div class="balotas" style="margin-top:8px">' + pintarGrupo(porRezago) + '</div></div>' +
+    '</div>';
+
+  if (!frec.destacados.length){
+    document.getElementById('alertasBalCont').innerHTML = '<div class="banner b-nada">Ningún número se aleja del azar (todo |z| &lt; 2) en ' + lot + '.</div>';
+  } else {
+    document.getElementById('alertasBalCont').innerHTML = frec.destacados.map(d => {
+      let persTxt;
+      if (!d.persistencia){
+        persTxt = 'Muestra insuficiente para chequeo de persistencia.';
+      } else if (d.sostenida){
+        persTxt = '<b style="color:var(--ok)">Sostenida</b> en ambas mitades del historial (z=' + fmt(d.persistencia[0].z,2) + ' / z=' + fmt(d.persistencia[1].z,2) + ').';
+      } else {
+        persTxt = 'No se sostiene en ambas mitades (z=' + fmt(d.persistencia[0].z,2) + ' / z=' + fmt(d.persistencia[1].z,2) + ') — probable falso positivo.';
+      }
+      return '<div class="acierto-item"><span class="tag">Número ' + d.numero + '</span> z=' + fmt(d.z,2) + ' (esperado ' + fmt(d.esperado,1) + ', observado ' + d.obs + '). ' + persTxt + '</div>';
+    }).join('');
+  }
+
+  const pares = paresFrecuentesBalotas(regs, cfg);
+  let tabla = '<thead><tr><th>Par</th><th>Veces juntos</th><th>Esperado</th><th>z</th></tr></thead><tbody>';
+  if (!pares.length) tabla += '<tr><td colspan="4">Sin datos suficientes.</td></tr>';
+  pares.forEach(p => { tabla += '<tr><td class="lot">' + p.par + '</td><td>' + p.obs + '</td><td>' + fmt(p.esperado,1) + '</td><td>' + fmt(p.z,2) + '</td></tr>'; });
+  tabla += '</tbody>';
+  document.getElementById('tablaParesBal').innerHTML = tabla;
+
+  if (cfg.complementario){
+    const compData = frecuenciaComplementarioBalotas(regs, cfg);
+    const porZc = compData.items.slice().sort((a,b) => b.z - a.z);
+    document.getElementById('compBalCont').innerHTML =
+      '<div class="tarjetas">' +
+      '<div class="tarjeta"><div class="etq">Superbalota más caliente</div><div class="balotas" style="margin-top:8px">' + pintarGrupo(porZc.slice(0,3)) + '</div></div>' +
+      '<div class="tarjeta"><div class="etq">Superbalota más fría</div><div class="balotas" style="margin-top:8px">' + pintarGrupo(porZc.slice(-3).reverse()) + '</div></div>' +
+      '</div>';
+  }
+}
+document.getElementById('selLotBal').onchange = actualizarBalotas;
+
+async function cargarNuevosBalotas(){
+  try {
+    const r = await window.storage.get('balotas-nuevos');
+    NUEVOS_BALOTAS = r && r.value ? JSON.parse(r.value) : [];
+    persistenteBalotas = true;
+  } catch (e) { NUEVOS_BALOTAS = NUEVOS_BALOTAS || []; persistenteBalotas = (typeof window.storage !== 'undefined'); }
+  document.getElementById('avisoStorageBal').textContent = persistenteBalotas
+    ? 'Guardado activo: tus sorteos de balotas persisten entre sesiones.'
+    : 'Aviso: en esta vista no hay almacenamiento persistente; los sorteos agregados viven solo mientras la página esté abierta.';
+}
+async function guardarNuevosBalotas(){
+  try { await window.storage.set('balotas-nuevos', JSON.stringify(NUEVOS_BALOTAS)); }
+  catch (e) { /* modo en memoria */ }
+}
+
+document.getElementById('btnImportarBal').onclick = async () => {
+  const texto = document.getElementById('impTextoBal').value;
+  if (!texto.trim()) return;
+  const fechaDef = document.getElementById('fFechaBal').value || new Date().toISOString().slice(0, 10);
+  const existentes = new Set(baseCompletaBalotas().map(r => r[0] + '|' + r[1]));
+  const r = parsearImportacionBalotas(texto, fechaDef, existentes);
+  for (const reg of r.ok) NUEVOS_BALOTAS.push(reg);
+  if (r.ok.length) await guardarNuevosBalotas();
+  poblarSelectorBalotas(); actualizarBalotas();
+  let msj = 'Importados: ' + r.ok.length + ' sorteos.';
+  if (r.duplicados.length) msj += ' Omitidos por duplicado (misma fecha y lotería): ' + r.duplicados.length + '.';
+  if (r.errores.length) msj += ' Líneas con error: ' + r.errores.join(', ') + '.';
+  document.getElementById('impResultadoBal').textContent = msj;
+  if (r.ok.length && !r.errores.length) document.getElementById('impTextoBal').value = '';
+};
+
+document.getElementById('btnAgregarBal').onclick = async () => {
+  const f = document.getElementById('fFechaBal').value;
+  const lot = document.getElementById('fLotBalSel').value;
+  const cfg = RANGO_BALOTAS[lot];
+  const nums = document.getElementById('fNumsBal').value.trim().split('-').map(s => parseInt(s.trim(), 10));
+  if (!f || nums.length !== cfg.k || nums.some(n => !Number.isInteger(n) || n < 1 || n > cfg.max) || new Set(nums).size !== nums.length){
+    alert('Completa fecha y ' + cfg.k + ' números distintos entre 1 y ' + cfg.max + ', separados por guion (ej: 4-8-23-26-30).');
+    return;
+  }
+  let comp = null;
+  if (cfg.complementario){
+    comp = parseInt(document.getElementById('fCompBal').value.trim(), 10);
+    if (!Number.isInteger(comp) || comp < 1 || comp > cfg.complementario){ alert('La superbalota debe ser un número entre 1 y ' + cfg.complementario + '.'); return; }
+  }
+  NUEVOS_BALOTAS.push([f, lot, nums.slice().sort((a,b) => a-b), comp]);
+  await guardarNuevosBalotas();
+  document.getElementById('fNumsBal').value = '';
+  document.getElementById('fCompBal').value = '';
+  poblarSelectorBalotas(); actualizarBalotas();
+};
+
+document.getElementById('btnLimpiarBal').onclick = async () => {
+  if (!NUEVOS_BALOTAS.length) return;
+  if (!confirm('¿Borrar los ' + NUEVOS_BALOTAS.length + ' sorteos de balotas agregados?')) return;
+  NUEVOS_BALOTAS = [];
+  try { await window.storage.delete('balotas-nuevos'); } catch (e) {}
+  poblarSelectorBalotas(); actualizarBalotas();
+};
+
+document.getElementById('btnExportarBal').onclick = () => {
+  if (!NUEVOS_BALOTAS.length){ alert('No tienes sorteos de balotas agregados para exportar.'); return; }
+  const lineas = NUEVOS_BALOTAS.slice().sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)
+    .map(r => r[0] + ',' + r[1] + ',' + r[2].join('-') + (r[3] != null ? ',' + r[3] : ''));
+  const encabezado = '# Respaldo Balotas (MiLoto/Baloto) — ' + NUEVOS_BALOTAS.length + ' sorteos — ' + new Date().toISOString().slice(0,10) + '\n';
+  const blob = new Blob([encabezado + lineas.join('\n')], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'respaldo-balotas-' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+document.getElementById('btnImportarArchivoBal').onclick = () => document.getElementById('archivoRespaldoBal').click();
+document.getElementById('archivoRespaldoBal').onchange = (ev) => {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const lector = new FileReader();
+  lector.onload = async (e) => {
+    const texto = e.target.result;
+    const existentes = new Set(baseCompletaBalotas().map(r => r[0] + '|' + r[1]));
+    const res = parsearImportacionBalotas(texto, document.getElementById('fFechaBal').value, existentes);
+    if (res.ok.length){
+      NUEVOS_BALOTAS = NUEVOS_BALOTAS.concat(res.ok);
+      await guardarNuevosBalotas();
+      poblarSelectorBalotas(); actualizarBalotas();
+    }
+    let msj = 'Respaldo importado: ' + res.ok.length + ' sorteos nuevos agregados';
+    if (res.duplicados.length) msj += ' · ' + res.duplicados.length + ' ya estaban (omitidos)';
+    if (res.errores.length) msj += ' · ' + res.errores.length + ' líneas no reconocidas';
+    msj += '.';
+    alert(msj);
+    ev.target.value = '';
+  };
+  lector.readAsText(file);
+};
+// ==/BALOTAS UI==
+
 function activarTab(tab){
   document.querySelectorAll('.panel-lab').forEach(el => el.style.display = tab === 'lab' ? '' : 'none');
   document.querySelectorAll('.panel-registro').forEach(el => el.style.display = tab === 'registro' ? '' : 'none');
+  document.querySelectorAll('.panel-balotas').forEach(el => el.style.display = tab === 'balotas' ? '' : 'none');
   document.getElementById('tabBtnLab').classList.toggle('activo', tab === 'lab');
   document.getElementById('tabBtnReg').classList.toggle('activo', tab === 'registro');
+  document.getElementById('tabBtnBal').classList.toggle('activo', tab === 'balotas');
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.getElementById('tabBtnLab').onclick = () => activarTab('lab');
 document.getElementById('tabBtnReg').onclick = () => activarTab('registro');
+document.getElementById('tabBtnBal').onclick = () => activarTab('balotas');
 
 document.getElementById('btnAlertas').onclick = () => {
   const aviso = document.getElementById('alertasAviso');
@@ -1269,7 +1644,7 @@ document.getElementById('btnExportar').onclick = () => {
   const lineas = NUEVOS.slice().sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)
     .map(r => r[0] + ',' + r[1] + ',' + r[2]);
   const encabezado = '# Respaldo Laboratorio de Chance — ' + NUEVOS.length + ' registros — ' + new Date().toISOString().slice(0,10) + '\n';
-  const blob = new Blob(['\uFEFF' + encabezado + lineas.join('\n')], {type:'text/csv;charset=utf-8'});
+  const blob = new Blob([encabezado + lineas.join('\n')], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1351,8 +1726,12 @@ document.getElementById('selLot').onchange = actualizar;
 
 (async function init(){
   document.getElementById('fFecha').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('fFechaBal').value = new Date().toISOString().slice(0, 10);
   await cargarNuevos();
+  await cargarNuevosBalotas();
   refrescarTodo();
+  poblarSelectorBalotas();
+  actualizarBalotas();
 })();
 </script>
 </body>

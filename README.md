@@ -20,3 +20,10 @@ App de backtesting de métodos (caliente, rezagado, frío) por lotería, con 1,6
 
 ## Actualizar la base histórica
 Los datos están en `index.html` en la constante `DATOS` (formato `["AAAA-MM-DD","Lotería","0000"]`). Se pueden agregar registros ahí directamente, o usar el formulario de la app.
+
+## Pestaña "Balotas" (MiLoto, Baloto, Baloto Revancha)
+Estos sorteos extraen 5 números de un rango de 43 (Baloto y Revancha además una superbalota de 1 a 16), un espacio combinatorio distinto al de chance — así que tienen su propio motor estadístico (`DATOS_BALOTAS`, funciones marcadas `==BALOTAS ENGINE==`), separado del de chance, con su propio almacenamiento (`balotas-nuevos`) y su propio botón de respaldo.
+
+- **Registro:** pega líneas `fecha,lotería,n1-n2-n3-n4-n5` (agrega `,complementario` para Baloto/Revancha), o usa el formulario individual.
+- **Análisis:** frecuencia por número (calientes/fríos/rezagados), alertas con chequeo de persistencia, pares más frecuentes co-ocurrentes, y superbalota aparte para Baloto/Revancha.
+- **Muestra:** con pocos sorteos cargados, la app avisa explícitamente que los resultados son ruido — el umbral de referencia es `MUESTRA_MINIMA_BALOTAS = 100` sorteos por lotería, igual criterio que en chance.
