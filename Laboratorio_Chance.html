@@ -244,6 +244,7 @@
     <button id="btnAgregar">Agregar sorteo</button>
     <button class="sec" id="btnLimpiar">Borrar agregados</button>
     <button class="sec" id="btnDepurar">Depurar duplicados</button>
+    <button class="sec" id="btnRepararNombres">Reparar nombres</button>
     <button class="sec" id="btnExportar">Exportar respaldo</button>
     <button class="sec" id="btnImportarArchivo">Importar respaldo</button>
     <input type="file" id="archivoRespaldo" accept=".csv,.txt" style="display:none">
@@ -362,9 +363,48 @@ const ALIAS_LOTERIA = {
   'Medellín': 'Lotería de Medellín', 'Loteria de Medellin': 'Lotería de Medellín',
   'Loteria de Bogota': 'Bogotá', 'Lotería de Bogotá': 'Bogotá',
   'Saman': 'El saman de la suerte',
-  'Pijao': 'El Pijao de Oro', 'Pijao de Oro': 'El Pijao de Oro'
+  'Pijao': 'El Pijao de Oro', 'Pijao de Oro': 'El Pijao de Oro',
+  'Lotería del Cauca': 'Cauca', 'Loteria del Cauca': 'Cauca',
+  'La Fantástica 1': 'La Fantastica 1', 'La Fantástica 2': 'La Fantastica 2'
 };
-function normalizarLoteria(nombre){ return ALIAS_LOTERIA[nombre] || nombre; }
+// Repara mojibake: texto UTF-8 que fue interpretado como Latin-1 y re-guardado
+// (típico al copiar/pegar de ciertas fuentes). Reinterpreta cada carácter como
+// un byte y lo vuelve a decodificar como UTF-8; si el texto ya estaba bien
+// (p. ej. "Chontico Noche", todo ASCII, o un acento ya correcto), la
+// decodificación produce el mismo texto o falla y se devuelve tal cual —
+// así que es seguro aplicarlo siempre, sin distinguir de antemano qué nombres
+// están dañados.
+function repararMojibake(s){
+  if (!s) return s;
+  try {
+    const bytes = Uint8Array.from(Array.from(s), c => c.charCodeAt(0));
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch (e) {
+    return s;
+  }
+}
+function normalizarLoteria(nombre){
+  const reparado = repararMojibake(nombre);
+  if (ALIAS_LOTERIA[reparado]) return ALIAS_LOTERIA[reparado];
+  const canon = MAPA_CANONICO[quitarTildes(reparado)];
+  return canon || reparado;
+}
+// Quita tildes y pasa a minúsculas, solo para comparar — nunca se usa como
+// nombre a mostrar. "Motilón" y "Motilon" deben apuntar al mismo canónico
+// aunque tu base tenga escrito uno u otro; esto evita tener que agregar a
+// mano cada variante con/sin tilde que aparezca (Motilón, Fantástica, etc.).
+function quitarTildes(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+// Mapa de "nombre sin tildes" -> forma canónica real, construido a partir de
+// los nombres que ya existen en la base embebida y de los valores de
+// ALIAS_LOTERIA. Se arma una sola vez al cargar, no en cada llamada.
+const MAPA_CANONICO = {};
+(function construirMapaCanonico(){
+  const nombres = new Set(DATOS.map(r => r[1]));
+  Object.values(ALIAS_LOTERIA).forEach(n => nombres.add(n));
+  nombres.forEach(n => { MAPA_CANONICO[quitarTildes(n)] = n; });
+})();
 function posicionesDe(sel){ return sel.indexOf('Pick 3') === 0 ? [1,2,3] : [0,1,2,3]; }
 
 function predecir(prev, posiciones){
@@ -1713,6 +1753,26 @@ document.getElementById('btnDepurar').onclick = async () => {
   await guardarNuevos();
   refrescarTodo();
   alert(sospechosos.length + ' duplicados eliminados. Base depurada.');
+};
+
+document.getElementById('btnRepararNombres').onclick = async () => {
+  // Reescribe en NUEVOS el nombre guardado (no solo el que se ve en pantalla),
+  // aplicando reparación de mojibake + alias, para que el arreglo sea
+  // permanente: sobrevive a exportar/importar respaldo y no depende de que
+  // normalizarLoteria() se siga llamando en cada análisis.
+  const cambios = [];
+  NUEVOS.forEach((r, idx) => {
+    const corregido = normalizarLoteria(r[1]);
+    if (corregido !== r[1]) cambios.push({ idx, antes: r[1], despues: corregido });
+  });
+  if (!cambios.length){ alert('No se encontraron nombres de lotería con mojibake o variantes por corregir en los registros agregados.'); return; }
+  const lista = cambios.slice(0, 30).map(c => '• "' + c.antes + '" → "' + c.despues + '"').join('\n')
+    + (cambios.length > 30 ? '\n… y ' + (cambios.length - 30) + ' más.' : '');
+  if (!confirm('Se corregirán ' + cambios.length + ' registros agregados:\n\n' + lista + '\n\n¿Aplicar la corrección?')) return;
+  cambios.forEach(c => { NUEVOS[c.idx][1] = c.despues; });
+  await guardarNuevos();
+  refrescarTodo();
+  alert(cambios.length + ' nombres de lotería corregidos permanentemente.');
 };
 
 document.getElementById('btnLimpiar').onclick = async () => {

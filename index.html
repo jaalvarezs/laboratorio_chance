@@ -389,8 +389,26 @@ function repararMojibake(s){
 }
 function normalizarLoteria(nombre){
   const reparado = repararMojibake(nombre);
-  return ALIAS_LOTERIA[reparado] || reparado;
+  if (ALIAS_LOTERIA[reparado]) return ALIAS_LOTERIA[reparado];
+  const canon = MAPA_CANONICO[quitarTildes(reparado)];
+  return canon || reparado;
 }
+// Quita tildes y pasa a minúsculas, solo para comparar — nunca se usa como
+// nombre a mostrar. "Motilón" y "Motilon" deben apuntar al mismo canónico
+// aunque tu base tenga escrito uno u otro; esto evita tener que agregar a
+// mano cada variante con/sin tilde que aparezca (Motilón, Fantástica, etc.).
+function quitarTildes(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+}
+// Mapa de "nombre sin tildes" -> forma canónica real, construido a partir de
+// los nombres que ya existen en la base embebida y de los valores de
+// ALIAS_LOTERIA. Se arma una sola vez al cargar, no en cada llamada.
+const MAPA_CANONICO = {};
+(function construirMapaCanonico(){
+  const nombres = new Set(DATOS.map(r => r[1]));
+  Object.values(ALIAS_LOTERIA).forEach(n => nombres.add(n));
+  nombres.forEach(n => { MAPA_CANONICO[quitarTildes(n)] = n; });
+})();
 function posicionesDe(sel){ return sel.indexOf('Pick 3') === 0 ? [1,2,3] : [0,1,2,3]; }
 
 function predecir(prev, posiciones){
