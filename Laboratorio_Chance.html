@@ -398,6 +398,14 @@
 </section>
 
 <section>
+  <h2>Alertas · desviaciones que cruzan el umbral (3 cifras)</h2>
+  <div class="sub">Recorre todas las loterías con muestra suficiente y lista únicamente lo que se aleja del azar (z≥2) en las últimas 3 cifras, tanto en los 5 métodos como en la tendencia de cada dígito. Cada alerta trae su chequeo de persistencia: sin eso, un z alto aislado no significa nada.</div>
+  <div class="fila-form" style="margin-bottom:12px"><button id="btnAlertas3">Buscar alertas</button></div>
+  <div class="aviso" id="alertasAviso3">Pulsa "Buscar alertas" — recorre el histórico completo en tu dispositivo, puede tardar unos segundos.</div>
+  <div id="alertasResultado3"></div>
+</section>
+
+<section>
   <div class="nota-honesta"><b>Lectura honesta:</b> esta pestaña no agrega datos nuevos ni un juego distinto — es el mismo histórico de chance, recortado a las 3 cifras por las que realmente se apuesta en la modalidad reducida. Si una lotería no muestra señal en 4 cifras, es esperable que tampoco la muestre aquí: son las mismas 3 de esas 4 posiciones. Donde sí puede aparecer algo nuevo es en loterías donde la cifra de mil "diluía" una desviación real en las otras 3 — al quitarla, un z que antes quedaba mezclado puede destacarse con más claridad, para bien o para mal.</div>
 </section>
 </div>
@@ -698,6 +706,60 @@ function escanearAlertas(base){
     }
 
     // --- tendencia de dígitos ---
+    const td = tendenciaDigitos(nums, pos);
+    pruebas += 10;
+    for (const d of td.destacados){
+      const p = d.persistencia;
+      alertas.push({ tipo:'dígito', lot, n:N, detalle:'Dígito ' + d.digito, z:d.z,
+        obs:d.obs, esperado:d.esperado,
+        zm1: p ? p[0].z : null, zm2: p ? p[1].z : null, sostenida: p ? (d.sostenida===true) : null });
+    }
+  }
+  alertas.sort((a,b) => Math.abs(b.z) - Math.abs(a.z));
+  const umbral = pruebas > 1 ? Math.sqrt(2 * Math.log(pruebas)) : 1.96;
+  return { alertas, pruebas, umbral, loterias: lots.length };
+}
+
+function escanearAlertas3(base){
+  // Igual que escanearAlertas(), pero forzando POS_3CIFRAS para TODAS las
+  // loterías en vez de posicionesDe(lot) — Pick 3 deja de ser caso especial,
+  // todas comparten el mismo espacio de 3 posiciones (últimas 3 cifras).
+  const cuentas = {};
+  for (const r of base) cuentas[r[1]] = (cuentas[r[1]] || 0) + 1;
+  const lots = Object.keys(cuentas).filter(l => cuentas[l] >= MUESTRA_MINIMA).sort();
+  const alertas = [];
+  let pruebas = 0;
+  const nombresM = { caliente:'Caliente', rezagado:'Rezagado', frio:'Frío', pares:'Pares', ternas:'Ternas' };
+
+  for (const lot of lots){
+    const pos = POS_3CIFRAS;
+    const nums = base.filter(r => r[1] === lot).map(r => r[2]);
+    const N = nums.length;
+    const k = pos.length;
+    const esperado = 0.1 * k;
+    const sd = Math.sqrt(k * 0.1 * 0.9);
+    const warmup = N >= 100 ? 30 : 8;
+    if (N <= warmup + 3) continue;
+
+    const bt = backtest(nums, pos, warmup);
+    const nEv = bt.caliente.scores.length;
+    let persist = null;
+    for (const m of ['caliente','rezagado','frio','pares','ternas']){
+      pruebas++;
+      const media = bt[m].scores.reduce((a,c) => a + c, 0) / nEv;
+      const z = (media - esperado) * Math.sqrt(nEv) / sd;
+      if (Math.abs(z) < 2) continue;
+      if (!persist) persist = chequearPersistencia(nums, pos);
+      const p1 = persist.primera, p2 = persist.segunda;
+      let sostenida = null, zm1 = null, zm2 = null;
+      if (p1 && p2){
+        zm1 = p1.z[m]; zm2 = p2.z[m];
+        sostenida = Math.sign(zm1)===Math.sign(z) && Math.abs(zm1)>=1.5 &&
+                    Math.sign(zm2)===Math.sign(z) && Math.abs(zm2)>=1.5;
+      }
+      alertas.push({ tipo:'método', lot, n:N, detalle:nombresM[m], z, media, esperado, zm1, zm2, sostenida });
+    }
+
     const td = tendenciaDigitos(nums, pos);
     pruebas += 10;
     for (const d of td.destacados){
@@ -1951,6 +2013,57 @@ document.getElementById('btnAlertas').onclick = () => {
       'aunque cada escaneo esté bien calculado. Lo que vale es que una misma alerta siga apareciendo, sostenida, ' +
       'conforme crecen los datos — no que aparezca una vez.</div>';
     document.getElementById('alertasResultado').innerHTML = html;
+  }, 30);
+};
+
+document.getElementById('btnAlertas3').onclick = () => {
+  const aviso = document.getElementById('alertasAviso3');
+  aviso.textContent = 'Escaneando…';
+  setTimeout(() => {
+    const r = escanearAlertas3(baseCompleta());
+    const espPorAzar = r.pruebas * 0.0455; // P(|z|>=2) en dos colas
+    aviso.innerHTML = 'Escaneadas <b>' + r.loterias + '</b> loterías (' + r.pruebas + ' pruebas: 5 métodos + 10 dígitos por lotería, sobre 3 cifras). ' +
+      'Umbral corregido por ese número de pruebas: <b>z≥' + fmt(r.umbral,2) + '</b>. ' +
+      'Solo por azar se esperarían <b>~' + fmt(espPorAzar,0) + '</b> alertas de z≥2; encontradas: <b>' + r.alertas.length + '</b>.';
+
+    if (!r.alertas.length){
+      document.getElementById('alertasResultado3').innerHTML =
+        '<div class="tarjeta" style="margin-top:12px"><div class="comp">Ninguna lotería cruzó z≥2. Todo dentro del azar.</div></div>';
+      return;
+    }
+    const sost = r.alertas.filter(a => a.sostenida === true);
+    const cruzanUmbral = r.alertas.filter(a => Math.abs(a.z) >= r.umbral);
+    let html = '<div style="overflow-x:auto"><table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:12px">' +
+      '<tr style="background:var(--tinta); color:#fff"><th style="padding:8px; text-align:left">LOTERÍA</th><th style="padding:8px; text-align:left">QUÉ</th>' +
+      '<th style="padding:8px; text-align:right">N</th><th style="padding:8px; text-align:right">Z</th>' +
+      '<th style="padding:8px; text-align:left">PERSISTENCIA</th><th style="padding:8px; text-align:left">LECTURA</th></tr>';
+    for (const a of r.alertas){
+      const cruza = Math.abs(a.z) >= r.umbral;
+      let lectura, color;
+      if (a.sostenida === true && cruza){ lectura = 'Sostenida y sobre el umbral'; color = 'var(--ok)'; }
+      else if (a.sostenida === true){ lectura = 'Sostenida, pero bajo el umbral del escaneo'; color = 'var(--alerta)'; }
+      else if (a.sostenida === false){ lectura = 'No sostenida — probable ruido'; color = 'var(--alerta)'; }
+      else { lectura = 'Sin historia suficiente para comprobar'; color = 'var(--muted)'; }
+      const persTxt = (a.zm1 === null || a.zm2 === null) ? '—'
+        : 'm1 ' + fmt(a.zm1,2) + ' · m2 ' + fmt(a.zm2,2);
+      html += '<tr style="border-bottom:1px solid var(--borde)">' +
+        '<td style="padding:8px"><b>' + a.lot + '</b></td>' +
+        '<td style="padding:8px">' + a.detalle + '</td>' +
+        '<td style="padding:8px; text-align:right">' + a.n + '</td>' +
+        '<td style="padding:8px; text-align:right"><b>' + fmt(a.z,2) + '</b></td>' +
+        '<td style="padding:8px">' + persTxt + '</td>' +
+        '<td style="padding:8px; color:' + color + '">' + lectura + '</td></tr>';
+    }
+    html += '</table></div>';
+    html += '<div class="nota-honesta" style="margin-top:14px"><b>Cómo leer esto:</b> ' +
+      sost.length + ' de ' + r.alertas.length + ' alertas se sostienen en ambas mitades de su historia, y ' +
+      cruzanUmbral.length + ' superan el umbral corregido (z≥' + fmt(r.umbral,2) + '). ' +
+      'Una alerta solo merece atención si cumple <b>las dos cosas</b>. ' +
+      'Además, revisar este panel cada semana multiplica las oportunidades de que aparezca una falsa alarma: ' +
+      'con revisión semanal durante un año, la probabilidad de ver al menos una señal falsa supera el 90%, ' +
+      'aunque cada escaneo esté bien calculado. Lo que vale es que una misma alerta siga apareciendo, sostenida, ' +
+      'conforme crecen los datos — no que aparezca una vez.</div>';
+    document.getElementById('alertasResultado3').innerHTML = html;
   }, 30);
 };
 

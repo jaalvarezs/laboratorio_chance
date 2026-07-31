@@ -2,7 +2,7 @@
 
 App de backtesting de métodos (caliente, rezagado, frío) por lotería, con 1,603 sorteos reales embebidos (chance + Lotería de Medellín desde 2007).
 
-**Pestaña "3 Cifras" (v23):** análisis de la modalidad reducida de apuesta — últimas 3 cifras de cualquier lotería (en Pick 3 esas 3 cifras ya son el resultado completo). Mismo motor estadístico y mismo dato de siempre, solo ignorando la cifra de mil; incluye Pronóstico, Backtest con tendencia de dígitos y persistencia, Analizar un número (3 cifras) y Panorama por lotería.
+**Pestaña "3 Cifras" (v24):** análisis de la modalidad reducida de apuesta — últimas 3 cifras de cualquier lotería (en Pick 3 esas 3 cifras ya son el resultado completo). Mismo motor estadístico y mismo dato de siempre, solo ignorando la cifra de mil; incluye Pronóstico, Backtest con tendencia de dígitos y persistencia, Analizar un número (3 cifras), Panorama por lotería y Alertas (escaneo de todas las loterías × 5 métodos × 10 dígitos).
 
 ## Publicar en GitHub Pages
 1. Crear un repositorio nuevo (por ejemplo `lab-chance`).
