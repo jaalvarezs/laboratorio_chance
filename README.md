@@ -2,6 +2,8 @@
 
 App de backtesting de métodos (caliente, rezagado, frío) por lotería, con 1,603 sorteos reales embebidos (chance + Lotería de Medellín desde 2007).
 
+**Pestaña "3 Cifras" (v23):** análisis de la modalidad reducida de apuesta — últimas 3 cifras de cualquier lotería (en Pick 3 esas 3 cifras ya son el resultado completo). Mismo motor estadístico y mismo dato de siempre, solo ignorando la cifra de mil; incluye Pronóstico, Backtest con tendencia de dígitos y persistencia, Analizar un número (3 cifras) y Panorama por lotería.
+
 ## Publicar en GitHub Pages
 1. Crear un repositorio nuevo (por ejemplo `lab-chance`).
 2. Subir estos 6 archivos a la raíz del repositorio.
@@ -20,10 +22,3 @@ App de backtesting de métodos (caliente, rezagado, frío) por lotería, con 1,6
 
 ## Actualizar la base histórica
 Los datos están en `index.html` en la constante `DATOS` (formato `["AAAA-MM-DD","Lotería","0000"]`). Se pueden agregar registros ahí directamente, o usar el formulario de la app.
-
-## Pestaña "Balotas" (MiLoto, Baloto, Baloto Revancha)
-Estos sorteos extraen 5 números de un rango de 43 (Baloto y Revancha además una superbalota de 1 a 16), un espacio combinatorio distinto al de chance — así que tienen su propio motor estadístico (`DATOS_BALOTAS`, funciones marcadas `==BALOTAS ENGINE==`), separado del de chance, con su propio almacenamiento (`balotas-nuevos`) y su propio botón de respaldo.
-
-- **Registro:** pega líneas `fecha,lotería,n1-n2-n3-n4-n5` (agrega `,complementario` para Baloto/Revancha), o usa el formulario individual.
-- **Análisis:** frecuencia por número (calientes/fríos/rezagados), alertas con chequeo de persistencia, pares más frecuentes co-ocurrentes, y superbalota aparte para Baloto/Revancha.
-- **Muestra:** con pocos sorteos cargados, la app avisa explícitamente que los resultados son ruido — el umbral de referencia es `MUESTRA_MINIMA_BALOTAS = 100` sorteos por lotería, igual criterio que en chance.
