@@ -1,4 +1,4 @@
-const CACHE = 'lab-chance-v27';
+const CACHE = 'lab-chance-v28';
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './manifest.json'])));
   self.skipWaiting();

@@ -110,6 +110,7 @@
       <div class="pastilla">Registros: <b id="stTotal">—</b></div>
       <div class="pastilla">Rango: <b id="stRango">—</b></div>
     </div>
+    <div id="avisoDuplicados" style="display:none; margin-top:10px; padding:10px 12px; border-radius:8px; background:#FBEAEA; border:1px solid #C4443A; color:#8B2F27; font-size:13px; line-height:1.45"></div>
   </div>
 </header>
 <div class="cont">
@@ -1194,9 +1195,25 @@ function actualizar(){
   const esPick3 = pos.length === 3;
   const warmup = (sel === '__TODAS__' || nums.length >= 100) ? 30 : 8;
 
-  document.getElementById('stTotal').textContent = baseCompleta().length;
   const b = baseCompleta();
+  document.getElementById('stTotal').textContent = b.length;
   document.getElementById('stRango').textContent = b.length ? b[0][0] + ' → ' + b[b.length-1][0] : '—';
+  // Aviso automático: al actualizar la app, la base embebida puede ya contener
+  // registros que el navegador todavía guarda como "agregados", y entonces todo
+  // se cuenta dos veces. Sin este aviso el síntoma (un total inflado) es difícil
+  // de interpretar. Se cuenta sobre lotería+fecha, la misma llave de la depuración.
+  const vistos = new Set(); let repetidos = 0;
+  for (const r of b){ const k = r[0] + '|' + r[1]; if (vistos.has(k)) repetidos++; else vistos.add(k); }
+  const avisoDup = document.getElementById('avisoDuplicados');
+  if (repetidos > 0){
+    avisoDup.style.display = '';
+    avisoDup.innerHTML = '<b>⚠ Hay ' + repetidos + ' registros repetidos (misma lotería y fecha).</b> ' +
+      'La base muestra ' + b.length + ' sorteos pero solo <b>' + vistos.size + '</b> son distintos. ' +
+      'Suele pasar tras actualizar la app: los sorteos que ya venían incluidos siguen además guardados en este navegador, así que se cuentan dos veces — y eso distorsiona todo el análisis. ' +
+      'Ve a <b>Registrar datos → Depurar duplicados</b> para dejar solo los únicos (no se borra ningún resultado legítimo).';
+  } else {
+    avisoDup.style.display = 'none';
+  }
   const muestraChica = sel !== '__TODAS__' && nums.length < MUESTRA_MINIMA;
   document.getElementById('subPron').innerHTML = 'Calculado con los ' + nums.length + ' sorteos disponibles de la selección' + (esPick3 ? ' (juego de 3 cifras).' : '.') +
     (muestraChica ? ' <b style="color:#C4443A">⚠ Muestra pequeña (' + nums.length + ' < ' + MUESTRA_MINIMA + '): estos resultados no son estadísticamente confiables y reflejan solo ruido.</b>' : '') +
@@ -2599,18 +2616,29 @@ document.getElementById('btnDepurar').onclick = async () => {
     alert('No se encontraron duplicados exactos ni conflictos (misma lotería+fecha) en los registros agregados.');
     return;
   }
+  // El listado va truncado a propósito: al recargar la app con una base
+  // embebida nueva, los registros ya guardados en el navegador pueden
+  // duplicarla por millares, y volcar miles de líneas en un confirm() lo
+  // vuelve ilegible (o el navegador lo trunca sin avisar).
+  const MAX_LISTA = 12;
+  const resumir = (arr, fmtFn) => arr.slice(0, MAX_LISTA).map(fmtFn).join('\n') +
+    (arr.length > MAX_LISTA ? '\n… y ' + (arr.length - MAX_LISTA) + ' más' : '');
+
   let aviso = '';
   if (conflictos.length){
     aviso += conflictos.length + ' CONFLICTO(S) — misma lotería y fecha, pero número distinto al ya guardado. NO se tocan automáticamente, requieren revisión manual:\n' +
-      conflictos.map(c => '• ' + c.r[0] + '  ' + c.r[1] + '  agregado=' + c.r[2] + '  vs. existente=' + c.existente).join('\n') + '\n\n';
+      resumir(conflictos, c => '• ' + c.r[0] + '  ' + c.r[1] + '  agregado=' + c.r[2] + '  vs. existente=' + c.existente) + '\n\n';
   }
   if (!duplicadosExactos.length){
     alert(aviso + 'Ningún duplicado exacto para eliminar automáticamente.');
     return;
   }
   aviso += duplicadosExactos.length + ' duplicado(s) EXACTO(S) (misma lotería, fecha y número) — se pueden eliminar sin riesgo:\n' +
-    duplicadosExactos.map(d => '• ' + d.r[0] + '  ' + d.r[1] + '  ' + d.r[2]).join('\n');
-  if (!confirm(aviso + '\n\n¿Eliminar solo los ' + duplicadosExactos.length + ' duplicados EXACTOS? Los conflictos listados arriba NO se tocarán.')) return;
+    resumir(duplicadosExactos, d => '• ' + d.r[0] + '  ' + d.r[1] + '  ' + d.r[2]);
+  const quedan = NUEVOS.length - duplicadosExactos.length;
+  if (!confirm(aviso + '\n\n¿Eliminar los ' + duplicadosExactos.length + ' duplicados EXACTOS?' +
+    '\nQuedarán ' + quedan + ' registro(s) agregado(s).' +
+    (conflictos.length ? ' Los conflictos listados arriba NO se tocarán.' : ''))) return;
   // Eliminar de mayor a menor índice para no descuadrar
   duplicadosExactos.sort((a,b) => b.idx - a.idx).forEach(s => NUEVOS.splice(s.idx, 1));
   await guardarNuevos();

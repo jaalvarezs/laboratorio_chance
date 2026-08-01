@@ -24,6 +24,10 @@ App de backtesting de métodos (caliente, rezagado, frío) por lotería, con **8
 
 **Pendiente:** Corrección de sesgo en "Mejor jugada empírica" y fuga temporal en el agregado "Todo el chance" quedan para la fase de backtesting/modelos, no se tocaron aquí a propósito.
 
+**v28 — aviso y depuracion de duplicados tras actualizar.** Al pasar de una version con base embebida pequena a v27 (8.705 sorteos), los registros que ya tenias guardados en el navegador **siguen ahi y duplican la base embebida**: el total se cuenta dos veces y el analisis se distorsiona. Ahora la app lo detecta sola y muestra un aviso en la cabecera con el numero de repetidos y que hacer. Ademas se corrigio un bug del dialogo de "Depurar duplicados": listaba todos los duplicados dentro de un `confirm()`, lo que con miles de registros lo volvia ilegible; ahora muestra los primeros 12 y resume el resto.
+
+**Si vienes de una version anterior:** abre la app y, si aparece el aviso rojo en la cabecera, ve a **Registrar datos -> Depurar duplicados**. Elimina solo duplicados exactos (misma loteria, fecha y numero); las repeticiones legitimas en fechas distintas y los conflictos quedan intactos.
+
 ## Publicar en GitHub Pages
 1. Crear un repositorio nuevo (por ejemplo `lab-chance`).
 2. Subir estos 6 archivos a la raíz del repositorio.
