@@ -492,6 +492,18 @@ def main():
         print("\nNo hay resultados nuevos para capturar (todo lo visible en las páginas ya estaba en el estado guardado).")
         if fuentes_con_error:
             print("Fuentes con error en esta corrida:", ", ".join(f[0] for f in fuentes_con_error))
+        # Diagnóstico completo aunque no haya nada nuevo -- antes esto solo
+        # se imprimía en la rama de éxito, así que un caso como "todo se
+        # descartó por numero_invalido" quedaba mudo justo cuando más hacía
+        # falta verlo.
+        if resumen_diagnostico["numero_invalido"]:
+            print(f"\n{len(resumen_diagnostico['numero_invalido'])} fila(s) con número no reconocido:")
+            for msg in resumen_diagnostico["numero_invalido"][:20]:
+                print(f"  - {msg}")
+        if resumen_diagnostico["excluidos"]:
+            print(f"\n{len(resumen_diagnostico['excluidos'])} fila(s) excluidas por regla (Suertudo, etc.).")
+        if resumen_diagnostico["ya_capturados"]:
+            print(f"\n{len(resumen_diagnostico['ya_capturados'])} fila(s) ya estaban en el estado guardado (normal en corridas posteriores a la primera).")
         return
 
     todas_finales.sort(key=lambda f: (f["fecha"], f["loteria"]))
