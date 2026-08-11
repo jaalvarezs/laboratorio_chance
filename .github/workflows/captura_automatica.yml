@@ -1,1 +1,56 @@
+name: Captura automática de resultados
 
+on:
+  schedule:
+    # 04:00 UTC = 11:00 PM hora Colombia (COT, UTC-5 todo el año, sin
+    # horario de verano). Corre una vez al día, pensado para llegar
+    # después de los sorteos "Noche". GitHub puede retrasar workflows
+    # programados unos minutos en horas de mucha carga; no afecta nada.
+    - cron: '0 4 * * *'
+  # Permite lanzarlo a mano desde la pestaña "Actions" del repositorio,
+  # sin esperar al horario, para probarlo o forzar una corrida puntual.
+  workflow_dispatch: {}
+
+# Necesario para que el robot pueda subir el cambio de vuelta al
+# repositorio. También hay que activar "Read and write permissions" en
+# Settings -> Actions -> General -> Workflow permissions: este bloque de
+# aquí no basta por sí solo si esa opción del repositorio está en
+# solo-lectura (esa configuración manda por encima de lo que diga este
+# archivo).
+permissions:
+  contents: write
+
+jobs:
+  capturar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: pip install requests beautifulsoup4
+
+      - name: Correr la captura (mismo script que se corre en local)
+        run: python capturar_resultados.py
+
+      - name: Subir cambios si hay algo nuevo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add captura_automatica.js captura_acumulada.json capturas/
+          # captura_estado.json solo existe después de la primera captura
+          # exitosa -- sin esta condición, git add fallaría (y con -e
+          # activado por defecto en los steps de Actions, tumbaría todo el
+          # paso) en cualquier corrida anterior a esa primera vez.
+          [ -f captura_estado.json ] && git add captura_estado.json || true
+          if git diff --cached --quiet; then
+            echo "Sin resultados nuevos en esta corrida, nada que subir."
+          else
+            git commit -m "Captura automática: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push
+          fi
