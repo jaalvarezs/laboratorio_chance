@@ -307,20 +307,24 @@ def filtrar_recientes(filas, dias):
 # --------------------------------------------------------------------------
 
 def normalizar_numero(crudo):
-    """'3 1 9 8 7' (5 cifras, la 5ta es cifra adicional) -> '3198'
-       '5 5 8 1'   (4 cifras)                             -> '5581'
-       '7 6 4'     (3 cifras, Pick 3)                     -> '0764'
+    """'3 1 9 8 7' (5 cifras con espacios) -> '3198'
+       '31987'     (5 cifras pegadas, sin espacios)     -> '3198'
+       '5581' / '5 5 8 1'  (4 cifras)                    -> '5581'
+       '764'  / '7 6 4'    (3 cifras, Pick 3)             -> '0764'
+    El sitio no siempre separa las cifras con espacios (depende de cómo
+    esté armada esa fila en particular) -- se colapsa cualquier espacio
+    antes de contar, así que ambos formatos quedan cubiertos por igual.
     Devuelve (numero_normalizado o None, mensaje_de_error o None)."""
-    cifras = crudo.split()
-    n = len(cifras)
-    if not all(c.isdigit() and len(c) == 1 for c in cifras):
-        return None, f"contiene algo que no es un solo dígito: {crudo!r}"
+    cifras_texto = crudo.replace(" ", "")
+    if not cifras_texto.isdigit():
+        return None, f"contiene algo que no es un dígito: {crudo!r}"
+    n = len(cifras_texto)
     if n == 5:
-        return "".join(cifras[:4]), None
+        return cifras_texto[:4], None
     if n == 4:
-        return "".join(cifras), None
+        return cifras_texto, None
     if n == 3:
-        return "".join(cifras).zfill(4), None
+        return cifras_texto.zfill(4), None
     return None, f"cantidad de cifras inesperada ({n}): {crudo!r}"
 
 
