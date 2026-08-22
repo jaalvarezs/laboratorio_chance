@@ -1,5 +1,5 @@
 // Generado automáticamente por capturar_resultados.py — no editar a mano.
-// Última corrida: 2026-08-20T04:24:40
+// Última corrida: 2026-08-22T04:20:36
 window.CAPTURA_AUTOMATICA_CHANCE = `fecha,loteria,numero
 2026-07-30,Extra de Colombia,9484
 2026-08-03,Cundinamarca,4757
@@ -286,4 +286,40 @@ window.CAPTURA_AUTOMATICA_CHANCE = `fecha,loteria,numero
 2026-08-19,Pick 4 Noche,6814
 2026-08-19,Sinuano Día,2409
 2026-08-19,Sinuano Noche,9516
-2026-08-19,Valle,5201`;
+2026-08-19,Valle,5201
+2026-08-20,Bogotá,9217
+2026-08-20,Dorado Noche,1607
+2026-08-20,Extra Super Millonario,1933
+2026-08-20,Quindío,3531
+2026-08-20,Super Chontico Noche Millonario,2607
+2026-08-21,Astro Luna,5210
+2026-08-21,Astro Sol,7722
+2026-08-21,Cafeterito Día,8634
+2026-08-21,Cafeterito Noche,1079
+2026-08-21,Chontico Millonario,8745
+2026-08-21,Chontico Noche,7941
+2026-08-21,Dorado Mañana,2750
+2026-08-21,Dorado Tarde,8479
+2026-08-21,El Motilon 1,8272
+2026-08-21,El Motilon 2,2494
+2026-08-21,El Pijao de Oro,2932
+2026-08-21,El saman de la suerte,2184
+2026-08-21,La Antioqueñita 1,7554
+2026-08-21,La Antioqueñita 2,5214
+2026-08-21,La Caribeña 1,8191
+2026-08-21,La Caribeña 2,3066
+2026-08-21,La Culona Día,7567
+2026-08-21,La Culona Noche,7068
+2026-08-21,La Fantastica 1,4181
+2026-08-21,La Fantastica 2,7410
+2026-08-21,Lotería de Medellín,9145
+2026-08-21,Paisita 1,5656
+2026-08-21,Paisita 2,8958
+2026-08-21,Pick 3 Día,0950
+2026-08-21,Pick 3 Noche,0054
+2026-08-21,Pick 4 Día,9268
+2026-08-21,Pick 4 Noche,1608
+2026-08-21,Risaralda,3415
+2026-08-21,Santander,0700
+2026-08-21,Sinuano Día,8309
+2026-08-21,Sinuano Noche,8369`;
