@@ -1,5 +1,5 @@
 // Generado automáticamente por capturar_resultados.py — no editar a mano.
-// Última corrida: 2026-09-08T08:23:09
+// Última corrida: 2026-09-09T08:26:25
 window.CAPTURA_AUTOMATICA_CHANCE = `fecha,loteria,numero
 2026-07-30,Extra de Colombia,9484
 2026-08-03,Cundinamarca,4757
@@ -724,4 +724,35 @@ window.CAPTURA_AUTOMATICA_CHANCE = `fecha,loteria,numero
 2026-09-07,Pick 4 Noche,3192
 2026-09-07,Sinuano Día,3876
 2026-09-07,Sinuano Noche,2022
-2026-09-07,Tolima,2680`;
+2026-09-07,Tolima,2680
+2026-09-08,Astro Luna,7032
+2026-09-08,Astro Sol,8607
+2026-09-08,Cafeterito Día,2610
+2026-09-08,Cafeterito Noche,3553
+2026-09-08,Chontico Millonario,0364
+2026-09-08,Chontico Noche,4076
+2026-09-08,Cruz Roja,0044
+2026-09-08,Dorado Mañana,8989
+2026-09-08,Dorado Noche,2757
+2026-09-08,Dorado Tarde,4295
+2026-09-08,El Motilon 1,6582
+2026-09-08,El Motilon 2,9794
+2026-09-08,El Pijao de Oro,1015
+2026-09-08,El saman de la suerte,7049
+2026-09-08,Huila,3804
+2026-09-08,La Antioqueñita 1,7578
+2026-09-08,La Antioqueñita 2,4186
+2026-09-08,La Caribeña 1,1294
+2026-09-08,La Caribeña 2,8236
+2026-09-08,La Culona Día,3704
+2026-09-08,La Culona Noche,0998
+2026-09-08,La Fantastica 1,1739
+2026-09-08,La Fantastica 2,3802
+2026-09-08,Paisita 1,2875
+2026-09-08,Paisita 2,2543
+2026-09-08,Pick 3 Día,0365
+2026-09-08,Pick 3 Noche,0695
+2026-09-08,Pick 4 Día,3819
+2026-09-08,Pick 4 Noche,3176
+2026-09-08,Sinuano Día,8333
+2026-09-08,Sinuano Noche,8015`;
