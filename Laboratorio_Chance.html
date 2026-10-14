@@ -96,7 +96,43 @@
   .banner b{font-family:'Archivo'}
   .acierto-item{display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--carta); border:1px solid var(--borde); border-left:4px solid var(--oro); border-radius:10px; padding:8px 14px; margin-bottom:8px; font-size:13.5px}
   .acierto-item .tag{font-family:'Archivo'; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; background:#FDF3D7; color:#7A5A10; border-radius:6px; padding:2px 8px}
-  @media (max-width:640px){ .balota{width:44px; height:44px; font-size:20px} .metodo .nombre{min-width:100%} }
+  /* ===== v30 ===== */
+  .tabs{overflow-x:auto; scrollbar-width:thin}
+  .tab-btn{white-space:nowrap}
+  .tab-btn:hover, .tab-btn:focus{background:none}
+  .badge{display:inline-block; font-family:'Archivo'; font-weight:700; font-size:11px; letter-spacing:.06em; text-transform:uppercase; border-radius:6px; padding:2px 8px}
+  .badge.curso{background:#E8EEF8; color:#24365C} .badge.confirmada{background:#E7F3EE; color:#0A4A3A}
+  .badge.descartada{background:#F3F1EC; color:#5B5A55} .badge.cerrada{background:#F3F1EC; color:#6B7280} .badge.sindatos{background:#FBF3E2; color:#7A5A10}
+  .hip{background:var(--carta); border:1px solid var(--borde); border-radius:14px; padding:14px 16px; margin-bottom:12px}
+  .hip.inactiva{opacity:.78}
+  .hip h3{font-family:'Archivo'; font-weight:700; font-size:15.5px; margin:6px 0 4px}
+  .hip .lin{font-size:13px; color:var(--muted); margin-top:3px}
+  .hip .lin b{color:var(--tinta)}
+  .evid{position:relative; height:10px; border-radius:5px; background:linear-gradient(90deg,#DCE5F1,#F3F1EC 50%,#DCEFE5); margin:12px 0 4px; border:1px solid var(--borde)}
+  .evid .centro{position:absolute; left:50%; top:-3px; width:1px; height:14px; background:#B9B4A8}
+  .evid .marca{position:absolute; top:-5px; width:6px; height:18px; margin-left:-3px; border-radius:3px; background:var(--tinta)}
+  .evid-etq{display:flex; justify-content:space-between; font-size:11px; color:var(--muted)}
+  .hip-acc{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .tabla-cob{border-collapse:collapse; font-size:11px}
+  .tabla-cob th{font-family:'Archivo'; font-weight:700; font-size:10px; color:var(--muted); padding:2px 1px; white-space:nowrap; text-align:center}
+  .tabla-cob td{min-width:30px; height:24px; text-align:center; border:1px solid var(--papel); color:var(--tinta)}
+  .tabla-cob td.lot, .tabla-cob th.lot{position:sticky; left:0; background:var(--carta); text-align:left; padding:0 8px; font-weight:600; font-size:12px; white-space:nowrap; min-width:150px; z-index:1}
+  .tabla-cob td.tot{font-weight:600; padding:0 6px}
+  .tabla-cob td.c0{background:#F2D1CC} .tabla-cob td.c1{background:#F7E2BF} .tabla-cob td.c2{background:#E3EDD3} .tabla-cob td.c3{background:#C9E4D6} .tabla-cob td.na{background:transparent; color:#C9C4B8}
+  .leyenda-cob{display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin:8px 0}
+  .leyenda-cob span{display:flex; align-items:center; gap:5px}
+  .leyenda-cob i{display:inline-block; width:14px; height:14px; border-radius:3px}
+  .bandeja-item{background:var(--carta); border:1px solid var(--borde); border-left:4px solid var(--alerta); border-radius:10px; padding:10px 14px; margin-bottom:8px; font-size:13.5px}
+  .bandeja-item .fila-form{margin-top:8px}
+  .bandeja-item select{min-width:200px}
+  .decision{display:flex; gap:8px; align-items:center; font-size:12.5px; padding:4px 0; border-bottom:1px dashed #F0EDE4}
+  .decision:last-child{border-bottom:none}
+  .decision span{flex:1}
+  button.mini.reg{border-color:var(--oro-oscuro); background:transparent; color:var(--oro-oscuro)}
+  details.historial{margin-top:12px; font-size:13px}
+  details.historial summary{cursor:pointer; font-family:'Archivo'; font-weight:700; color:var(--tinta-suave)}
+  .esc-item{padding:6px 0; border-bottom:1px dashed var(--borde)}
+  @media (max-width:640px){ .balota{width:44px; height:44px; font-size:20px} .metodo .nombre{min-width:100%} .tab-btn{padding:11px 12px} }
 </style>
 </head>
 <body>
@@ -109,13 +145,17 @@
       <div class="campo"><label for="selLot">Lotería</label><select id="selLot"></select></div>
       <div class="pastilla">Registros: <b id="stTotal">—</b></div>
       <div class="pastilla">Rango: <b id="stRango">—</b></div>
+      <div class="pastilla" id="pastHuella" title="Identificador de la versión exacta de los datos con que se calculó todo lo que ves. Si cambia un solo registro, cambia la huella.">Huella de datos: <b id="stHuella">—</b></div>
+      <div class="pastilla">Versión: <b id="stVersion">v30</b></div>
     </div>
     <div id="avisoDuplicados" style="display:none; margin-top:10px; padding:10px 12px; border-radius:8px; background:#FBEAEA; border:1px solid #C4443A; color:#8B2F27; font-size:13px; line-height:1.45"></div>
+    <div id="avisoAutocarga" style="display:none; margin-top:10px; padding:10px 12px; border-radius:8px; background:#E8F3EF; border:1px solid #0F6E56; color:#0F6E56; font-size:13px; line-height:1.45"></div>
   </div>
 </header>
 <div class="cont">
   <nav class="tabs">
     <button class="tab-btn activo" id="tabBtnLab" data-tab="lab">Laboratorio</button>
+    <button class="tab-btn" id="tabBtnHip" data-tab="hipotesis">Hipótesis</button>
     <button class="tab-btn" id="tabBtnReg" data-tab="registro">Registrar datos</button>
     <button class="tab-btn" id="tabBtnBal" data-tab="balotas">Balotas</button>
     <button class="tab-btn" id="tabBtnCifras3" data-tab="cifras3">3 Cifras</button>
@@ -179,6 +219,7 @@
   <div class="fila-form" style="margin-bottom:12px"><button id="btnAlertas">Buscar alertas</button></div>
   <div class="aviso" id="alertasAviso">Pulsa "Buscar alertas" — recorre el histórico completo en tu dispositivo, puede tardar unos segundos.</div>
   <div id="alertasResultado"></div>
+  <div id="historialEscaneos"></div>
 </section>
 
 <section>
@@ -242,6 +283,11 @@
     <div id="impPreview"></div>
   </div>
   <div style="margin-top:26px; padding-top:20px; border-top:1px solid var(--borde)">
+    <b style="font-family:Archivo">Bandeja de cuarentena · nombres desconocidos</b>
+    <div class="sub" style="margin:4px 0 10px">Un nombre de lotería que no está en la lista blanca ya no crea una lotería nueva: sus resultados esperan aquí, fuera de todos los análisis, hasta que decidas qué son. Lo que decidas se recuerda para las próximas importaciones y para la captura automática.</div>
+    <div id="bandejaCuarentena"></div>
+  </div>
+  <div style="margin-top:26px; padding-top:20px; border-top:1px solid var(--borde)">
     <b style="font-family:Archivo; font-size:13.5px; letter-spacing:.03em; text-transform:uppercase; color:var(--muted)">Agregar sorteo individual</b>
   </div>
   <div class="fila-form">
@@ -254,10 +300,12 @@
     <button class="sec" id="btnDeshacerImport" style="display:none; border-color:#C4443A; color:#C4443A">Deshacer última importación</button>
     <button class="sec" id="btnRepararNombres">Reparar nombres</button>
     <button class="sec" id="btnExportar">Exportar respaldo</button>
+    <button class="sec" id="btnExportarCompleta">Exportar base completa</button>
     <button class="sec" id="btnImportarArchivo">Importar respaldo</button>
     <input type="file" id="archivoRespaldo" accept=".csv,.txt" style="display:none">
   </div>
   <div class="aviso" id="avisoStorage"></div>
+  <div class="aviso" id="avisoRespaldo">"Exportar respaldo" guarda solo lo que has agregado tú (la base embebida viaja dentro de la app). "Exportar base completa" guarda todo junto —base embebida más lo agregado— con el conteo por fuente y la huella de los datos en el encabezado.</div>
   <div class="fila-form" style="margin-top:16px">
     <div class="campo"><label for="filtroNuevos">Buscar en lo agregado</label><input type="text" id="filtroNuevos" placeholder="Lotería, número o fecha..." style="min-width:220px"></div>
     <button class="sec" id="btnExpandirTodo">Expandir todo</button>
@@ -267,6 +315,75 @@
   <div id="nuevosCont"></div>
 </section>
 
+<section>
+  <h2>Captura automática</h2>
+  <div class="sub">Estado del archivo que deja la tarea nocturna de GitHub. Si la última fecha capturada se queda atrás más de 2 días, la app te avisa arriba.</div>
+  <div id="estadoCaptura" class="tarjeta"><div class="comp">—</div></div>
+</section>
+
+<section>
+  <h2>Cobertura de datos</h2>
+  <div class="sub">Sorteos registrados por lotería y mes, frente a lo que esa lotería suele sortear en un mes completo. Los huecos le quitan poder a todas las pruebas y obligan a que las rachas entre sorteos solo se midan en días consecutivos: esta tabla te dice qué meses conviene rellenar primero.</div>
+  <div class="fila-form" style="margin-bottom:10px">
+    <div class="campo"><label for="cobGrupo">Grupo</label>
+      <select id="cobGrupo">
+        <option value="diario">Chance diario</option>
+        <option value="semanal">Loterías semanales</option>
+        <option value="todas">Todas (con 12 o más sorteos)</option>
+      </select>
+    </div>
+    <div class="campo"><label for="cobMeses">Meses</label>
+      <select id="cobMeses">
+        <option value="12">Últimos 12</option>
+        <option value="24" selected>Últimos 24</option>
+        <option value="36">Últimos 36</option>
+      </select>
+    </div>
+  </div>
+  <div class="aviso" id="cobResumen"></div>
+  <div class="leyenda-cob">
+    <span><i style="background:#C9E4D6"></i>90% o más</span>
+    <span><i style="background:#E3EDD3"></i>50–89%</span>
+    <span><i style="background:#F7E2BF"></i>1–49%</span>
+    <span><i style="background:#F2D1CC"></i>sin sorteos</span>
+    <span><i style="background:transparent; border:1px solid var(--borde)"></i>antes de su primer sorteo</span>
+  </div>
+  <div style="overflow-x:auto"><table class="tabla-cob" id="tablaCobertura"></table></div>
+</section>
+
+</div>
+
+<div class="panel panel-hipotesis" style="display:none">
+<section>
+  <h2>Registro de hipótesis</h2>
+  <div class="sub">Una alerta del escaneo es una pregunta, no una respuesta. Aquí la conviertes en una hipótesis con fecha de registro y regla de parada fijas: solo cuentan los sorteos <b>posteriores</b> al registro, y el veredicto se actualiza solo con cada resultado nuevo.</div>
+  <div class="nota-honesta"><b>Cómo decide:</b> con cada sorteo nuevo compara qué tan probable es lo observado si la hipótesis es cierta (tasa "si es real") frente a si es puro azar. Cuando esa razón llega a <b>20 a 1</b> en cualquiera de los dos sentidos, la hipótesis queda <b>confirmada</b> o <b>descartada</b> (prueba secuencial de Wald, ~5% de error en cada dirección). El historial anterior al registro se muestra como contexto pero <b>no cuenta</b>: esos datos ya se usaron para encontrar la alerta y no pueden validarla.</div>
+</section>
+<section>
+  <div class="aviso" id="hipResumen" style="margin-bottom:12px"></div>
+  <div id="hipLista"></div>
+</section>
+<section>
+  <h2>Registrar una hipótesis nueva</h2>
+  <div class="sub">La fecha de registro es hoy y no se puede cambiar: así la prueba solo usa sorteos que todavía no existían cuando la formulaste. Desde una alerta de dígito puedes llegar aquí con el botón <b>Registrar</b> y el formulario se llena solo.</div>
+  <div class="fila-form">
+    <div class="campo"><label for="hipLot">Lotería</label><select id="hipLot"></select></div>
+    <div class="campo"><label for="hipTipo">Qué se mide</label>
+      <select id="hipTipo">
+        <option value="posicion">Una posición</option>
+        <option value="agrupado">Cualquier posición (agrupado)</option>
+      </select>
+    </div>
+    <div class="campo" id="hipPosCampo"><label for="hipPos">Posición</label><select id="hipPos"></select></div>
+    <div class="campo"><label for="hipDig">Dígitos</label><input type="text" id="hipDig" placeholder="Ej: 3,7,8" style="min-width:110px"></div>
+    <div class="campo"><label for="hipP1">Tasa si es real (%)</label><input type="text" id="hipP1" placeholder="Ej: 13" style="min-width:90px"></div>
+  </div>
+  <div class="fila-form" style="margin-top:10px">
+    <div class="campo" style="flex:1"><label for="hipNotas">Origen o notas (opcional)</label><input type="text" id="hipNotas" placeholder="De dónde salió la idea" style="width:100%"></div>
+    <button id="btnHipRegistrar">Registrar hipótesis</button>
+  </div>
+  <div class="aviso" id="hipFormAviso"></div>
+</section>
 </div>
 
 <div class="panel panel-balotas" style="display:none">
@@ -410,6 +527,7 @@
   <div class="fila-form" style="margin-bottom:12px"><button id="btnAlertas3">Buscar alertas</button></div>
   <div class="aviso" id="alertasAviso3">Pulsa "Buscar alertas" — recorre el histórico completo en tu dispositivo, puede tardar unos segundos.</div>
   <div id="alertasResultado3"></div>
+  <div id="historialEscaneos3"></div>
 </section>
 
 <section>
@@ -475,8 +593,18 @@ const ALIAS_LOTERIA = {
   'Lotería del Cauca': 'Cauca', 'Loteria del Cauca': 'Cauca',
   'La Fantástica 1': 'La Fantastica 1', 'La Fantástica 2': 'La Fantastica 2',
   // Mismas palabras en distinto orden — confirmado uno a uno, no por parecido difuso.
-  'Super chontico Millonario Noche': 'Super Chontico Noche Millonario'
+  'Super chontico Millonario Noche': 'Super Chontico Noche Millonario',
+  // v30 — variantes que se colaron sin normalizar (lote del 30-jul-2026 y
+  // del 1-ene-2025), confirmadas una a una contra el sorteo real. La búsqueda
+  // de alias ahora ignora mayúsculas y tildes, así que "Pijao de oro" ya cae
+  // en 'Pijao de Oro' sin agregarlo aparte.
+  'El Sinuano Día': 'Sinuano Día', 'El Sinuano Noche': 'Sinuano Noche',
+  'Culona Noche': 'La Culona Noche'
 };
+// v30 · Decisiones que tomas en la bandeja de cuarentena ("este nombre es tal
+// lotería"). Clave: nombre sin tildes ni mayúsculas. Se cargan del
+// almacenamiento al iniciar y se aplican en CADA lectura, igual que los alias.
+let ALIAS_USUARIO = {};
 // Repara mojibake: texto UTF-8 que fue interpretado como Latin-1 y re-guardado
 // (típico al copiar/pegar de ciertas fuentes). Reinterpreta cada carácter como
 // un byte y lo vuelve a decodificar como UTF-8; si el texto ya estaba bien
@@ -530,9 +658,17 @@ function campoSeguroCSV(s){
   return /^[=+\-@]/.test(s) ? "'" + s : s;
 }
 function normalizarLoteria(nombre){
-  const reparado = sanitizarNombreLoteria(repararMojibake(nombre));
+  let reparado = sanitizarNombreLoteria(repararMojibake(nombre));
+  if (!reparado) return reparado;
+  // v30: "Astro Sol (CAN)" -> "Astro Sol". El signo zodiacal es un dato del
+  // sorteo, no parte del nombre de la lotería (misma regla de transcripción
+  // de siempre, ahora aplicada también al leer).
+  if (/^astro\s/i.test(reparado)) reparado = reparado.replace(/\s*\([^)]*\)\s*$/, '');
   if (ALIAS_LOTERIA[reparado]) return ALIAS_LOTERIA[reparado];
-  const canon = MAPA_CANONICO[quitarTildes(reparado)];
+  const clave = quitarTildes(reparado);
+  if (ALIAS_NORM[clave]) return ALIAS_NORM[clave];
+  if (ALIAS_USUARIO[clave]) return ALIAS_USUARIO[clave];
+  const canon = MAPA_CANONICO[clave];
   return canon || reparado;
 }
 // Quita tildes y pasa a minúsculas, solo para comparar — nunca se usa como
@@ -551,6 +687,29 @@ const MAPA_CANONICO = {};
   Object.values(ALIAS_LOTERIA).forEach(n => nombres.add(n));
   nombres.forEach(n => { MAPA_CANONICO[quitarTildes(n)] = n; });
 })();
+// v30 · Alias sin distinguir mayúsculas ni tildes.
+const ALIAS_NORM = {};
+for (const k in ALIAS_LOTERIA) ALIAS_NORM[quitarTildes(k)] = ALIAS_LOTERIA[k];
+
+// v30 · Loterías excluidas por regla del proyecto: nunca entran a la base,
+// ni importadas a mano ni por la captura automática.
+const LOTERIAS_EXCLUIDAS = new Set(['suertudo']);
+function esExcluida(nombre){ return LOTERIAS_EXCLUIDAS.has(quitarTildes(nombre || '')); }
+
+// v30 · Lista blanca. Un nombre que no esté aquí NO crea una lotería nueva: va
+// a la bandeja de cuarentena hasta que decidas qué es (asignarlo a una lotería
+// existente, aceptarlo como lotería nueva o ignorarlo). Parte de los nombres
+// de la base embebida y de los alias; LISTA_BLANCA_INICIAL agrega los sorteos
+// extraordinarios legítimos que ya estaban en tus registros agregados.
+const LISTA_BLANCA_INICIAL = ['Extra de Bogotá', 'Extra de Colombia Atlántico', 'Extra de Colombia Cúcuta',
+  'Extra de Colombia - Quindio', 'Extra Super Millonario', 'Extra Pijao de la Lotería del Tolima',
+  'Sorteo Extraordinario de Navidad'];
+const NOMBRES_BASE = new Set(Object.values(MAPA_CANONICO));
+LISTA_BLANCA_INICIAL.forEach(n => { NOMBRES_BASE.add(n); MAPA_CANONICO[quitarTildes(n)] = n; });
+let LISTA_BLANCA_USUARIO = new Set();   // nombres que aceptaste como lotería nueva
+let IGNORADOS_USUARIO = new Set();      // nombres (sin tildes) que decidiste ignorar
+function nombreConocido(n){ return NOMBRES_BASE.has(n) || LISTA_BLANCA_USUARIO.has(n); }
+function esIgnorado(n){ return IGNORADOS_USUARIO.has(quitarTildes(n || '')); }
 function posicionesDe(sel){ return sel.indexOf('Pick 3') === 0 ? [1,2,3] : [0,1,2,3]; }
 // Posiciones fijas para la vista "3 Cifras": last-3-dígitos de CUALQUIER
 // lotería (no solo Pick 3). Es la misma cadena de 4 caracteres almacenada;
@@ -968,7 +1127,10 @@ function parsearImportacion(texto, fechaDefecto, existentes){
   //   - mismo número  -> duplicado exacto (se puede omitir sin riesgo)
   //   - número distinto -> CONFLICTO real (se reporta, nunca se descarta
   //     en silencio ni se sobreescribe automáticamente)
-  const out = {ok:[], errores:[], duplicados:[], conflictos:[]};
+  // v30: además separa
+  //   - excluidos: loterías excluidas por regla (Suertudo) o que decidiste ignorar
+  //   - cuarentena: nombres fuera de la lista blanca (no crean lotería nueva)
+  const out = {ok:[], errores:[], duplicados:[], conflictos:[], excluidos:[], cuarentena:[]};
   const lineas = texto.split(/\r?\n/);
   for (let i = 0; i < lineas.length; i++){
     const cruda = lineas[i].trim();
@@ -985,6 +1147,8 @@ function parsearImportacion(texto, fechaDefecto, existentes){
     const lot = normalizarLoteria(nombreCrudo);
     if (!/^\d{3,4}$/.test(num) || !lot){ out.errores.push({linea: i + 1, motivo: 'número o lotería inválidos'}); continue; }
     num = num.padStart(4, '0');
+    if (esExcluida(lot) || esIgnorado(lot)){ out.excluidos.push({linea: i + 1, fecha, lot, num}); continue; }
+    if (!nombreConocido(lot)){ out.cuarentena.push([fecha, lot, num]); continue; }
     const clave = fecha + '|' + lot;
     const existente = existentes.get(clave);
     if (existente !== undefined){
@@ -1162,7 +1326,24 @@ let chart = null;
 function baseCompleta(){
   const todo = DATOS.concat(NUEVOS.map(r => [r[0], r[1], r[2]]));
   todo.sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
-  return todo.map(r => [r[0], normalizarLoteria(r[1]), r[2]]);
+  // v30: quedan fuera de TODO análisis las loterías excluidas por regla
+  // (Suertudo), los nombres que decidiste ignorar y los que esperan decisión
+  // en la bandeja de cuarentena. No se borran: siguen guardados y la bandeja
+  // los muestra para que decidas.
+  const out = [];
+  for (const r of todo){
+    const n = normalizarLoteria(r[1]);
+    if (esExcluida(n) || esIgnorado(n) || !nombreConocido(n)) continue;
+    out.push([r[0], n, r[2]]);
+  }
+  return out;
+}
+// v30 · La base sin duplicados exactos (misma fecha, lotería y número): es la
+// que se usa para la huella de datos y para "Exportar base completa".
+function baseUnica(){
+  const vistos = new Set(), out = [];
+  for (const r of baseCompleta()){ const k = r[0] + '|' + r[1] + '|' + r[2]; if (!vistos.has(k)){ vistos.add(k); out.push(r); } }
+  return out;
 }
 function registrosDe(sel){
   const todo = baseCompleta();
@@ -1871,6 +2052,7 @@ function poblarSelectorAnalisis3(){
 function refrescarTodo(){
   poblarSelector(); poblarSelectorAnalisis(); pintarNuevos(); poblarFiltroHist(); pintarHistorico(); actualizar();
   poblarSelector3(); poblarSelectorAnalisis3(); actualizar3();
+  pintarV30();
 }
 
 function pintarNuevos(){
@@ -1941,18 +2123,68 @@ document.getElementById('btnExpandirTodo').onclick = () => document.querySelecto
 document.getElementById('btnContraerTodo').onclick = () => document.querySelectorAll('.grupo-nuevo').forEach(g => g.classList.remove('abierto'));
 
 async function cargarNuevos(){
-  try {
-    const r = await window.storage.get('chance-nuevos');
-    NUEVOS = r && r.value ? JSON.parse(r.value) : [];
-    persistente = true;
-  } catch (e) { NUEVOS = NUEVOS || []; persistente = (typeof window.storage !== 'undefined'); }
-  document.getElementById('avisoStorage').textContent = persistente
-    ? 'Guardado activo: tus registros persisten entre sesiones.'
-    : 'Aviso: en esta vista no hay almacenamiento persistente; los registros agregados viven solo mientras la página esté abierta.';
+  NUEVOS = []; persistente = false; let modo = 'memoria';
+  if (typeof window.storage !== 'undefined') {
+    try { const r = await window.storage.get('chance-nuevos'); NUEVOS = r && r.value ? JSON.parse(r.value) : []; persistente = true; modo = 'claude'; } catch (e) { persistente = true; modo = 'claude'; }
+  } else {
+    try { const v = localStorage.getItem('chance-nuevos'); NUEVOS = v ? JSON.parse(v) : []; persistente = true; modo = 'local'; } catch (e) { persistente = false; }
+  }
+  const msj = { claude:'Guardado activo (Claude): tus registros persisten entre sesiones.', local:'Guardado activo en este dispositivo: tus registros persisten en el navegador del equipo o celular.', memoria:'Aviso: sin almacenamiento disponible; los registros viven solo mientras la página esté abierta.' };
+  document.getElementById('avisoStorage').textContent = msj[persistente ? modo : 'memoria'];
 }
 async function guardarNuevos(){
-  try { await window.storage.set('chance-nuevos', JSON.stringify(NUEVOS)); }
-  catch (e) { /* modo en memoria */ }
+  if (typeof window.storage !== 'undefined') { try { await window.storage.set('chance-nuevos', JSON.stringify(NUEVOS)); return; } catch (e) {} }
+  try { localStorage.setItem('chance-nuevos', JSON.stringify(NUEVOS)); } catch (e) {}
+}
+
+// ==AUTOCARGA==
+// Si capturar_resultados.py ya corrió en esta carpeta, dejó
+// captura_automatica.js con CAPTURA_AUTOMATICA_CHANCE: el mismo texto
+// fecha,lotería,número que se pegaría a mano en "Importación masiva". Se
+// reutiliza el mismo parsearImportacion() y las mismas reglas de siempre
+// (duplicado exacto → se ignora; mismo día/lotería con número distinto →
+// CONFLICTO, nunca se sobreescribe solo) — la única diferencia con pegarlo
+// a mano es que esto corre solo, una vez, al abrir la página.
+async function autocargarSiHayNuevos(){
+  if (typeof window.CAPTURA_AUTOMATICA_CHANCE === 'undefined'){ mostrarAvisoAutocarga(null); return; }
+  const existentes = new Map(baseCompleta().map(r => [r[0] + '|' + r[1], r[2]]));
+  const res = parsearImportacion(window.CAPTURA_AUTOMATICA_CHANCE, new Date().toISOString().slice(0, 10), existentes);
+  if (res.ok.length){
+    NUEVOS = NUEVOS.concat(res.ok);
+    ULTIMO_LOTE_IMPORT = res.ok;
+    document.getElementById('btnDeshacerImport').style.display = '';
+    await guardarNuevos();
+  }
+  // v30: los nombres desconocidos de la captura van a la bandeja (sin repetirse
+  // en cada apertura: agregarACuarentena descarta lo que ya está ahí).
+  res.nuevosEnCuarentena = await agregarACuarentena(res.cuarentena, 'captura');
+  mostrarAvisoAutocarga(res);
+}
+function mostrarAvisoAutocarga(res){
+  const el = document.getElementById('avisoAutocarga');
+  if (!el) return;
+  // v30: monitor de la captura. Si la última fecha capturada se queda atrás
+  // más de 2 días, avisa aunque no haya nada nuevo que cargar.
+  const est = estadoCaptura();
+  const partes = [];
+  let alerta = false;
+  if (est && est.vieja){
+    alerta = true;
+    partes.push('⚠ La captura automática trae resultados solo hasta el <b>' + est.ultima + '</b> (hace ' + est.dias + ' días). ' +
+      'Revisa la pestaña <b>Actions</b> del repositorio en GitHub: puede que la tarea esté fallando o que el sitio de origen haya cambiado.');
+  } else if (est && est.fallo){
+    alerta = true;
+    partes.push('⚠ No se pudo cargar <b>captura_automatica.js</b>: hoy no entran resultados automáticos. Si persiste, revisa el repositorio.');
+  }
+  if (res && res.ok.length) partes.push('✓ Captura automática: ' + res.ok.length + ' resultado(s) nuevo(s) cargados solos al abrir la página.');
+  if (res && res.conflictos.length) partes.push('⚠ ' + res.conflictos.length + ' conflicto(s) sin cargar — mismo día y lotería con un número distinto al guardado. Revísalos en Registrar datos → Importación masiva.');
+  if (res && res.nuevosEnCuarentena) partes.push('⚠ ' + res.nuevosEnCuarentena + ' resultado(s) con nombre desconocido quedaron en la bandeja de cuarentena (Registrar datos).');
+  if (!partes.length){ el.style.display = 'none'; return; } // nada que avisar: no interrumpe con un aviso vacío
+  el.innerHTML = partes.join(' ');
+  el.style.background = alerta ? '#FBF3E2' : '#E8F3EF';
+  el.style.borderColor = alerta ? '#B45309' : '#0F6E56';
+  el.style.color = alerta ? '#7A4A0E' : '#0F6E56';
+  el.style.display = '';
 }
 
 function reaccionar(lot, numStr){
@@ -2005,6 +2237,13 @@ document.getElementById('btnAgregar').onclick = async () => {
   if (esFechaFutura(f) && !confirm('La fecha ' + f + ' es posterior a hoy. ¿Agregar de todas formas?')) return;
   l = normalizarLoteria(l); // sanea y normaliza ANTES de usarla en cualquier parte (incluida la reacción de abajo)
   n = n.padStart(4, '0');
+  // v30: lista blanca también para el registro individual
+  if (esExcluida(l) || esIgnorado(l)){ alert('"' + l + '" está excluida por regla o marcada para ignorar; no se agregó.'); return; }
+  if (!nombreConocido(l)){
+    if (!confirm('"' + l + '" no está en la lista blanca de loterías.\n\nSi es una lotería nueva (por ejemplo, un sorteo extraordinario), pulsa Aceptar para agregarla a la lista blanca. Si es un nombre mal escrito, pulsa Cancelar y elige el nombre correcto de la lista.')) return;
+    LISTA_BLANCA_USUARIO.add(l); MAPA_CANONICO[quitarTildes(l)] = l;
+    await guardarAlmacen('chance-lista-blanca', [...LISTA_BLANCA_USUARIO]);
+  }
   // Chequeo de conflicto: ¿ya existe un resultado para esta lotería+fecha?
   const clave = f + '|' + l;
   const existente = baseCompleta().find(r => (r[0] + '|' + r[1]) === clave);
@@ -2043,9 +2282,21 @@ document.getElementById('btnImportar').onclick = () => {
   const resDiv = document.getElementById('impResultado');
   const prevDiv = document.getElementById('impPreview');
   resDiv.innerHTML = '<b>Vista previa</b> — nuevos: <b>' + r.ok.length + '</b> · duplicados exactos (se omiten): <b>' + r.duplicados.length +
-    '</b> · <b style="color:' + (r.conflictos.length ? '#C4443A' : 'inherit') + '">conflictos: ' + r.conflictos.length + '</b> · líneas con error: <b>' + r.errores.length + '</b>';
+    '</b> · <b style="color:' + (r.conflictos.length ? '#C4443A' : 'inherit') + '">conflictos: ' + r.conflictos.length + '</b> · líneas con error: <b>' + r.errores.length + '</b>' +
+    (r.cuarentena.length ? ' · <b style="color:var(--alerta)">a cuarentena: ' + r.cuarentena.length + '</b>' : '') +
+    (r.excluidos.length ? ' · excluidos por regla: <b>' + r.excluidos.length + '</b>' : '');
 
   let html = '';
+  if (r.cuarentena.length){
+    const nombres = [...new Set(r.cuarentena.map(x => x[1]))];
+    html += '<div class="nota-honesta" style="margin-top:10px">' +
+      '<b>' + r.cuarentena.length + ' resultado(s) con nombre desconocido → irán a la bandeja de cuarentena</b>, fuera de los análisis, hasta que decidas qué son: ' +
+      nombres.slice(0, 12).map(n => '<b>' + esc(n) + '</b>').join(', ') + (nombres.length > 12 ? '…' : '') + '.</div>';
+  }
+  if (r.excluidos.length){
+    html += '<div class="aviso" style="margin-top:8px">Excluidos por regla o porque decidiste ignorarlos (no se guardan): ' +
+      [...new Set(r.excluidos.map(x => x.lot))].map(esc).join(', ') + '.</div>';
+  }
   if (r.conflictos.length){
     html += '<div class="nota-honesta" style="margin-top:10px; border-color:#C4443A; background:#FBEAEA">' +
       '<b>⚠ ' + r.conflictos.length + ' conflicto(s) — misma lotería y fecha, pero número distinto al ya guardado. NO se importan automáticamente:</b><br>' +
@@ -2061,21 +2312,26 @@ document.getElementById('btnImportar').onclick = () => {
   prevDiv.innerHTML = html;
 
   document.getElementById('btnImportar').style.display = 'none';
-  document.getElementById('btnConfirmarImportar').style.display = r.ok.length ? '' : 'none';
+  document.getElementById('btnConfirmarImportar').style.display = (r.ok.length || r.cuarentena.length) ? '' : 'none';
   document.getElementById('btnCancelarImportar').style.display = '';
-  if (!r.ok.length) resDiv.innerHTML += '<br><span class="aviso">Nada para importar — cancela o corrige la lista.</span>';
+  if (!r.ok.length && !r.cuarentena.length) resDiv.innerHTML += '<br><span class="aviso">Nada para importar — cancela o corrige la lista.</span>';
 };
 
 document.getElementById('btnConfirmarImportar').onclick = async () => {
   const r = IMPORT_PENDIENTE;
-  if (!r || !r.ok.length) return;
+  if (!r || (!r.ok.length && !r.cuarentena.length)) return;
   for (const reg of r.ok) NUEVOS.push(reg);
-  ULTIMO_LOTE_IMPORT = r.ok;
-  document.getElementById('btnDeshacerImport').style.display = '';
+  if (r.ok.length){
+    ULTIMO_LOTE_IMPORT = r.ok;
+    document.getElementById('btnDeshacerImport').style.display = '';
+  }
+  const aCuarentena = await agregarACuarentena(r.cuarentena, 'importación');
   await guardarNuevos();
   refrescarTodo();
   document.getElementById('impResultado').innerHTML = '<b>Importados ' + r.ok.length + ' registros nuevos.</b>' +
     (r.duplicados.length ? ' ' + r.duplicados.length + ' duplicados omitidos.' : '') +
+    (aCuarentena ? ' <b style="color:var(--alerta)">' + aCuarentena + ' quedaron en la bandeja de cuarentena</b> (más abajo) por nombre desconocido.' : '') +
+    (r.excluidos.length ? ' ' + r.excluidos.length + ' excluidos por regla.' : '') +
     (r.conflictos.length ? ' <b style="color:#C4443A">' + r.conflictos.length + ' conflictos NO se importaron</b> (revísalos arriba).' : '');
   document.getElementById('impTexto').value = '';
   IMPORT_PENDIENTE = null;
@@ -2197,18 +2453,18 @@ function actualizarBalotas(){
 document.getElementById('selLotBal').onchange = actualizarBalotas;
 
 async function cargarNuevosBalotas(){
-  try {
-    const r = await window.storage.get('balotas-nuevos');
-    NUEVOS_BALOTAS = r && r.value ? JSON.parse(r.value) : [];
-    persistenteBalotas = true;
-  } catch (e) { NUEVOS_BALOTAS = NUEVOS_BALOTAS || []; persistenteBalotas = (typeof window.storage !== 'undefined'); }
-  document.getElementById('avisoStorageBal').textContent = persistenteBalotas
-    ? 'Guardado activo: tus sorteos de balotas persisten entre sesiones.'
-    : 'Aviso: en esta vista no hay almacenamiento persistente; los sorteos agregados viven solo mientras la página esté abierta.';
+  NUEVOS_BALOTAS = []; persistenteBalotas = false; let modo = 'memoria';
+  if (typeof window.storage !== 'undefined') {
+    try { const r = await window.storage.get('balotas-nuevos'); NUEVOS_BALOTAS = r && r.value ? JSON.parse(r.value) : []; persistenteBalotas = true; modo = 'claude'; } catch (e) { persistenteBalotas = true; modo = 'claude'; }
+  } else {
+    try { const v = localStorage.getItem('balotas-nuevos'); NUEVOS_BALOTAS = v ? JSON.parse(v) : []; persistenteBalotas = true; modo = 'local'; } catch (e) { persistenteBalotas = false; }
+  }
+  const msj = { claude:'Guardado activo (Claude): tus sorteos de balotas persisten entre sesiones.', local:'Guardado activo en este dispositivo: persisten en el navegador del equipo o celular.', memoria:'Aviso: sin almacenamiento disponible; los sorteos viven solo mientras la página esté abierta.' };
+  document.getElementById('avisoStorageBal').textContent = msj[persistenteBalotas ? modo : 'memoria'];
 }
 async function guardarNuevosBalotas(){
-  try { await window.storage.set('balotas-nuevos', JSON.stringify(NUEVOS_BALOTAS)); }
-  catch (e) { /* modo en memoria */ }
+  if (typeof window.storage !== 'undefined') { try { await window.storage.set('balotas-nuevos', JSON.stringify(NUEVOS_BALOTAS)); return; } catch (e) {} }
+  try { localStorage.setItem('balotas-nuevos', JSON.stringify(NUEVOS_BALOTAS)); } catch (e) {}
 }
 
 document.getElementById('btnImportarBal').onclick = async () => {
@@ -2314,18 +2570,636 @@ document.getElementById('archivoRespaldoBal').onchange = (ev) => {
 };
 // ==/BALOTAS UI==
 
+// ==V30==
+// Prioridad 1 (datos) + registro de hipótesis. Lo nuevo vive en este bloque;
+// lo que cambió del motor existente está marcado con "v30" en su lugar.
+const VERSION_APP = 'v30';
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtPct(x, dec){ return (100 * x).toFixed(dec === undefined ? 1 : dec).replace('.', ',') + '%'; }
+function fmtNum(x){ return Number(x).toLocaleString('es-CO'); }
+function fechaLocalHoy(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function diasEntre(a, b){ return Math.round((Date.parse(b + 'T00:00:00Z') - Date.parse(a + 'T00:00:00Z')) / 86400000); }
+
+// ---------- Almacenamiento (Claude o navegador, igual que chance-nuevos) ----------
+async function leerAlmacen(clave, porDefecto){
+  if (typeof window.storage !== 'undefined'){
+    try { const r = await window.storage.get(clave); return r && r.value ? JSON.parse(r.value) : porDefecto; }
+    catch (e) { /* clave inexistente o sin permiso: se intenta con el navegador */ }
+  }
+  try { const v = localStorage.getItem(clave); return v ? JSON.parse(v) : porDefecto; } catch (e) { return porDefecto; }
+}
+async function guardarAlmacen(clave, valor){
+  const txt = JSON.stringify(valor);
+  if (typeof window.storage !== 'undefined'){ try { await window.storage.set(clave, txt); return true; } catch (e) {} }
+  try { localStorage.setItem(clave, txt); return true; } catch (e) { return false; }
+}
+
+// ---------- Huella de datos ----------
+// cyrb53: hash rápido de 53 bits. No es criptográfico (no hace falta): sirve
+// para saber si dos análisis usaron EXACTAMENTE los mismos datos.
+function cyrb53(str, semilla){
+  let h1 = 0xdeadbeef ^ semilla, h2 = 0x41c6ce57 ^ semilla;
+  for (let i = 0; i < str.length; i++){
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+  h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+  h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return 4294967296 * (2097151 & h2) + (h1 >>> 0);
+}
+// Independiente del orden en que llegaron los registros: se ordenan antes.
+function huellaDe(registros){
+  const lineas = registros.map(r => r[0] + ',' + r[1] + ',' + r[2]);
+  lineas.sort();
+  return cyrb53(lineas.join('\n'), 0).toString(16).padStart(14, '0').slice(-8);
+}
+function resumenBase(registros){
+  let desde = null, hasta = null;
+  for (const r of registros){ if (desde === null || r[0] < desde) desde = r[0]; if (hasta === null || r[0] > hasta) hasta = r[0]; }
+  return { n: registros.length, desde: desde || '—', hasta: hasta || '—', huella: registros.length ? huellaDe(registros) : '—' };
+}
+function pintarHuella(base){
+  const rb = resumenBase(base || baseUnica());
+  document.getElementById('stHuella').textContent = rb.huella;
+  document.getElementById('pastHuella').title = 'Huella de los ' + fmtNum(rb.n) + ' registros únicos (' + rb.desde + ' → ' + rb.hasta + '). ' +
+    'Identifica la versión exacta de los datos con que se calculó lo que ves: si cambia un solo registro, cambia la huella.';
+  return rb;
+}
+
+// ---------- Verificación de un respaldo contra su propio encabezado ----------
+function verificarArchivoRespaldo(texto){
+  let declarado = null, huella = null, datos = 0;
+  for (const l of texto.split(/\r?\n/)){
+    const t = l.trim();
+    if (!t) continue;
+    if (t[0] === '#'){
+      const m3 = /—\s*(\d+)\s+registros\s*—/.exec(t);
+      if (m3 && declarado === null) declarado = Number(m3[1]);
+      const m1 = /registros:\s*(\d+)/i.exec(t);
+      if (m1 && declarado === null) declarado = Number(m1[1]);
+      const m2 = /huella\s+([0-9a-f]{8})/i.exec(t);
+      if (m2) huella = m2[1];
+      continue;
+    }
+    if (/^fecha\s*[,;\t]/i.test(t)) continue; // fila de títulos
+    datos++;
+  }
+  if (declarado === null) return '';
+  return declarado === datos
+    ? '✓ Verificación: el archivo declara ' + declarado + ' registros y trae exactamente ' + datos + ' líneas de datos' + (huella ? ' (huella ' + huella + ')' : '') + '.'
+    : '⚠ Verificación: el archivo declara ' + declarado + ' registros pero trae ' + datos + ' líneas de datos. Puede estar incompleto o haber sido editado.';
+}
+
+// ---------- Bandeja de cuarentena ----------
+let CUARENTENA = []; // [fecha, nombre tal como llegó, número, origen]
+async function agregarACuarentena(registros, origen){
+  if (!registros || !registros.length) return 0;
+  const ya = new Set(CUARENTENA.map(r => r[0] + '|' + r[1] + '|' + r[2]));
+  let n = 0;
+  for (const r of registros){
+    const k = r[0] + '|' + r[1] + '|' + r[2];
+    if (ya.has(k)) continue;
+    ya.add(k); CUARENTENA.push([r[0], r[1], r[2], origen]); n++;
+  }
+  if (n) await guardarAlmacen('chance-cuarentena', CUARENTENA);
+  return n;
+}
+function pendienteDeDecision(nombreNormalizado){
+  return !esExcluida(nombreNormalizado) && !esIgnorado(nombreNormalizado) && !nombreConocido(nombreNormalizado);
+}
+function gruposDesconocidos(){
+  const g = new Map();
+  const grupo = n => { if (!g.has(n)) g.set(n, { nombre:n, cuarentena:[], guardados:[] }); return g.get(n); };
+  CUARENTENA.forEach((r, i) => { const n = normalizarLoteria(r[1]); if (pendienteDeDecision(n)) grupo(n).cuarentena.push(i); });
+  NUEVOS.forEach((r, i) => { const n = normalizarLoteria(r[1]); if (pendienteDeDecision(n)) grupo(n).guardados.push(i); });
+  return [...g.values()].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+}
+// Parecido de texto (bigramas) — SOLO para preseleccionar una sugerencia en la
+// lista; la decisión siempre la confirmas tú con un clic.
+function bigramas(s){
+  const t = ' ' + quitarTildes(s).replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
+  const m = new Map();
+  for (let i = 0; i < t.length - 1; i++){ const b = t.slice(i, i + 2); m.set(b, (m.get(b) || 0) + 1); }
+  return m;
+}
+function similitud(a, b){
+  const A = bigramas(a), B = bigramas(b);
+  let comun = 0, tA = 0, tB = 0;
+  for (const [k, v] of A){ tA += v; if (B.has(k)) comun += Math.min(v, B.get(k)); }
+  for (const v of B.values()) tB += v;
+  return 2 * comun / ((tA + tB) || 1);
+}
+function nombresCanonicos(){
+  return [...new Set([...NOMBRES_BASE, ...LISTA_BLANCA_USUARIO])].sort((a, b) => a.localeCompare(b, 'es'));
+}
+function sugerirDestino(nombre){
+  const candidatos = nombresCanonicos().map(c => [c, c]).concat(Object.keys(ALIAS_LOTERIA).map(k => [k, ALIAS_LOTERIA[k]]));
+  let mejor = null, s = 0;
+  for (const [txt, destino] of candidatos){ const v = similitud(nombre, txt); if (v > s){ s = v; mejor = destino; } }
+  return s >= 0.5 ? mejor : null;
+}
+// Mueve a "agregados" lo que ya tiene un nombre conocido, con las mismas
+// reglas de la importación: duplicado exacto se omite, conflicto se reporta.
+async function liberarCuarentena(){
+  const existentes = new Map(baseCompleta().map(r => [r[0] + '|' + r[1], r[2]]));
+  const quedan = [], movidos = [], duplicados = [], conflictos = [];
+  for (const r of CUARENTENA){
+    const n = normalizarLoteria(r[1]);
+    if (esExcluida(n) || esIgnorado(n)) continue;
+    if (!nombreConocido(n)){ quedan.push(r); continue; }
+    const k = r[0] + '|' + n, ex = existentes.get(k);
+    if (ex === undefined){ const reg = [r[0], n, r[2]]; NUEVOS.push(reg); movidos.push(reg); existentes.set(k, r[2]); }
+    else if (ex === r[2]) duplicados.push(r);
+    else conflictos.push({ fecha:r[0], lot:n, numExistente:ex, numNuevo:r[2] });
+  }
+  CUARENTENA = quedan;
+  await guardarAlmacen('chance-cuarentena', CUARENTENA);
+  if (movidos.length) await guardarNuevos();
+  return { movidos, duplicados, conflictos };
+}
+function conflictosDe(lot){
+  const porFecha = new Map(), out = [];
+  for (const r of baseCompleta()){
+    if (r[1] !== lot) continue;
+    if (porFecha.has(r[0]) && porFecha.get(r[0]) !== r[2]) out.push(r[0]);
+    else porFecha.set(r[0], r[2]);
+  }
+  return out;
+}
+async function decidirNombre(nombre, accion, destino){
+  const clave = quitarTildes(nombre);
+  let final = nombre;
+  if (accion === 'asignar'){
+    if (!destino){ alert('Elige primero a qué lotería corresponde "' + nombre + '".'); return; }
+    ALIAS_USUARIO[clave] = destino; final = destino;
+    await guardarAlmacen('chance-alias-usuario', ALIAS_USUARIO);
+  } else if (accion === 'aceptar'){
+    if (!confirm('¿Aceptar "' + nombre + '" como una lotería nueva? Desde ahora se analizará como una serie aparte.')) return;
+    LISTA_BLANCA_USUARIO.add(nombre); MAPA_CANONICO[clave] = nombre;
+    await guardarAlmacen('chance-lista-blanca', [...LISTA_BLANCA_USUARIO]);
+  } else if (accion === 'ignorar'){
+    if (!confirm('¿Ignorar "' + nombre + '"? Sus resultados no entrarán a ningún análisis, ni ahora ni en futuras importaciones. Puedes deshacerlo en "Tus decisiones".')) return;
+    IGNORADOS_USUARIO.add(clave);
+    await guardarAlmacen('chance-ignorados', [...IGNORADOS_USUARIO]);
+  }
+  const res = await liberarCuarentena();
+  refrescarTodo();
+  let msj = '"' + nombre + '"' + (accion === 'asignar' ? ' ahora cuenta como ' + destino : accion === 'aceptar' ? ' quedó aceptada como lotería nueva' : ' quedó ignorada') + '.';
+  if (res.movidos.length) msj += '\n' + res.movidos.length + ' resultado(s) salieron de la cuarentena y entraron al análisis.';
+  if (res.duplicados.length) msj += '\n' + res.duplicados.length + ' ya estaban registrados (se omitieron).';
+  if (res.conflictos.length) msj += '\n⚠ ' + res.conflictos.length + ' conflicto(s) (misma fecha, número distinto) NO se movieron: ' +
+    res.conflictos.slice(0, 5).map(c => c.fecha + ' ' + c.lot + ' guardado ' + c.numExistente + ' vs ' + c.numNuevo).join(' · ');
+  if (accion !== 'ignorar'){
+    const conf = conflictosDe(final);
+    if (conf.length) msj += '\n⚠ ' + final + ' tiene ' + conf.length + ' fecha(s) con dos números distintos. Usa "Depurar duplicados" para revisarlas.';
+  }
+  alert(msj);
+}
+async function deshacerDecision(tipo, valor){
+  if (tipo === 'alias'){ delete ALIAS_USUARIO[valor]; await guardarAlmacen('chance-alias-usuario', ALIAS_USUARIO); }
+  if (tipo === 'blanca'){
+    LISTA_BLANCA_USUARIO.delete(valor);
+    if (!NOMBRES_BASE.has(valor) && MAPA_CANONICO[quitarTildes(valor)] === valor) delete MAPA_CANONICO[quitarTildes(valor)];
+    await guardarAlmacen('chance-lista-blanca', [...LISTA_BLANCA_USUARIO]);
+  }
+  if (tipo === 'ignorado'){ IGNORADOS_USUARIO.delete(valor); await guardarAlmacen('chance-ignorados', [...IGNORADOS_USUARIO]); }
+  refrescarTodo();
+}
+function pintarBandeja(){
+  const cont = document.getElementById('bandejaCuarentena');
+  if (!cont) return;
+  const grupos = gruposDesconocidos();
+  const canon = nombresCanonicos();
+  let html = '';
+  if (!grupos.length){
+    html += '<div class="aviso">Sin nombres desconocidos: todo lo que entra coincide con la lista blanca.</div>';
+  } else {
+    html += '<div class="aviso" style="margin-bottom:8px"><b>' + grupos.length + '</b> nombre(s) esperan tu decisión. Mientras tanto sus resultados no entran a ningún análisis.</div>';
+    grupos.forEach((g, gi) => {
+      const regs = g.cuarentena.map(i => CUARENTENA[i]).concat(g.guardados.map(i => NUEVOS[i]));
+      const ejemplos = regs.slice(0, 4).map(r => esc(r[0]) + ' → <b>' + esc(r[2]) + '</b>').join(' · ');
+      const sug = sugerirDestino(g.nombre);
+      const partes = [];
+      if (g.cuarentena.length) partes.push(g.cuarentena.length + ' en cuarentena');
+      if (g.guardados.length) partes.push(g.guardados.length + ' ya guardado(s) en este dispositivo');
+      html += '<div class="bandeja-item" data-g="' + gi + '"><b>' + esc(g.nombre) + '</b> <span class="aviso">· ' + partes.join(' · ') + '</span>' +
+        '<div class="aviso" style="margin-top:2px">Ejemplos: ' + ejemplos +
+        (sug ? ' · Sugerencia por parecido de texto: <b>' + esc(sug) + '</b> (confírmala antes de asignar)' : '') + '</div>' +
+        '<div class="fila-form"><select class="bq-destino"><option value="">Asignar a…</option>' +
+        canon.map(c => '<option value="' + esc(c) + '"' + (c === sug ? ' selected' : '') + '>' + esc(c) + '</option>').join('') + '</select>' +
+        '<button class="mini guardar bq-asignar">Asignar</button>' +
+        '<button class="mini editar bq-aceptar">Es una lotería nueva</button>' +
+        '<button class="mini quitar bq-ignorar">Ignorar</button></div></div>';
+    });
+  }
+  const decisiones = [];
+  Object.keys(ALIAS_USUARIO).sort().forEach(k => decisiones.push('<div class="decision"><span>"' + esc(k) + '" → <b>' + esc(ALIAS_USUARIO[k]) + '</b></span><button class="mini cancelar bq-deshacer" data-t="alias" data-v="' + esc(k) + '">Deshacer</button></div>'));
+  [...LISTA_BLANCA_USUARIO].sort().forEach(n => decisiones.push('<div class="decision"><span><b>' + esc(n) + '</b> aceptada como lotería nueva</span><button class="mini cancelar bq-deshacer" data-t="blanca" data-v="' + esc(n) + '">Deshacer</button></div>'));
+  [...IGNORADOS_USUARIO].sort().forEach(k => decisiones.push('<div class="decision"><span>"' + esc(k) + '" ignorada</span><button class="mini cancelar bq-deshacer" data-t="ignorado" data-v="' + esc(k) + '">Deshacer</button></div>'));
+  if (decisiones.length){
+    html += '<details class="historial"><summary>Tus decisiones (' + decisiones.length + ')</summary><div style="margin-top:6px">' + decisiones.join('') + '</div>' +
+      '<div class="aviso">Deshacer solo afecta lo que se lea de aquí en adelante; lo que ya salió de la cuarentena con el nombre corregido se queda así.</div></details>';
+  }
+  const nExcl = NUEVOS.filter(r => esExcluida(normalizarLoteria(r[1]))).length;
+  if (nExcl){
+    html += '<div class="aviso" style="margin-top:8px">' + nExcl + ' registro(s) de loterías excluidas por regla (Suertudo) siguen guardados en este dispositivo, fuera de todos los análisis. ' +
+      '<button class="mini quitar" id="bqBorrarExcluidos">Borrarlos</button></div>';
+  }
+  cont.innerHTML = html;
+  cont.querySelectorAll('.bandeja-item').forEach(el => {
+    const g = grupos[Number(el.dataset.g)];
+    el.querySelector('.bq-asignar').onclick = () => decidirNombre(g.nombre, 'asignar', el.querySelector('.bq-destino').value);
+    el.querySelector('.bq-aceptar').onclick = () => decidirNombre(g.nombre, 'aceptar');
+    el.querySelector('.bq-ignorar').onclick = () => decidirNombre(g.nombre, 'ignorar');
+  });
+  cont.querySelectorAll('.bq-deshacer').forEach(b => b.onclick = () => deshacerDecision(b.dataset.t, b.dataset.v));
+  const bx = document.getElementById('bqBorrarExcluidos');
+  if (bx) bx.onclick = async () => {
+    if (!confirm('¿Borrar los ' + nExcl + ' registro(s) de loterías excluidas por regla?')) return;
+    NUEVOS = NUEVOS.filter(r => !esExcluida(normalizarLoteria(r[1])));
+    await guardarNuevos();
+    refrescarTodo();
+  };
+}
+
+// ---------- Monitor de la captura automática ----------
+function estadoCaptura(){
+  if (!document.getElementById('scriptCaptura')) return null; // variante sin captura (artefacto de Claude)
+  if (typeof window.CAPTURA_AUTOMATICA_CHANCE === 'undefined'){
+    return { cargada:false, fallo: /^https?:$/.test(location.protocol) && window.CAPTURA_FALLO === true };
+  }
+  const porFecha = {};
+  let total = 0, ultima = null;
+  for (const l of String(window.CAPTURA_AUTOMATICA_CHANCE).split(/\r?\n/)){
+    const m = /^(\d{4}-\d{2}-\d{2}),/.exec(l.trim());
+    if (!m) continue;
+    total++; porFecha[m[1]] = (porFecha[m[1]] || 0) + 1;
+    if (!ultima || m[1] > ultima) ultima = m[1];
+  }
+  const dias = ultima ? diasEntre(ultima, fechaLocalHoy()) : null;
+  return { cargada:true, total, ultima, enUltima: ultima ? porFecha[ultima] : 0, dias, vieja: dias !== null && dias > 2 };
+}
+function pintarEstadoCaptura(){
+  const el = document.getElementById('estadoCaptura');
+  if (!el) return;
+  const e = estadoCaptura();
+  if (!e){ el.innerHTML = '<div class="comp">Esta versión de la app no usa captura automática: los resultados se cargan a mano o con la importación.</div>'; return; }
+  if (!e.cargada){
+    el.innerHTML = '<div class="comp">' + (e.fallo ? '<b style="color:var(--alerta)">No se pudo cargar captura_automatica.js.</b> ' : '') +
+      'Sin datos de captura automática en esta apertura (es normal si abres el archivo desde tu computador sin la carpeta del repositorio).</div>';
+    return;
+  }
+  el.innerHTML = '<div class="etq">Último día capturado</div><div class="valor" style="font-size:22px">' + e.ultima + '</div>' +
+    '<div class="comp">' + e.enUltima + ' resultados ese día · ' + fmtNum(e.total) + ' resultados acumulados en el archivo · ' +
+    (e.vieja ? '<b style="color:var(--alerta)">atrasada ' + e.dias + ' días: revisa la pestaña Actions del repositorio</b>'
+             : 'al día (' + (e.dias <= 0 ? 'hoy' : 'hace ' + e.dias + (e.dias === 1 ? ' día' : ' días')) + ')') + '</div>';
+}
+
+// ---------- Cobertura de datos ----------
+const MESES_CORTOS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function diasDelMes(ym){ const [y, m] = ym.split('-').map(Number); return new Date(Date.UTC(y, m, 0)).getUTCDate(); }
+function mesAnterior(ym, k){ let [y, m] = ym.split('-').map(Number); m -= k; while (m <= 0){ m += 12; y--; } return y + '-' + String(m).padStart(2, '0'); }
+function nombreMes(ym){ return MESES_CORTOS[Number(ym.slice(5)) - 1] + ' ' + ym.slice(0, 4); }
+function calcularCobertura(base, nMeses){
+  const fechasPorLot = new Map();
+  let ultimaFecha = '0000-00-00';
+  for (const r of base){
+    if (!fechasPorLot.has(r[1])) fechasPorLot.set(r[1], new Set());
+    fechasPorLot.get(r[1]).add(r[0]);
+    if (r[0] > ultimaFecha) ultimaFecha = r[0];
+  }
+  const ultimo = ultimaFecha.slice(0, 7);
+  // El mes en curso solo se compara contra los días ya transcurridos hasta el
+  // último registro: 6 sorteos al 6 de octubre es un mes completo, no un hueco.
+  const diasHasta = Number(ultimaFecha.slice(8, 10));
+  const meses = [];
+  for (let i = nMeses - 1; i >= 0; i--) meses.push(mesAnterior(ultimo, i));
+  const filas = [];
+  for (const [lot, fechas] of fechasPorLot){
+    if (fechas.size < 12) continue; // sorteos sueltos (extraordinarios): no tiene sentido medir cobertura
+    const porMes = {};
+    let primera = null;
+    for (const f of fechas){ const m = f.slice(0, 7); porMes[m] = (porMes[m] || 0) + 1; if (!primera || f < primera) primera = f; }
+    const capacidad = Math.max(...Object.values(porMes)); // su mes más completo de toda la historia
+    const tipo = capacidad >= 20 ? 'diario' : 'semanal';
+    const porSemana = Math.max(1, Math.round(capacidad * 7 / 31));
+    const celdas = meses.map(m => {
+      if (m < primera.slice(0, 7)) return { m, na: true };
+      const dim = m === ultimo ? diasHasta : diasDelMes(m);
+      const esperado = tipo === 'diario' ? capacidad * dim / 31 : porSemana * Math.floor(dim / 7);
+      const c = porMes[m] || 0;
+      if (esperado < 0.5) return { m, c, parcial: true }; // mes en curso aún sin un sorteo esperado
+      return { m, c, ratio: Math.min(1, c / esperado), enCurso: m === ultimo };
+    });
+    const validas = celdas.filter(x => !x.na && !x.parcial);
+    filas.push({ lot, tipo, capacidad, celdas,
+      cobertura: validas.length ? validas.reduce((s, x) => s + x.ratio, 0) / validas.length : null });
+  }
+  return { meses, filas };
+}
+function pintarCobertura(base){
+  const tabla = document.getElementById('tablaCobertura');
+  if (!tabla) return;
+  const grupo = document.getElementById('cobGrupo').value;
+  const nMeses = Number(document.getElementById('cobMeses').value);
+  const { meses, filas } = calcularCobertura(base || baseUnica(), nMeses);
+  const sel = filas.filter(f => grupo === 'todas' || f.tipo === grupo).sort((a, b) => a.lot.localeCompare(b.lot, 'es'));
+  const resumen = document.getElementById('cobResumen');
+  if (!sel.length){ tabla.innerHTML = ''; resumen.textContent = 'No hay loterías en este grupo.'; return; }
+  let html = '<tr><th class="lot">Lotería</th>' + meses.map(m => '<th>' + MESES_CORTOS[Number(m.slice(5)) - 1] + '<br>' + m.slice(2, 4) + '</th>').join('') + '<th>Prom.</th></tr>';
+  for (const f of sel){
+    html += '<tr><td class="lot" title="' + esc(f.lot) + '">' + esc(f.lot) + '</td>' + f.celdas.map(c => {
+      if (c.na) return '<td class="na" title="Antes de su primer sorteo registrado">·</td>';
+      if (c.parcial) return '<td class="na" title="Mes en curso">' + (c.c || '·') + '</td>';
+      const cls = c.c === 0 ? 'c0' : c.ratio < 0.5 ? 'c1' : c.ratio < 0.9 ? 'c2' : 'c3';
+      return '<td class="' + cls + '" title="' + esc(f.lot) + ' · ' + nombreMes(c.m) + (c.enCurso ? ' (mes en curso)' : '') + ': ' + c.c + ' sorteos (' +
+        Math.floor(100 * c.ratio) + '% de lo esperado' + (c.enCurso ? ' hasta hoy' : ' en un mes completo') + ')">' + c.c + '</td>';
+    }).join('') + '<td class="tot">' + (f.cobertura === null ? '—' : Math.floor(100 * f.cobertura) + '%') + '</td></tr>';
+  }
+  tabla.innerHTML = html;
+  const promMes = meses.map((m, i) => {
+    const vals = sel.map(f => f.celdas[i]).filter(c => !c.na && !c.parcial);
+    return vals.length ? vals.reduce((s, c) => s + c.ratio, 0) / vals.length : null;
+  });
+  const validos = promMes.filter(v => v !== null);
+  const global = validos.length ? validos.reduce((s, v) => s + v, 0) / validos.length : 0;
+  const huecos = meses.map((m, i) => ({ m, v: promMes[i] })).filter(x => x.v !== null && x.v < 0.5);
+  resumen.innerHTML = 'Cobertura promedio del grupo en la ventana: <b>' + Math.floor(100 * global) + '%</b>. ' +
+    (huecos.length ? 'Meses con menos de la mitad de los sorteos: ' + huecos.map(x => '<b>' + nombreMes(x.m) + '</b> (' + Math.floor(100 * x.v) + '%)').join(', ') + '.'
+                   : 'Ningún mes por debajo de la mitad.');
+}
+document.getElementById('cobGrupo').onchange = () => pintarCobertura();
+document.getElementById('cobMeses').onchange = () => pintarCobertura();
+
+// ---------- Historial de escaneos (huella de cada hallazgo) ----------
+let HISTORIAL_ESCANEOS = [];
+async function registrarEscaneo(tipo, r, rb){
+  HISTORIAL_ESCANEOS.unshift({
+    cuando: new Date().toISOString(), tipo, n: rb.n, desde: rb.desde, hasta: rb.hasta, huella: rb.huella,
+    pruebas: r.pruebas, umbral: Math.round(r.umbral * 100) / 100, total: r.alertas.length,
+    top: r.alertas.slice(0, 8).map(a => ({ lot: a.lot, det: a.detalle, z: Math.round(a.z * 100) / 100, s: a.sostenida }))
+  });
+  HISTORIAL_ESCANEOS = HISTORIAL_ESCANEOS.slice(0, 40);
+  await guardarAlmacen('chance-historial-escaneos', HISTORIAL_ESCANEOS);
+}
+function pintarHistorialEscaneos(){
+  for (const [id, tipo] of [['historialEscaneos', '4 cifras'], ['historialEscaneos3', '3 cifras']]){
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const lista = HISTORIAL_ESCANEOS.filter(h => h.tipo === tipo);
+    if (!lista.length){ el.innerHTML = ''; continue; }
+    el.innerHTML = '<details class="historial"><summary>Escaneos anteriores (' + lista.length + ')</summary>' +
+      lista.map(h => '<div class="esc-item"><b>' + esc(new Date(h.cuando).toLocaleString('es-CO', { dateStyle:'medium', timeStyle:'short' })) + '</b> · huella ' + esc(h.huella) +
+        ' · ' + fmtNum(h.n) + ' registros hasta ' + esc(h.hasta) + ' · ' + h.total + ' alertas (umbral z≥' + String(h.umbral).replace('.', ',') + ')' +
+        (h.top.length ? '<div class="aviso" style="margin-top:2px">' + h.top.slice(0, 4).map(a => esc(a.lot) + ' · ' + esc(a.det) + ' z=' + String(a.z).replace('.', ',')).join(' — ') + '</div>' : '') +
+        '</div>').join('') + '</details>';
+  }
+}
+
+// ---------- Registro de hipótesis ----------
+// Prueba secuencial de Wald: razón de verosimilitud H1 (tasa "si es real")
+// contra H0 (tasa del azar), acumulada SOLO con sorteos de fechas posteriores
+// al registro. Decide al llegar a 20:1 en cualquiera de los dos sentidos.
+const HIPOTESIS_SEMILLA = [
+  { id:'h-chontico-noche-d1', registro:'2026-07-31', loteria:'Chontico Noche', tipo:'agrupado', posicion:null, digitos:[1], p1:0.13, umbral:20,
+    origen:'Alerta de tendencia de dígitos de finales de julio de 2026 (z=4,54, "sostenida" en ambas mitades).',
+    notas:'En la base embebida el exceso se concentra en 2026 (mitad 1: z=−0,81; mitad 2: z=+4,49).' },
+  { id:'h-paisita1-c3-378', registro:'2026-10-07', loteria:'Paisita 1', tipo:'posicion', posicion:3, digitos:[3,7,8], p1:0.36, umbral:20,
+    origen:'Análisis del 7-oct-2026: chi² de la 3ª cifra p=9,3·10⁻⁵ en la base completa (único resultado que sobrevive a la corrección por comparaciones múltiples). Se replicó en datos que no se usaron para elegirlo: base embebida 69/176 = 39,2% frente a 30%.',
+    notas:'Aun si fuera real, apostar 2 cifras que empiecen por 3, 7 u 8 devolvería unos 65 centavos por peso con el pago mínimo de 50×. Conviene verificar una muestra de Paisita 1 contra la fuente oficial para descartar un error sistemático de transcripción.' },
+  { id:'h-cafeterito-dia-c4-2', registro:'2026-10-07', loteria:'Cafeterito Día', tipo:'posicion', posicion:4, digitos:[2], p1:0.15, umbral:20,
+    origen:'Análisis del 7-oct-2026 sobre el respaldo de registros agregados (el 2 salió 26 de 125 veces en la última cifra).',
+    cerrada:{ fecha:'2026-10-07', motivo:'No se replicó en datos independientes (base embebida: 8/123 = 6,5%).' } },
+  { id:'h-pick4-dia-c1-9', registro:'2026-10-07', loteria:'Pick 4 Día', tipo:'posicion', posicion:1, digitos:[9], p1:0.15, umbral:20,
+    origen:'Análisis del 7-oct-2026 sobre el respaldo de registros agregados (el 9 salió 26 de 124 veces en la primera cifra).',
+    cerrada:{ fecha:'2026-10-07', motivo:'No se replicó en datos independientes (base embebida: 17/176 = 9,7%).' } }
+];
+let HIPOTESIS = [];
+function fusionarSemillas(guardadas){
+  const lista = Array.isArray(guardadas) ? guardadas.filter(h => h && h.id) : [];
+  const ids = new Set(lista.map(h => h.id));
+  for (const s of HIPOTESIS_SEMILLA) if (!ids.has(s.id)) lista.push(JSON.parse(JSON.stringify(s)));
+  return lista;
+}
+async function guardarHipotesis(){ await guardarAlmacen('chance-hipotesis', HIPOTESIS); }
+function describirHipotesis(h){
+  const d = h.digitos;
+  const dig = d.length === 1 ? 'el ' + d[0] : 'el ' + d.slice(0, -1).join(', ') + ' o ' + d[d.length - 1];
+  const pos = h.tipo === 'agrupado' ? 'en cualquier posición' : 'en la ' + ['1ª','2ª','3ª','4ª'][h.posicion - 1] + ' cifra';
+  return h.loteria + ' · ' + dig + ' ' + pos;
+}
+function evaluarHipotesis(h, base){
+  const usar = h.tipo === 'agrupado' ? posicionesDe(h.loteria) : [h.posicion - 1];
+  const set = new Set(h.digitos);
+  const p0 = h.digitos.length / 10, p1 = h.p1, umbral = h.umbral || 20;
+  let n = 0, k = 0, sorteos = 0, nPre = 0, kPre = 0, sorteosPre = 0;
+  for (const r of base){
+    if (r[1] !== h.loteria) continue;
+    let ac = 0;
+    for (const p of usar) if (set.has(r[2].charCodeAt(p) - 48)) ac++;
+    if (r[0] > h.registro){ sorteos++; n += usar.length; k += ac; }
+    else { sorteosPre++; nPre += usar.length; kPre += ac; }
+  }
+  const a = Math.log(p1 / p0), b = Math.log((1 - p1) / (1 - p0));
+  const logLR = k * a + (n - k) * b;
+  const lnU = Math.log(umbral);
+  const estado = h.cerrada ? 'cerrada' : logLR >= lnU ? 'confirmada' : logLR <= -lnU ? 'descartada' : (sorteos ? 'curso' : 'sindatos');
+  const e0 = p0 * a + (1 - p0) * b, e1 = p1 * a + (1 - p1) * b; // avance esperado por cifra si es azar / si es real
+  return { p0, p1, umbral, n, k, sorteos, nPre, kPre, sorteosPre, logLR, lr: Math.exp(logLR), estado, porSorteo: usar.length,
+    faltanAzar: logLR > -lnU ? Math.ceil((-lnU - logLR) / e0 / usar.length) : 0,
+    faltanReal: logLR < lnU ? Math.ceil((lnU - logLR) / e1 / usar.length) : 0 };
+}
+function fmtRazon(x){ return x >= 100 ? fmtNum(Math.round(x)) : x.toFixed(1).replace('.', ','); }
+function textoEvidencia(lr){
+  if (!isFinite(lr)) return '—';
+  return lr >= 1 ? fmtRazon(lr) + ' : 1 a favor de que es real' : fmtRazon(1 / lr) + ' : 1 a favor del azar';
+}
+function tarjetaHipotesis(h, e){
+  const etq = { curso:'En curso', sindatos:'Esperando sorteos', confirmada:'Confirmada', descartada:'Descartada', cerrada:'Cerrada' }[e.estado];
+  const marca = Math.max(0, Math.min(100, 50 + 50 * e.logLR / Math.log(e.umbral)));
+  const dec = x => x.toFixed(1).replace('.', ',');
+  let html = '<div class="hip' + (e.estado === 'cerrada' ? ' inactiva' : '') + '" data-id="' + esc(h.id) + '">';
+  html += '<span class="badge ' + e.estado + '">' + etq + '</span>';
+  html += '<h3>' + esc(describirHipotesis(h)) + '</h3>';
+  html += '<div class="lin">Registrada el <b>' + esc(h.registro) + '</b> · azar <b>' + fmtPct(e.p0) + '</b> · si es real <b>' + fmtPct(e.p1) + '</b> (' + (e.p1 > e.p0 ? 'sale de más' : 'sale de menos') + ') · decide a <b>' + e.umbral + ':1</b></div>';
+  if (e.sorteos){
+    html += '<div class="lin">Desde el registro: <b>' + e.sorteos + '</b> sorteos' + (e.porSorteo > 1 ? ' (' + e.n + ' cifras)' : '') +
+      ' · <b>' + e.k + '</b> aciertos = <b>' + fmtPct(e.k / e.n) + '</b> · el azar esperaba ' + dec(e.n * e.p0) + '; "si es real", ' + dec(e.n * e.p1) + '</div>';
+    html += '<div class="evid"><div class="centro"></div><div class="marca" style="left:' + marca.toFixed(1) + '%"></div></div>' +
+      '<div class="evid-etq"><span>descartada (' + e.umbral + ':1 azar)</span><span>empate</span><span>confirmada (' + e.umbral + ':1 real)</span></div>';
+    html += '<div class="lin">Evidencia acumulada: <b>' + textoEvidencia(e.lr) + '</b></div>';
+  } else {
+    html += '<div class="lin"><b>Aún no hay sorteos posteriores al registro.</b> La prueba arranca con el primer resultado de una fecha posterior a ' + esc(h.registro) + '.</div>';
+  }
+  if (e.estado === 'curso' || e.estado === 'sindatos'){
+    html += '<div class="lin">Para decidir faltan, en promedio, ~<b>' + fmtNum(e.faltanAzar) + '</b> sorteos si es azar o ~<b>' + fmtNum(e.faltanReal) + '</b> si es real.</div>';
+  }
+  if (e.sorteosPre) html += '<div class="lin">Antes del registro (contexto, no cuenta): ' + fmtNum(e.sorteosPre) + ' sorteos · ' + fmtPct(e.kPre / e.nPre) + '</div>';
+  if (h.origen) html += '<div class="lin">Origen: ' + esc(h.origen) + '</div>';
+  if (h.notas) html += '<div class="lin">Notas: ' + esc(h.notas) + '</div>';
+  if (h.cerrada) html += '<div class="lin">Cerrada el ' + esc(h.cerrada.fecha) + ': ' + esc(h.cerrada.motivo) + '</div>';
+  html += '<div class="hip-acc">' + (h.cerrada ? '<button class="mini editar hip-reabrir">Reabrir</button>' : '<button class="mini editar hip-cerrar">Cerrar</button>') +
+    '<button class="mini quitar hip-borrar">Eliminar</button></div></div>';
+  return html;
+}
+function pintarHipotesis(base){
+  const cont = document.getElementById('hipLista');
+  if (!cont) return;
+  base = base || baseUnica();
+  const rb = resumenBase(base);
+  const orden = { curso:0, sindatos:1, confirmada:2, descartada:3, cerrada:4 };
+  const evals = HIPOTESIS.filter(h => !h.borrada).map(h => ({ h, e: evaluarHipotesis(h, base) }));
+  evals.sort((x, y) => orden[x.e.estado] - orden[y.e.estado] || y.h.registro.localeCompare(x.h.registro));
+  const cuenta = s => evals.filter(x => x.e.estado === s).length;
+  document.getElementById('hipResumen').innerHTML = '<b>' + evals.length + '</b> hipótesis · en curso: <b>' + (cuenta('curso') + cuenta('sindatos')) +
+    '</b> · confirmadas: <b>' + cuenta('confirmada') + '</b> · descartadas: <b>' + cuenta('descartada') + '</b> · cerradas: <b>' + cuenta('cerrada') + '</b>' +
+    '<br>Evaluadas con ' + fmtNum(rb.n) + ' registros hasta ' + rb.hasta + ' · huella <b>' + rb.huella + '</b>.';
+  cont.innerHTML = evals.length ? evals.map(({ h, e }) => tarjetaHipotesis(h, e)).join('') : '<div class="aviso">No hay hipótesis registradas.</div>';
+  cont.querySelectorAll('.hip').forEach(card => {
+    const h = HIPOTESIS.find(x => x.id === card.dataset.id);
+    if (!h) return;
+    const bc = card.querySelector('.hip-cerrar'), br = card.querySelector('.hip-reabrir'), bb = card.querySelector('.hip-borrar');
+    if (bc) bc.onclick = async () => {
+      const motivo = prompt('¿Por qué cierras esta hipótesis? (queda anotado)', '');
+      if (motivo === null) return;
+      h.cerrada = { fecha: fechaLocalHoy(), motivo: motivo.trim().slice(0, 300) || 'Cerrada a mano.' };
+      await guardarHipotesis(); pintarHipotesis();
+    };
+    if (br) br.onclick = async () => {
+      if (!confirm('¿Reabrir? La prueba sigue contando desde la fecha de registro original (' + h.registro + ').')) return;
+      delete h.cerrada; await guardarHipotesis(); pintarHipotesis();
+    };
+    if (bb) bb.onclick = async () => {
+      if (!confirm('¿Eliminar "' + describirHipotesis(h) + '" del registro? Mejor ciérrala si quieres conservar el historial.')) return;
+      h.borrada = true; await guardarHipotesis(); pintarHipotesis();
+    };
+  });
+}
+function poblarFormHipotesis(base){
+  const sel = document.getElementById('hipLot');
+  if (!sel) return;
+  const previo = sel.value;
+  const cuentas = {};
+  for (const r of (base || baseUnica())) cuentas[r[1]] = (cuentas[r[1]] || 0) + 1;
+  const lots = Object.keys(cuentas).filter(l => cuentas[l] >= 30).sort((a, b) => a.localeCompare(b, 'es'));
+  sel.innerHTML = lots.map(l => '<option value="' + esc(l) + '">' + esc(l) + ' (' + cuentas[l] + ')</option>').join('');
+  if (lots.includes(previo)) sel.value = previo;
+  actualizarPosicionesHip();
+}
+function actualizarPosicionesHip(){
+  const lot = document.getElementById('hipLot').value || '';
+  const selPos = document.getElementById('hipPos');
+  const prev = selPos.value;
+  selPos.innerHTML = posicionesDe(lot).map(p => '<option value="' + (p + 1) + '">' + ['1ª (miles)','2ª (centenas)','3ª (decenas)','4ª (unidades)'][p] + '</option>').join('');
+  if ([...selPos.options].some(o => o.value === prev)) selPos.value = prev;
+  document.getElementById('hipPosCampo').style.display = document.getElementById('hipTipo').value === 'agrupado' ? 'none' : '';
+}
+function digitosDelFormulario(){
+  return [...new Set((document.getElementById('hipDig').value.match(/\d/g) || []).map(Number))].sort((a, b) => a - b);
+}
+document.getElementById('hipLot').onchange = actualizarPosicionesHip;
+document.getElementById('hipTipo').onchange = actualizarPosicionesHip;
+document.getElementById('hipDig').oninput = () => {
+  const d = digitosDelFormulario();
+  document.getElementById('hipFormAviso').innerHTML = d.length && d.length < 10
+    ? 'Con ' + d.length + ' dígito(s) el azar es <b>' + fmtPct(d.length / 10) + '</b>. La tasa "si es real" debe ser distinta: mayor si crees que salen de más, menor si salen de menos. Mejor un efecto modesto que lo observado en el escaneo, que siempre exagera.'
+    : '';
+};
+document.getElementById('btnHipRegistrar').onclick = async () => {
+  const aviso = document.getElementById('hipFormAviso');
+  const lot = document.getElementById('hipLot').value;
+  const tipo = document.getElementById('hipTipo').value;
+  const posicion = tipo === 'agrupado' ? null : Number(document.getElementById('hipPos').value);
+  const digitos = digitosDelFormulario();
+  const p1 = parseFloat(String(document.getElementById('hipP1').value).replace(',', '.')) / 100;
+  const notas = document.getElementById('hipNotas').value.trim().slice(0, 300);
+  const error = m => { aviso.innerHTML = '<b style="color:#C4443A">' + m + '</b>'; };
+  if (!lot) return error('Elige una lotería.');
+  if (!digitos.length || digitos.length > 9) return error('Escribe entre 1 y 9 dígitos distintos (por ejemplo: 3,7,8).');
+  const p0 = digitos.length / 10;
+  if (!(p1 > 0 && p1 < 1)) return error('Escribe la tasa "si es real" como un porcentaje entre 0 y 100.');
+  if (Math.abs(p1 - p0) < 0.005) return error('La tasa "si es real" tiene que ser distinta de la del azar (' + fmtPct(p0) + ').');
+  const igual = HIPOTESIS.find(h => !h.borrada && !h.cerrada && h.loteria === lot && h.tipo === tipo && h.posicion === posicion && h.digitos.join() === digitos.join());
+  if (igual) return error('Ya hay una hipótesis abierta igual, registrada el ' + igual.registro + '.');
+  const h = { id: 'u-' + Date.now().toString(36), registro: fechaLocalHoy(), loteria: lot, tipo, posicion, digitos,
+    p1: Math.round(p1 * 10000) / 10000, umbral: 20, origen: notas, creada: new Date().toISOString() };
+  HIPOTESIS.push(h);
+  await guardarHipotesis();
+  aviso.innerHTML = '✓ Registrada: <b>' + esc(describirHipotesis(h)) + '</b>. Cuenta desde el primer sorteo con fecha posterior a hoy (' + h.registro + ').';
+  document.getElementById('hipDig').value = ''; document.getElementById('hipP1').value = ''; document.getElementById('hipNotas').value = '';
+  pintarHipotesis();
+};
+function prellenarHipotesisDesdeAlerta(d){
+  activarTab('hipotesis');
+  pintarHipotesis();
+  const sel = document.getElementById('hipLot');
+  if (![...sel.options].some(o => o.value === d.lot)) poblarFormHipotesis();
+  sel.value = d.lot;
+  document.getElementById('hipTipo').value = 'agrupado';
+  actualizarPosicionesHip();
+  document.getElementById('hipDig').value = d.dig;
+  const obs = Number(d.obs), esp = Number(d.esp);
+  const tasaObs = esp > 0 ? 0.1 * obs / esp : 0.1;
+  const sugerida = 0.1 + (tasaObs - 0.1) / 2; // a mitad de camino: corrige el sesgo del ganador
+  document.getElementById('hipP1').value = (100 * sugerida).toFixed(1).replace('.', ',');
+  document.getElementById('hipNotas').value = 'Alerta del escaneo del ' + fechaLocalHoy() + ': observado ' + fmtPct(tasaObs) + ' frente a 10%.';
+  document.getElementById('hipFormAviso').innerHTML = 'Formulario lleno desde la alerta. La tasa "si es real" quedó a mitad de camino entre el azar y lo observado, ' +
+    'porque lo que se ve en un escaneo siempre exagera (sesgo del ganador). Revisa y pulsa <b>Registrar hipótesis</b>.';
+  document.getElementById('btnHipRegistrar').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+// ---------- Carga y pintado ----------
+async function cargarV30(){
+  const cuar = await leerAlmacen('chance-cuarentena', []);
+  CUARENTENA = Array.isArray(cuar) ? cuar : [];
+  const blanca = await leerAlmacen('chance-lista-blanca', []);
+  LISTA_BLANCA_USUARIO = new Set(Array.isArray(blanca) ? blanca : []);
+  LISTA_BLANCA_USUARIO.forEach(n => { MAPA_CANONICO[quitarTildes(n)] = n; });
+  const ign = await leerAlmacen('chance-ignorados', []);
+  IGNORADOS_USUARIO = new Set(Array.isArray(ign) ? ign : []);
+  const alias = await leerAlmacen('chance-alias-usuario', {});
+  ALIAS_USUARIO = alias && typeof alias === 'object' && !Array.isArray(alias) ? alias : {};
+  HIPOTESIS = fusionarSemillas(await leerAlmacen('chance-hipotesis', null));
+  await guardarHipotesis();
+  const hist = await leerAlmacen('chance-historial-escaneos', []);
+  HISTORIAL_ESCANEOS = Array.isArray(hist) ? hist : [];
+}
+function pintarV30(){
+  const base = baseUnica();
+  pintarHuella(base);
+  pintarBandeja();
+  pintarEstadoCaptura();
+  pintarCobertura(base);
+  poblarFormHipotesis(base);
+  pintarHipotesis(base);
+  pintarHistorialEscaneos();
+}
+// ==/V30==
+
 function activarTab(tab){
   document.querySelectorAll('.panel-lab').forEach(el => el.style.display = tab === 'lab' ? '' : 'none');
+  document.querySelectorAll('.panel-hipotesis').forEach(el => el.style.display = tab === 'hipotesis' ? '' : 'none');
   document.querySelectorAll('.panel-registro').forEach(el => el.style.display = tab === 'registro' ? '' : 'none');
   document.querySelectorAll('.panel-balotas').forEach(el => el.style.display = tab === 'balotas' ? '' : 'none');
   document.querySelectorAll('.panel-cifras3').forEach(el => el.style.display = tab === 'cifras3' ? '' : 'none');
   document.getElementById('tabBtnLab').classList.toggle('activo', tab === 'lab');
+  document.getElementById('tabBtnHip').classList.toggle('activo', tab === 'hipotesis');
   document.getElementById('tabBtnReg').classList.toggle('activo', tab === 'registro');
   document.getElementById('tabBtnBal').classList.toggle('activo', tab === 'balotas');
   document.getElementById('tabBtnCifras3').classList.toggle('activo', tab === 'cifras3');
   window.scrollTo({top:0, behavior:'instant'});
 }
 document.getElementById('tabBtnLab').onclick = () => activarTab('lab');
+document.getElementById('tabBtnHip').onclick = () => { pintarHipotesis(); activarTab('hipotesis'); };
 document.getElementById('tabBtnReg').onclick = () => activarTab('registro');
 document.getElementById('tabBtnBal').onclick = () => activarTab('balotas');
 document.getElementById('tabBtnCifras3').onclick = () => activarTab('cifras3');
@@ -2335,11 +3209,14 @@ document.getElementById('btnAlertas').onclick = () => {
   aviso.textContent = 'Escaneando…';
   setTimeout(() => {
     const r = escanearAlertas(baseCompleta());
+    const rb = resumenBase(baseUnica());
     // Cuántas alertas esperaríamos por PURO AZAR con esta cantidad de pruebas
     const espPorAzar = r.pruebas * 0.0455; // P(|z|>=2) en dos colas
     aviso.innerHTML = 'Escaneadas <b>' + r.loterias + '</b> loterías (' + r.pruebas + ' pruebas: 5 métodos + 10 dígitos por lotería). ' +
       'Umbral corregido por ese número de pruebas: <b>z≥' + fmt(r.umbral,2) + '</b>. ' +
-      'Solo por azar se esperarían <b>~' + fmt(espPorAzar,0) + '</b> alertas de z≥2; encontradas: <b>' + r.alertas.length + '</b>.';
+      'Solo por azar se esperarían <b>~' + fmt(espPorAzar,0) + '</b> alertas de z≥2; encontradas: <b>' + r.alertas.length + '</b>.' +
+      '<br>Datos del escaneo: ' + rb.n.toLocaleString('es-CO') + ' registros · ' + rb.desde + ' → ' + rb.hasta + ' · huella <b>' + rb.huella + '</b> (queda guardado en "Escaneos anteriores").';
+    registrarEscaneo('4 cifras', r, rb).then(() => pintarHistorialEscaneos());
 
     if (!r.alertas.length){
       document.getElementById('alertasResultado').innerHTML =
@@ -2361,9 +3238,13 @@ document.getElementById('btnAlertas').onclick = () => {
       else { lectura = 'Sin historia suficiente para comprobar'; color = 'var(--muted)'; }
       const persTxt = (a.zm1 === null || a.zm2 === null) ? '—'
         : 'm1 ' + fmt(a.zm1,2) + ' · m2 ' + fmt(a.zm2,2);
+      // v30: las alertas de dígito se pueden registrar como hipótesis con un clic
+      const btnReg = a.tipo === 'dígito'
+        ? ' <button class="mini reg" data-lot="' + esc(a.lot) + '" data-dig="' + a.detalle.replace(/\D/g, '') + '" data-obs="' + a.obs + '" data-esp="' + a.esperado + '">Registrar</button>'
+        : '';
       html += '<tr style="border-bottom:1px solid var(--borde)">' +
         '<td style="padding:8px"><b>' + a.lot + '</b></td>' +
-        '<td style="padding:8px">' + a.detalle + '</td>' +
+        '<td style="padding:8px; white-space:nowrap">' + a.detalle + btnReg + '</td>' +
         '<td style="padding:8px; text-align:right">' + a.n + '</td>' +
         '<td style="padding:8px; text-align:right"><b>' + fmt(a.z,2) + '</b></td>' +
         '<td style="padding:8px">' + persTxt + '</td>' +
@@ -2373,12 +3254,14 @@ document.getElementById('btnAlertas').onclick = () => {
     html += '<div class="nota-honesta" style="margin-top:14px"><b>Cómo leer esto:</b> ' +
       sost.length + ' de ' + r.alertas.length + ' alertas se sostienen en ambas mitades de su historia, y ' +
       cruzanUmbral.length + ' superan el umbral corregido (z≥' + fmt(r.umbral,2) + '). ' +
-      'Una alerta solo merece atención si cumple <b>las dos cosas</b>. ' +
+      '<b>Ojo con la persistencia:</b> las dos mitades salen de los mismos datos que produjeron la alerta, así que una alerta fuerte casi siempre "se sostiene" aunque sea ruido ' +
+      '(con z=4,5, el puro azar pasa ese filtro cerca del 98% de las veces). Sirve para descartar, no para confirmar. ' +
+      '<b>La única validación real es registrar la alerta como hipótesis</b> (botón Registrar en las alertas de dígito) y dejar que decidan los sorteos que todavía no han ocurrido. ' +
       'Además, revisar este panel cada semana multiplica las oportunidades de que aparezca una falsa alarma: ' +
       'con revisión semanal durante un año, la probabilidad de ver al menos una señal falsa supera el 90%, ' +
-      'aunque cada escaneo esté bien calculado. Lo que vale es que una misma alerta siga apareciendo, sostenida, ' +
-      'conforme crecen los datos — no que aparezca una vez.</div>';
+      'aunque cada escaneo esté bien calculado.</div>';
     document.getElementById('alertasResultado').innerHTML = html;
+    document.querySelectorAll('#alertasResultado button.reg').forEach(b => b.onclick = () => prellenarHipotesisDesdeAlerta(b.dataset));
   }, 30);
 };
 
@@ -2387,10 +3270,13 @@ document.getElementById('btnAlertas3').onclick = () => {
   aviso.textContent = 'Escaneando…';
   setTimeout(() => {
     const r = escanearAlertas3(baseCompleta());
+    const rb = resumenBase(baseUnica());
     const espPorAzar = r.pruebas * 0.0455; // P(|z|>=2) en dos colas
     aviso.innerHTML = 'Escaneadas <b>' + r.loterias + '</b> loterías (' + r.pruebas + ' pruebas: 5 métodos + 10 dígitos por lotería, sobre 3 cifras). ' +
       'Umbral corregido por ese número de pruebas: <b>z≥' + fmt(r.umbral,2) + '</b>. ' +
-      'Solo por azar se esperarían <b>~' + fmt(espPorAzar,0) + '</b> alertas de z≥2; encontradas: <b>' + r.alertas.length + '</b>.';
+      'Solo por azar se esperarían <b>~' + fmt(espPorAzar,0) + '</b> alertas de z≥2; encontradas: <b>' + r.alertas.length + '</b>.' +
+      '<br>Datos del escaneo: ' + rb.n.toLocaleString('es-CO') + ' registros · ' + rb.desde + ' → ' + rb.hasta + ' · huella <b>' + rb.huella + '</b>.';
+    registrarEscaneo('3 cifras', r, rb).then(() => pintarHistorialEscaneos());
 
     if (!r.alertas.length){
       document.getElementById('alertasResultado3').innerHTML =
@@ -2535,19 +3421,41 @@ document.getElementById('btnAnalizar3').onclick = () => {
   resDiv.innerHTML = html;
 };
 
-document.getElementById('btnExportar').onclick = () => {
-  if (!NUEVOS.length){ alert('No tienes registros agregados para exportar. La base incluida en la app no necesita respaldo.'); return; }
-  // Exportar SOLO los registros agregados, en el mismo formato de la importación masiva
-  const lineas = NUEVOS.slice().sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)
-    .map(r => r[0] + ',' + campoSeguroCSV(r[1]) + ',' + r[2]);
-  const encabezado = '# Respaldo Laboratorio de Chance — ' + NUEVOS.length + ' registros — ' + new Date().toISOString().slice(0,10) + '\n';
-  const blob = new Blob([encabezado + lineas.join('\n')], {type:'text/csv;charset=utf-8'});
+function descargarTexto(texto, nombreArchivo){
+  const blob = new Blob([texto], {type:'text/csv;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'respaldo-chance-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = nombreArchivo;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+document.getElementById('btnExportar').onclick = () => {
+  if (!NUEVOS.length){ alert('No tienes registros agregados para exportar. La base incluida en la app no necesita respaldo.'); return; }
+  // Exportar SOLO los registros agregados, en el mismo formato de la importación masiva
+  const ordenados = NUEVOS.slice().sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0);
+  const lineas = ordenados.map(r => r[0] + ',' + campoSeguroCSV(r[1]) + ',' + r[2]);
+  const hoy = new Date().toISOString().slice(0,10);
+  const rb = resumenBase(ordenados);
+  // v30: el encabezado dice qué contiene el archivo y con qué datos se generó,
+  // para que nadie (ni el análisis) lo confunda con la base completa.
+  const encabezado = '# Respaldo Laboratorio de Chance ' + VERSION_APP + ' — ' + NUEVOS.length + ' registros — ' + hoy + '\n' +
+    '# contenido: solo los registros agregados por ti; la base embebida (' + DATOS.length + ' registros) viaja dentro de la app\n' +
+    '# registros: ' + rb.n + ' · desde ' + rb.desde + ' · hasta ' + rb.hasta + ' · huella ' + rb.huella + '\n';
+  descargarTexto(encabezado + lineas.join('\n'), 'respaldo-chance-' + hoy + '.csv');
+};
+document.getElementById('btnExportarCompleta').onclick = () => {
+  const base = baseUnica();
+  const clavesEmb = new Set(DATOS.map(r => r[0] + '|' + normalizarLoteria(r[1]) + '|' + r[2]));
+  let nEmb = 0;
+  for (const r of base) if (clavesEmb.has(r[0] + '|' + r[1] + '|' + r[2])) nEmb++;
+  const rb = resumenBase(base);
+  const hoy = new Date().toISOString().slice(0,10);
+  const encabezado = '# Base completa Laboratorio de Chance ' + VERSION_APP + ' — ' + rb.n + ' registros — ' + hoy + '\n' +
+    '# fuentes: base embebida ' + nEmb + ' · agregados ' + (rb.n - nEmb) + ' · sin duplicados exactos ni registros en cuarentena\n' +
+    '# registros: ' + rb.n + ' · desde ' + rb.desde + ' · hasta ' + rb.hasta + ' · huella ' + rb.huella + '\n';
+  const lineas = base.map(r => r[0] + ',' + campoSeguroCSV(r[1]) + ',' + r[2]);
+  descargarTexto(encabezado + lineas.join('\n'), 'base-completa-chance-' + hoy + '.csv');
 };
 
 document.getElementById('btnImportarArchivo').onclick = () => {
@@ -2563,17 +3471,23 @@ document.getElementById('archivoRespaldo').onchange = (ev) => {
     // valida fechas reales y separa duplicados exactos de conflictos).
     const existentes = new Map(baseCompleta().map(r => [r[0] + '|' + r[1], r[2]]));
     const res = parsearImportacion(texto, document.getElementById('fFecha').value, existentes);
+    const aCuarentena = await agregarACuarentena(res.cuarentena, 'archivo');
     if (res.ok.length){
       NUEVOS = NUEVOS.concat(res.ok);
       ULTIMO_LOTE_IMPORT = res.ok;
       document.getElementById('btnDeshacerImport').style.display = '';
       await guardarNuevos();
-      refrescarTodo();
     }
+    if (res.ok.length || aCuarentena) refrescarTodo();
     let msj = 'Respaldo importado: ' + res.ok.length + ' registros nuevos agregados';
     if (res.duplicados.length) msj += ' · ' + res.duplicados.length + ' ya estaban (omitidos)';
+    if (aCuarentena) msj += ' · ' + aCuarentena + ' a la bandeja de cuarentena (nombre desconocido)';
+    if (res.excluidos.length) msj += ' · ' + res.excluidos.length + ' excluidos por regla';
     if (res.errores.length) msj += ' · ' + res.errores.length + ' líneas no reconocidas';
     msj += '.';
+    // v30: verificación contra el encabezado del propio archivo
+    const v = verificarArchivoRespaldo(texto);
+    if (v) msj += '\n\n' + v;
     if (res.conflictos.length){
       msj += '\n\n⚠ ' + res.conflictos.length + ' CONFLICTO(S) — misma lotería y fecha, número distinto al ya guardado. NO se importaron:\n' +
         res.conflictos.slice(0, 20).map(c => '• línea ' + c.linea + ': ' + c.fecha + ' ' + c.lot + ' — guardado ' + c.numExistente + ' vs. archivo ' + c.numNuevo).join('\n') +
@@ -2681,7 +3595,9 @@ document.getElementById('selLot3').onchange = actualizar3;
   document.getElementById('fFecha').value = new Date().toISOString().slice(0, 10);
   document.getElementById('fFechaBal').value = new Date().toISOString().slice(0, 10);
   await cargarNuevos();
+  await cargarV30();
   await cargarNuevosBalotas();
+  await autocargarSiHayNuevos();
   refrescarTodo();
   poblarSelectorBalotas();
   actualizarBalotas();

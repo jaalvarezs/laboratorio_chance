@@ -1,6 +1,13 @@
-const CACHE = 'lab-chance-v29';
+const CACHE = 'lab-chance-v30';
+// cache: 'reload' obliga a bajar del servidor una copia FRESCA de cada archivo
+// al instalar una versión nueva, sin pasar por la caché HTTP del navegador.
+// Sin esto, si la app se abrió con Ctrl+Shift+R en los 10 minutos previos a
+// subir una versión nueva, el service worker nuevo guardaba la copia VIEJA de
+// la página (GitHub Pages permite guardarla 10 minutos) y la app se quedaba
+// pegada en la versión anterior aunque se recargara.
+const PRECARGA = ['./', './index.html', './manifest.json'];
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './index.html', './manifest.json'])));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(PRECARGA.map(u => new Request(u, { cache: 'reload' })))));
   self.skipWaiting();
 });
 self.addEventListener('activate', e => {
