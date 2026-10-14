@@ -56,3 +56,29 @@ jobs:
             git commit -m "Captura automática: $(date -u +'%Y-%m-%d %H:%M UTC')"
             git push
           fi
+
+      # v30 -- Monitor: si la captura deja de traer resultados (el sitio cambió,
+      # bloqueó al robot, etc.), la corrida termina en ROJO en vez de pasar en
+      # silencio. GitHub avisa por correo cuando falla una tarea programada.
+      # Va al final a propósito: lo que sí se haya capturado ya quedó subido.
+      - name: Verificar que la captura siga trayendo resultados
+        run: |
+          python - <<'PY'
+          import json, sys, datetime, pathlib
+          ruta = pathlib.Path("captura_acumulada.json")
+          if not ruta.exists():
+              print("::error::No existe captura_acumulada.json: la captura nunca ha guardado resultados.")
+              sys.exit(1)
+          filas = json.loads(ruta.read_text(encoding="utf-8"))
+          fechas = sorted({f.get("fecha", "") for f in filas if f.get("fecha")})
+          if not fechas:
+              print("::error::captura_acumulada.json está vacío.")
+              sys.exit(1)
+          ultima = datetime.date.fromisoformat(fechas[-1])
+          hoy = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=5)).date()  # hora Colombia
+          atraso = (hoy - ultima).days
+          print(f"Último día capturado: {ultima} · hoy (Colombia): {hoy} · atraso: {atraso} día(s)")
+          if atraso > 3:
+              print(f"::error::La captura no trae resultados nuevos desde {ultima} ({atraso} días). Revisa si cambió el sitio de origen.")
+              sys.exit(1)
+          PY
