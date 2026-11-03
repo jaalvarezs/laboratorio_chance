@@ -10068,5 +10068,1810 @@
     "fecha": "2026-10-21",
     "loteria": "Valle",
     "numero": "8084"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Astro Luna",
+    "numero": "9520"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Astro Sol",
+    "numero": "9117"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Bogotá",
+    "numero": "9392"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Cafeterito Día",
+    "numero": "2931"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Cafeterito Noche",
+    "numero": "0996"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Chontico Millonario",
+    "numero": "2976"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Chontico Noche",
+    "numero": "3588"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Dorado Mañana",
+    "numero": "5009"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Dorado Noche",
+    "numero": "7089"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Dorado Tarde",
+    "numero": "6670"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "El Motilon 1",
+    "numero": "6031"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "El Motilon 2",
+    "numero": "8376"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "El Pijao de Oro",
+    "numero": "6348"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "El saman de la suerte",
+    "numero": "4646"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Antioqueñita 1",
+    "numero": "9037"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Antioqueñita 2",
+    "numero": "5940"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Caribeña 1",
+    "numero": "5022"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Caribeña 2",
+    "numero": "4706"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Culona Día",
+    "numero": "5877"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Culona Noche",
+    "numero": "3661"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Fantastica 1",
+    "numero": "0336"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "La Fantastica 2",
+    "numero": "0713"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Paisita 1",
+    "numero": "6041"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Paisita 2",
+    "numero": "7660"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Pick 3 Día",
+    "numero": "0827"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Pick 3 Noche",
+    "numero": "0574"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Pick 4 Día",
+    "numero": "7928"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Pick 4 Noche",
+    "numero": "8338"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Quindío",
+    "numero": "2398"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Sinuano Día",
+    "numero": "5451"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Sinuano Noche",
+    "numero": "0238"
+  },
+  {
+    "fecha": "2026-10-22",
+    "loteria": "Super Chontico Noche Millonario",
+    "numero": "5838"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Astro Luna",
+    "numero": "3289"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Astro Sol",
+    "numero": "9977"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Cafeterito Día",
+    "numero": "1841"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Cafeterito Noche",
+    "numero": "7501"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Chontico Millonario",
+    "numero": "2457"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Chontico Noche",
+    "numero": "4289"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Dorado Mañana",
+    "numero": "6729"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Dorado Noche",
+    "numero": "9023"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Dorado Tarde",
+    "numero": "4083"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "El Motilon 1",
+    "numero": "5825"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "El Motilon 2",
+    "numero": "2452"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "El Pijao de Oro",
+    "numero": "7920"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "El saman de la suerte",
+    "numero": "3882"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Antioqueñita 1",
+    "numero": "9409"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Antioqueñita 2",
+    "numero": "3645"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Caribeña 1",
+    "numero": "6217"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Caribeña 2",
+    "numero": "3066"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Culona Día",
+    "numero": "5215"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Culona Noche",
+    "numero": "4338"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Fantastica 1",
+    "numero": "3887"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "La Fantastica 2",
+    "numero": "4599"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Lotería de Medellín",
+    "numero": "3755"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Paisita 1",
+    "numero": "2224"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Paisita 2",
+    "numero": "2967"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Pick 3 Día",
+    "numero": "0213"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Pick 3 Noche",
+    "numero": "0905"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Pick 4 Día",
+    "numero": "5520"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Pick 4 Noche",
+    "numero": "6055"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Risaralda",
+    "numero": "7470"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Santander",
+    "numero": "0579"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Sinuano Día",
+    "numero": "1573"
+  },
+  {
+    "fecha": "2026-10-23",
+    "loteria": "Sinuano Noche",
+    "numero": "9565"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Astro Luna",
+    "numero": "0460"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Astro Sol",
+    "numero": "6273"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Boyacá",
+    "numero": "5707"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Cafeterito Día",
+    "numero": "8432"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Cafeterito Noche",
+    "numero": "2675"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Cauca",
+    "numero": "9458"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Chontico Millonario",
+    "numero": "0121"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Chontico Noche",
+    "numero": "3161"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Dorado Mañana",
+    "numero": "3602"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Dorado Noche",
+    "numero": "5366"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Dorado Tarde",
+    "numero": "6862"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "El Motilon 1",
+    "numero": "2472"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "El Motilon 2",
+    "numero": "8519"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "El Pijao de Oro",
+    "numero": "3251"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "El saman de la suerte",
+    "numero": "9408"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Antioqueñita 1",
+    "numero": "0431"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Antioqueñita 2",
+    "numero": "7106"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Caribeña 1",
+    "numero": "0531"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Caribeña 2",
+    "numero": "7260"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Culona Día",
+    "numero": "5374"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Culona Noche",
+    "numero": "8542"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Fantastica 1",
+    "numero": "9111"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "La Fantastica 2",
+    "numero": "9702"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Paisita 1",
+    "numero": "8786"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Paisita 2",
+    "numero": "9593"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Paisita 3",
+    "numero": "9120"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Pick 3 Día",
+    "numero": "0419"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Pick 3 Noche",
+    "numero": "0122"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Pick 4 Día",
+    "numero": "9946"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Pick 4 Noche",
+    "numero": "8810"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Sinuano Día",
+    "numero": "2735"
+  },
+  {
+    "fecha": "2026-10-24",
+    "loteria": "Sinuano Noche",
+    "numero": "9509"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Astro Luna",
+    "numero": "0743"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Cafeterito Noche",
+    "numero": "7646"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Chontico Millonario",
+    "numero": "4322"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Chontico Noche",
+    "numero": "7067"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Dorado Noche",
+    "numero": "2080"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "El Motilon 1",
+    "numero": "2531"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "El Motilon 2",
+    "numero": "9147"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "El Pijao de Oro",
+    "numero": "7377"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "El saman de la suerte",
+    "numero": "0810"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Antioqueñita 1",
+    "numero": "9377"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Antioqueñita 2",
+    "numero": "9156"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Caribeña 1",
+    "numero": "8822"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Caribeña 2",
+    "numero": "6274"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Culona Día",
+    "numero": "7813"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Culona Noche",
+    "numero": "7021"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "La Fantastica 2",
+    "numero": "1810"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Paisita 1",
+    "numero": "6683"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Paisita 2",
+    "numero": "9205"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Pick 3 Día",
+    "numero": "0858"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Pick 3 Noche",
+    "numero": "0267"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Pick 4 Día",
+    "numero": "6422"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Pick 4 Noche",
+    "numero": "5376"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Sinuano Día",
+    "numero": "6918"
+  },
+  {
+    "fecha": "2026-10-25",
+    "loteria": "Sinuano Noche",
+    "numero": "3133"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Astro Luna",
+    "numero": "3424"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Astro Sol",
+    "numero": "7333"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Cafeterito Día",
+    "numero": "4980"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Cafeterito Noche",
+    "numero": "6538"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Chontico Millonario",
+    "numero": "8666"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Chontico Noche",
+    "numero": "3634"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Cundinamarca",
+    "numero": "7099"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Dorado Mañana",
+    "numero": "3383"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Dorado Noche",
+    "numero": "6423"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Dorado Tarde",
+    "numero": "7075"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "El Motilon 1",
+    "numero": "8077"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "El Motilon 2",
+    "numero": "9304"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "El Pijao de Oro",
+    "numero": "2385"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "El saman de la suerte",
+    "numero": "1514"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Antioqueñita 1",
+    "numero": "4902"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Antioqueñita 2",
+    "numero": "7035"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Caribeña 1",
+    "numero": "9501"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Caribeña 2",
+    "numero": "1258"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Culona Día",
+    "numero": "5918"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Culona Noche",
+    "numero": "2420"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Fantastica 1",
+    "numero": "5081"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "La Fantastica 2",
+    "numero": "4711"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Paisita 1",
+    "numero": "7492"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Paisita 2",
+    "numero": "7722"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Pick 3 Día",
+    "numero": "0819"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Pick 3 Noche",
+    "numero": "0179"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Pick 4 Día",
+    "numero": "7177"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Pick 4 Noche",
+    "numero": "9845"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Sinuano Día",
+    "numero": "2503"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Sinuano Noche",
+    "numero": "9191"
+  },
+  {
+    "fecha": "2026-10-26",
+    "loteria": "Tolima",
+    "numero": "0902"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Astro Luna",
+    "numero": "9906"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Astro Sol",
+    "numero": "9761"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Cafeterito Día",
+    "numero": "5521"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Cafeterito Noche",
+    "numero": "7782"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Chontico Millonario",
+    "numero": "5644"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Chontico Noche",
+    "numero": "0865"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Cruz Roja",
+    "numero": "8663"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Dorado Mañana",
+    "numero": "5814"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Dorado Noche",
+    "numero": "3809"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Dorado Tarde",
+    "numero": "1336"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "El Motilon 1",
+    "numero": "1100"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "El Motilon 2",
+    "numero": "7771"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "El Pijao de Oro",
+    "numero": "5835"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "El saman de la suerte",
+    "numero": "2067"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Huila",
+    "numero": "8262"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Antioqueñita 1",
+    "numero": "9081"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Antioqueñita 2",
+    "numero": "6664"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Caribeña 1",
+    "numero": "1993"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Caribeña 2",
+    "numero": "9792"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Culona Día",
+    "numero": "5932"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Culona Noche",
+    "numero": "5377"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Fantastica 1",
+    "numero": "3987"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "La Fantastica 2",
+    "numero": "5738"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Paisita 1",
+    "numero": "7274"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Paisita 2",
+    "numero": "8185"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Pick 3 Día",
+    "numero": "0618"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Pick 3 Noche",
+    "numero": "0245"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Pick 4 Día",
+    "numero": "3675"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Pick 4 Noche",
+    "numero": "6793"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Sinuano Día",
+    "numero": "8258"
+  },
+  {
+    "fecha": "2026-10-27",
+    "loteria": "Sinuano Noche",
+    "numero": "4081"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Astro Luna",
+    "numero": "7047"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Astro Sol",
+    "numero": "6334"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Cafeterito Día",
+    "numero": "0714"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Cafeterito Noche",
+    "numero": "8860"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Chontico Millonario",
+    "numero": "5369"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Chontico Noche",
+    "numero": "1527"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Dorado Mañana",
+    "numero": "5269"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Dorado Noche",
+    "numero": "4816"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Dorado Tarde",
+    "numero": "8870"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "El Motilon 1",
+    "numero": "1029"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "El Motilon 2",
+    "numero": "9901"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "El Pijao de Oro",
+    "numero": "5597"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "El saman de la suerte",
+    "numero": "4236"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Antioqueñita 1",
+    "numero": "7566"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Antioqueñita 2",
+    "numero": "4111"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Caribeña 1",
+    "numero": "6762"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Caribeña 2",
+    "numero": "5132"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Culona Día",
+    "numero": "4167"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Culona Noche",
+    "numero": "9976"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Fantastica 1",
+    "numero": "0964"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "La Fantastica 2",
+    "numero": "5436"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Manizales",
+    "numero": "4241"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Meta",
+    "numero": "7443"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Paisita 1",
+    "numero": "1989"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Paisita 2",
+    "numero": "5982"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Pick 3 Día",
+    "numero": "0336"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Pick 3 Noche",
+    "numero": "0135"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Pick 4 Día",
+    "numero": "7428"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Pick 4 Noche",
+    "numero": "5743"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Sinuano Día",
+    "numero": "0492"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Sinuano Noche",
+    "numero": "8516"
+  },
+  {
+    "fecha": "2026-10-28",
+    "loteria": "Valle",
+    "numero": "7544"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Astro Luna",
+    "numero": "5045"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Astro Sol",
+    "numero": "9573"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Bogotá",
+    "numero": "0500"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Cafeterito Día",
+    "numero": "9201"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Cafeterito Noche",
+    "numero": "4127"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Chontico Millonario",
+    "numero": "5928"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Chontico Noche",
+    "numero": "6296"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Dorado Mañana",
+    "numero": "0496"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Dorado Noche",
+    "numero": "9817"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Dorado Tarde",
+    "numero": "5847"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "El Motilon 1",
+    "numero": "4850"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "El Motilon 2",
+    "numero": "0601"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "El Pijao de Oro",
+    "numero": "1435"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "El saman de la suerte",
+    "numero": "8800"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Antioqueñita 1",
+    "numero": "6365"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Antioqueñita 2",
+    "numero": "0048"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Caribeña 1",
+    "numero": "1160"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Caribeña 2",
+    "numero": "6387"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Culona Día",
+    "numero": "5479"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Culona Noche",
+    "numero": "1960"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Fantastica 1",
+    "numero": "2045"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "La Fantastica 2",
+    "numero": "1414"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Paisita 1",
+    "numero": "3094"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Paisita 2",
+    "numero": "4444"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Pick 3 Día",
+    "numero": "0968"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Pick 3 Noche",
+    "numero": "0819"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Pick 4 Día",
+    "numero": "6375"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Pick 4 Noche",
+    "numero": "6602"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Quindío",
+    "numero": "2506"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Sinuano Día",
+    "numero": "6443"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Sinuano Noche",
+    "numero": "9187"
+  },
+  {
+    "fecha": "2026-10-29",
+    "loteria": "Super Chontico Noche Millonario",
+    "numero": "5727"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Astro Luna",
+    "numero": "2259"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Astro Sol",
+    "numero": "5840"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Cafeterito Día",
+    "numero": "5020"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Cafeterito Noche",
+    "numero": "9602"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Chontico Millonario",
+    "numero": "5612"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Chontico Noche",
+    "numero": "5786"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Dorado Mañana",
+    "numero": "1025"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Dorado Noche",
+    "numero": "1590"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Dorado Tarde",
+    "numero": "8288"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "El Motilon 1",
+    "numero": "4105"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "El Motilon 2",
+    "numero": "2889"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "El Pijao de Oro",
+    "numero": "0210"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "El saman de la suerte",
+    "numero": "1503"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Antioqueñita 1",
+    "numero": "8717"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Antioqueñita 2",
+    "numero": "2643"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Caribeña 1",
+    "numero": "3025"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Caribeña 2",
+    "numero": "7150"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Culona Día",
+    "numero": "9298"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Culona Noche",
+    "numero": "2107"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Fantastica 1",
+    "numero": "0520"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "La Fantastica 2",
+    "numero": "9011"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Lotería de Medellín",
+    "numero": "2168"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Paisita 1",
+    "numero": "1882"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Paisita 2",
+    "numero": "4242"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Pick 3 Día",
+    "numero": "0581"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Pick 3 Noche",
+    "numero": "0919"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Pick 4 Día",
+    "numero": "5810"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Pick 4 Noche",
+    "numero": "0683"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Risaralda",
+    "numero": "3292"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Santander",
+    "numero": "8037"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Sinuano Día",
+    "numero": "7218"
+  },
+  {
+    "fecha": "2026-10-30",
+    "loteria": "Sinuano Noche",
+    "numero": "7115"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Astro Luna",
+    "numero": "2522"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Astro Sol",
+    "numero": "6628"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Boyacá",
+    "numero": "5748"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Cafeterito Día",
+    "numero": "4778"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Cafeterito Noche",
+    "numero": "9494"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Cauca",
+    "numero": "1355"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Chontico Millonario",
+    "numero": "4935"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Chontico Noche",
+    "numero": "0446"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Dorado Mañana",
+    "numero": "3279"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Dorado Noche",
+    "numero": "4545"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Dorado Tarde",
+    "numero": "6065"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "El Motilon 1",
+    "numero": "1690"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "El Motilon 2",
+    "numero": "3828"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "El Pijao de Oro",
+    "numero": "8725"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "El saman de la suerte",
+    "numero": "0463"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Extra de Colombia",
+    "numero": "8259"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Antioqueñita 1",
+    "numero": "0226"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Antioqueñita 2",
+    "numero": "2340"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Caribeña 1",
+    "numero": "3764"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Caribeña 2",
+    "numero": "2467"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Culona Día",
+    "numero": "9296"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Culona Noche",
+    "numero": "7212"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Fantastica 1",
+    "numero": "3779"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "La Fantastica 2",
+    "numero": "0844"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Paisita 1",
+    "numero": "3205"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Paisita 2",
+    "numero": "0480"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Paisita 3",
+    "numero": "9022"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Pick 3 Día",
+    "numero": "0666"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Pick 3 Noche",
+    "numero": "0430"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Pick 4 Día",
+    "numero": "7890"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Pick 4 Noche",
+    "numero": "3361"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Sinuano Día",
+    "numero": "0278"
+  },
+  {
+    "fecha": "2026-10-31",
+    "loteria": "Sinuano Noche",
+    "numero": "3913"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Astro Luna",
+    "numero": "8882"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Cafeterito Noche",
+    "numero": "5904"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Chontico Millonario",
+    "numero": "7422"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Chontico Noche",
+    "numero": "7059"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Dorado Noche",
+    "numero": "7215"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "El Motilon 1",
+    "numero": "2982"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "El Motilon 2",
+    "numero": "1275"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "El Pijao de Oro",
+    "numero": "7526"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "El saman de la suerte",
+    "numero": "1182"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Antioqueñita 1",
+    "numero": "5367"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Antioqueñita 2",
+    "numero": "0759"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Caribeña 1",
+    "numero": "6834"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Caribeña 2",
+    "numero": "3572"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Culona Día",
+    "numero": "7729"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Culona Noche",
+    "numero": "5344"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "La Fantastica 2",
+    "numero": "5889"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Paisita 1",
+    "numero": "9588"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Paisita 2",
+    "numero": "9026"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Pick 3 Día",
+    "numero": "0123"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Pick 3 Noche",
+    "numero": "0549"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Pick 4 Día",
+    "numero": "0928"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Pick 4 Noche",
+    "numero": "7401"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Sinuano Día",
+    "numero": "3270"
+  },
+  {
+    "fecha": "2026-11-01",
+    "loteria": "Sinuano Noche",
+    "numero": "5192"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Astro Luna",
+    "numero": "0603"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Cafeterito Noche",
+    "numero": "2458"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Chontico Millonario",
+    "numero": "4206"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Chontico Noche",
+    "numero": "3672"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Dorado Noche",
+    "numero": "8747"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "El Motilon 1",
+    "numero": "8242"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "El Motilon 2",
+    "numero": "6959"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "El Pijao de Oro",
+    "numero": "5819"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "El saman de la suerte",
+    "numero": "5494"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Antioqueñita 1",
+    "numero": "4242"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Antioqueñita 2",
+    "numero": "4477"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Caribeña 1",
+    "numero": "1862"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Caribeña 2",
+    "numero": "8064"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Culona Día",
+    "numero": "2014"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Culona Noche",
+    "numero": "8299"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "La Fantastica 2",
+    "numero": "4504"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Paisita 1",
+    "numero": "8459"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Paisita 2",
+    "numero": "0893"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Pick 3 Día",
+    "numero": "0566"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Pick 3 Noche",
+    "numero": "0246"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Pick 4 Día",
+    "numero": "5614"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Pick 4 Noche",
+    "numero": "3069"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Sinuano Día",
+    "numero": "4233"
+  },
+  {
+    "fecha": "2026-11-02",
+    "loteria": "Sinuano Noche",
+    "numero": "0756"
+  },
+  {
+    "fecha": "2026-11-03",
+    "loteria": "Dorado Mañana",
+    "numero": "4949"
+  },
+  {
+    "fecha": "2026-11-03",
+    "loteria": "La Antioqueñita 1",
+    "numero": "4172"
   }
 ]

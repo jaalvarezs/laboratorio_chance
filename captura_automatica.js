@@ -1,5 +1,5 @@
 // Generado automáticamente por capturar_resultados.py — no editar a mano.
-// Última corrida: 2026-10-22T08:58:37
+// Última corrida: 2026-11-03T11:02:36-05:00
 window.CAPTURA_AUTOMATICA_CHANCE = `fecha,loteria,numero
 2026-07-30,Extra de Colombia,9484
 2026-08-03,Cundinamarca,4757
@@ -2014,4 +2014,365 @@ window.CAPTURA_AUTOMATICA_CHANCE = `fecha,loteria,numero
 2026-10-21,Pick 4 Noche,7424
 2026-10-21,Sinuano Día,4625
 2026-10-21,Sinuano Noche,8995
-2026-10-21,Valle,8084`;
+2026-10-21,Valle,8084
+2026-10-22,Astro Luna,9520
+2026-10-22,Astro Sol,9117
+2026-10-22,Bogotá,9392
+2026-10-22,Cafeterito Día,2931
+2026-10-22,Cafeterito Noche,0996
+2026-10-22,Chontico Millonario,2976
+2026-10-22,Chontico Noche,3588
+2026-10-22,Dorado Mañana,5009
+2026-10-22,Dorado Noche,7089
+2026-10-22,Dorado Tarde,6670
+2026-10-22,El Motilon 1,6031
+2026-10-22,El Motilon 2,8376
+2026-10-22,El Pijao de Oro,6348
+2026-10-22,El saman de la suerte,4646
+2026-10-22,La Antioqueñita 1,9037
+2026-10-22,La Antioqueñita 2,5940
+2026-10-22,La Caribeña 1,5022
+2026-10-22,La Caribeña 2,4706
+2026-10-22,La Culona Día,5877
+2026-10-22,La Culona Noche,3661
+2026-10-22,La Fantastica 1,0336
+2026-10-22,La Fantastica 2,0713
+2026-10-22,Paisita 1,6041
+2026-10-22,Paisita 2,7660
+2026-10-22,Pick 3 Día,0827
+2026-10-22,Pick 3 Noche,0574
+2026-10-22,Pick 4 Día,7928
+2026-10-22,Pick 4 Noche,8338
+2026-10-22,Quindío,2398
+2026-10-22,Sinuano Día,5451
+2026-10-22,Sinuano Noche,0238
+2026-10-22,Super Chontico Noche Millonario,5838
+2026-10-23,Astro Luna,3289
+2026-10-23,Astro Sol,9977
+2026-10-23,Cafeterito Día,1841
+2026-10-23,Cafeterito Noche,7501
+2026-10-23,Chontico Millonario,2457
+2026-10-23,Chontico Noche,4289
+2026-10-23,Dorado Mañana,6729
+2026-10-23,Dorado Noche,9023
+2026-10-23,Dorado Tarde,4083
+2026-10-23,El Motilon 1,5825
+2026-10-23,El Motilon 2,2452
+2026-10-23,El Pijao de Oro,7920
+2026-10-23,El saman de la suerte,3882
+2026-10-23,La Antioqueñita 1,9409
+2026-10-23,La Antioqueñita 2,3645
+2026-10-23,La Caribeña 1,6217
+2026-10-23,La Caribeña 2,3066
+2026-10-23,La Culona Día,5215
+2026-10-23,La Culona Noche,4338
+2026-10-23,La Fantastica 1,3887
+2026-10-23,La Fantastica 2,4599
+2026-10-23,Lotería de Medellín,3755
+2026-10-23,Paisita 1,2224
+2026-10-23,Paisita 2,2967
+2026-10-23,Pick 3 Día,0213
+2026-10-23,Pick 3 Noche,0905
+2026-10-23,Pick 4 Día,5520
+2026-10-23,Pick 4 Noche,6055
+2026-10-23,Risaralda,7470
+2026-10-23,Santander,0579
+2026-10-23,Sinuano Día,1573
+2026-10-23,Sinuano Noche,9565
+2026-10-24,Astro Luna,0460
+2026-10-24,Astro Sol,6273
+2026-10-24,Boyacá,5707
+2026-10-24,Cafeterito Día,8432
+2026-10-24,Cafeterito Noche,2675
+2026-10-24,Cauca,9458
+2026-10-24,Chontico Millonario,0121
+2026-10-24,Chontico Noche,3161
+2026-10-24,Dorado Mañana,3602
+2026-10-24,Dorado Noche,5366
+2026-10-24,Dorado Tarde,6862
+2026-10-24,El Motilon 1,2472
+2026-10-24,El Motilon 2,8519
+2026-10-24,El Pijao de Oro,3251
+2026-10-24,El saman de la suerte,9408
+2026-10-24,La Antioqueñita 1,0431
+2026-10-24,La Antioqueñita 2,7106
+2026-10-24,La Caribeña 1,0531
+2026-10-24,La Caribeña 2,7260
+2026-10-24,La Culona Día,5374
+2026-10-24,La Culona Noche,8542
+2026-10-24,La Fantastica 1,9111
+2026-10-24,La Fantastica 2,9702
+2026-10-24,Paisita 1,8786
+2026-10-24,Paisita 2,9593
+2026-10-24,Paisita 3,9120
+2026-10-24,Pick 3 Día,0419
+2026-10-24,Pick 3 Noche,0122
+2026-10-24,Pick 4 Día,9946
+2026-10-24,Pick 4 Noche,8810
+2026-10-24,Sinuano Día,2735
+2026-10-24,Sinuano Noche,9509
+2026-10-25,Astro Luna,0743
+2026-10-25,Cafeterito Noche,7646
+2026-10-25,Chontico Millonario,4322
+2026-10-25,Chontico Noche,7067
+2026-10-25,Dorado Noche,2080
+2026-10-25,El Motilon 1,2531
+2026-10-25,El Motilon 2,9147
+2026-10-25,El Pijao de Oro,7377
+2026-10-25,El saman de la suerte,0810
+2026-10-25,La Antioqueñita 1,9377
+2026-10-25,La Antioqueñita 2,9156
+2026-10-25,La Caribeña 1,8822
+2026-10-25,La Caribeña 2,6274
+2026-10-25,La Culona Día,7813
+2026-10-25,La Culona Noche,7021
+2026-10-25,La Fantastica 2,1810
+2026-10-25,Paisita 1,6683
+2026-10-25,Paisita 2,9205
+2026-10-25,Pick 3 Día,0858
+2026-10-25,Pick 3 Noche,0267
+2026-10-25,Pick 4 Día,6422
+2026-10-25,Pick 4 Noche,5376
+2026-10-25,Sinuano Día,6918
+2026-10-25,Sinuano Noche,3133
+2026-10-26,Astro Luna,3424
+2026-10-26,Astro Sol,7333
+2026-10-26,Cafeterito Día,4980
+2026-10-26,Cafeterito Noche,6538
+2026-10-26,Chontico Millonario,8666
+2026-10-26,Chontico Noche,3634
+2026-10-26,Cundinamarca,7099
+2026-10-26,Dorado Mañana,3383
+2026-10-26,Dorado Noche,6423
+2026-10-26,Dorado Tarde,7075
+2026-10-26,El Motilon 1,8077
+2026-10-26,El Motilon 2,9304
+2026-10-26,El Pijao de Oro,2385
+2026-10-26,El saman de la suerte,1514
+2026-10-26,La Antioqueñita 1,4902
+2026-10-26,La Antioqueñita 2,7035
+2026-10-26,La Caribeña 1,9501
+2026-10-26,La Caribeña 2,1258
+2026-10-26,La Culona Día,5918
+2026-10-26,La Culona Noche,2420
+2026-10-26,La Fantastica 1,5081
+2026-10-26,La Fantastica 2,4711
+2026-10-26,Paisita 1,7492
+2026-10-26,Paisita 2,7722
+2026-10-26,Pick 3 Día,0819
+2026-10-26,Pick 3 Noche,0179
+2026-10-26,Pick 4 Día,7177
+2026-10-26,Pick 4 Noche,9845
+2026-10-26,Sinuano Día,2503
+2026-10-26,Sinuano Noche,9191
+2026-10-26,Tolima,0902
+2026-10-27,Astro Luna,9906
+2026-10-27,Astro Sol,9761
+2026-10-27,Cafeterito Día,5521
+2026-10-27,Cafeterito Noche,7782
+2026-10-27,Chontico Millonario,5644
+2026-10-27,Chontico Noche,0865
+2026-10-27,Cruz Roja,8663
+2026-10-27,Dorado Mañana,5814
+2026-10-27,Dorado Noche,3809
+2026-10-27,Dorado Tarde,1336
+2026-10-27,El Motilon 1,1100
+2026-10-27,El Motilon 2,7771
+2026-10-27,El Pijao de Oro,5835
+2026-10-27,El saman de la suerte,2067
+2026-10-27,Huila,8262
+2026-10-27,La Antioqueñita 1,9081
+2026-10-27,La Antioqueñita 2,6664
+2026-10-27,La Caribeña 1,1993
+2026-10-27,La Caribeña 2,9792
+2026-10-27,La Culona Día,5932
+2026-10-27,La Culona Noche,5377
+2026-10-27,La Fantastica 1,3987
+2026-10-27,La Fantastica 2,5738
+2026-10-27,Paisita 1,7274
+2026-10-27,Paisita 2,8185
+2026-10-27,Pick 3 Día,0618
+2026-10-27,Pick 3 Noche,0245
+2026-10-27,Pick 4 Día,3675
+2026-10-27,Pick 4 Noche,6793
+2026-10-27,Sinuano Día,8258
+2026-10-27,Sinuano Noche,4081
+2026-10-28,Astro Luna,7047
+2026-10-28,Astro Sol,6334
+2026-10-28,Cafeterito Día,0714
+2026-10-28,Cafeterito Noche,8860
+2026-10-28,Chontico Millonario,5369
+2026-10-28,Chontico Noche,1527
+2026-10-28,Dorado Mañana,5269
+2026-10-28,Dorado Noche,4816
+2026-10-28,Dorado Tarde,8870
+2026-10-28,El Motilon 1,1029
+2026-10-28,El Motilon 2,9901
+2026-10-28,El Pijao de Oro,5597
+2026-10-28,El saman de la suerte,4236
+2026-10-28,La Antioqueñita 1,7566
+2026-10-28,La Antioqueñita 2,4111
+2026-10-28,La Caribeña 1,6762
+2026-10-28,La Caribeña 2,5132
+2026-10-28,La Culona Día,4167
+2026-10-28,La Culona Noche,9976
+2026-10-28,La Fantastica 1,0964
+2026-10-28,La Fantastica 2,5436
+2026-10-28,Manizales,4241
+2026-10-28,Meta,7443
+2026-10-28,Paisita 1,1989
+2026-10-28,Paisita 2,5982
+2026-10-28,Pick 3 Día,0336
+2026-10-28,Pick 3 Noche,0135
+2026-10-28,Pick 4 Día,7428
+2026-10-28,Pick 4 Noche,5743
+2026-10-28,Sinuano Día,0492
+2026-10-28,Sinuano Noche,8516
+2026-10-28,Valle,7544
+2026-10-29,Astro Luna,5045
+2026-10-29,Astro Sol,9573
+2026-10-29,Bogotá,0500
+2026-10-29,Cafeterito Día,9201
+2026-10-29,Cafeterito Noche,4127
+2026-10-29,Chontico Millonario,5928
+2026-10-29,Chontico Noche,6296
+2026-10-29,Dorado Mañana,0496
+2026-10-29,Dorado Noche,9817
+2026-10-29,Dorado Tarde,5847
+2026-10-29,El Motilon 1,4850
+2026-10-29,El Motilon 2,0601
+2026-10-29,El Pijao de Oro,1435
+2026-10-29,El saman de la suerte,8800
+2026-10-29,La Antioqueñita 1,6365
+2026-10-29,La Antioqueñita 2,0048
+2026-10-29,La Caribeña 1,1160
+2026-10-29,La Caribeña 2,6387
+2026-10-29,La Culona Día,5479
+2026-10-29,La Culona Noche,1960
+2026-10-29,La Fantastica 1,2045
+2026-10-29,La Fantastica 2,1414
+2026-10-29,Paisita 1,3094
+2026-10-29,Paisita 2,4444
+2026-10-29,Pick 3 Día,0968
+2026-10-29,Pick 3 Noche,0819
+2026-10-29,Pick 4 Día,6375
+2026-10-29,Pick 4 Noche,6602
+2026-10-29,Quindío,2506
+2026-10-29,Sinuano Día,6443
+2026-10-29,Sinuano Noche,9187
+2026-10-29,Super Chontico Noche Millonario,5727
+2026-10-30,Astro Luna,2259
+2026-10-30,Astro Sol,5840
+2026-10-30,Cafeterito Día,5020
+2026-10-30,Cafeterito Noche,9602
+2026-10-30,Chontico Millonario,5612
+2026-10-30,Chontico Noche,5786
+2026-10-30,Dorado Mañana,1025
+2026-10-30,Dorado Noche,1590
+2026-10-30,Dorado Tarde,8288
+2026-10-30,El Motilon 1,4105
+2026-10-30,El Motilon 2,2889
+2026-10-30,El Pijao de Oro,0210
+2026-10-30,El saman de la suerte,1503
+2026-10-30,La Antioqueñita 1,8717
+2026-10-30,La Antioqueñita 2,2643
+2026-10-30,La Caribeña 1,3025
+2026-10-30,La Caribeña 2,7150
+2026-10-30,La Culona Día,9298
+2026-10-30,La Culona Noche,2107
+2026-10-30,La Fantastica 1,0520
+2026-10-30,La Fantastica 2,9011
+2026-10-30,Lotería de Medellín,2168
+2026-10-30,Paisita 1,1882
+2026-10-30,Paisita 2,4242
+2026-10-30,Pick 3 Día,0581
+2026-10-30,Pick 3 Noche,0919
+2026-10-30,Pick 4 Día,5810
+2026-10-30,Pick 4 Noche,0683
+2026-10-30,Risaralda,3292
+2026-10-30,Santander,8037
+2026-10-30,Sinuano Día,7218
+2026-10-30,Sinuano Noche,7115
+2026-10-31,Astro Luna,2522
+2026-10-31,Astro Sol,6628
+2026-10-31,Boyacá,5748
+2026-10-31,Cafeterito Día,4778
+2026-10-31,Cafeterito Noche,9494
+2026-10-31,Cauca,1355
+2026-10-31,Chontico Millonario,4935
+2026-10-31,Chontico Noche,0446
+2026-10-31,Dorado Mañana,3279
+2026-10-31,Dorado Noche,4545
+2026-10-31,Dorado Tarde,6065
+2026-10-31,El Motilon 1,1690
+2026-10-31,El Motilon 2,3828
+2026-10-31,El Pijao de Oro,8725
+2026-10-31,El saman de la suerte,0463
+2026-10-31,Extra de Colombia,8259
+2026-10-31,La Antioqueñita 1,0226
+2026-10-31,La Antioqueñita 2,2340
+2026-10-31,La Caribeña 1,3764
+2026-10-31,La Caribeña 2,2467
+2026-10-31,La Culona Día,9296
+2026-10-31,La Culona Noche,7212
+2026-10-31,La Fantastica 1,3779
+2026-10-31,La Fantastica 2,0844
+2026-10-31,Paisita 1,3205
+2026-10-31,Paisita 2,0480
+2026-10-31,Paisita 3,9022
+2026-10-31,Pick 3 Día,0666
+2026-10-31,Pick 3 Noche,0430
+2026-10-31,Pick 4 Día,7890
+2026-10-31,Pick 4 Noche,3361
+2026-10-31,Sinuano Día,0278
+2026-10-31,Sinuano Noche,3913
+2026-11-01,Astro Luna,8882
+2026-11-01,Cafeterito Noche,5904
+2026-11-01,Chontico Millonario,7422
+2026-11-01,Chontico Noche,7059
+2026-11-01,Dorado Noche,7215
+2026-11-01,El Motilon 1,2982
+2026-11-01,El Motilon 2,1275
+2026-11-01,El Pijao de Oro,7526
+2026-11-01,El saman de la suerte,1182
+2026-11-01,La Antioqueñita 1,5367
+2026-11-01,La Antioqueñita 2,0759
+2026-11-01,La Caribeña 1,6834
+2026-11-01,La Caribeña 2,3572
+2026-11-01,La Culona Día,7729
+2026-11-01,La Culona Noche,5344
+2026-11-01,La Fantastica 2,5889
+2026-11-01,Paisita 1,9588
+2026-11-01,Paisita 2,9026
+2026-11-01,Pick 3 Día,0123
+2026-11-01,Pick 3 Noche,0549
+2026-11-01,Pick 4 Día,0928
+2026-11-01,Pick 4 Noche,7401
+2026-11-01,Sinuano Día,3270
+2026-11-01,Sinuano Noche,5192
+2026-11-02,Astro Luna,0603
+2026-11-02,Cafeterito Noche,2458
+2026-11-02,Chontico Millonario,4206
+2026-11-02,Chontico Noche,3672
+2026-11-02,Dorado Noche,8747
+2026-11-02,El Motilon 1,8242
+2026-11-02,El Motilon 2,6959
+2026-11-02,El Pijao de Oro,5819
+2026-11-02,El saman de la suerte,5494
+2026-11-02,La Antioqueñita 1,4242
+2026-11-02,La Antioqueñita 2,4477
+2026-11-02,La Caribeña 1,1862
+2026-11-02,La Caribeña 2,8064
+2026-11-02,La Culona Día,2014
+2026-11-02,La Culona Noche,8299
+2026-11-02,La Fantastica 2,4504
+2026-11-02,Paisita 1,8459
+2026-11-02,Paisita 2,0893
+2026-11-02,Pick 3 Día,0566
+2026-11-02,Pick 3 Noche,0246
+2026-11-02,Pick 4 Día,5614
+2026-11-02,Pick 4 Noche,3069
+2026-11-02,Sinuano Día,4233
+2026-11-02,Sinuano Noche,0756
+2026-11-03,Dorado Mañana,4949
+2026-11-03,La Antioqueñita 1,4172`;
