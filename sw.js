@@ -1,4 +1,4 @@
-const CACHE = 'lab-chance-v30';
+const CACHE = 'lab-chance-v32';
 // cache: 'reload' obliga a bajar del servidor una copia FRESCA de cada archivo
 // al instalar una versión nueva, sin pasar por la caché HTTP del navegador.
 // Sin esto, si la app se abrió con Ctrl+Shift+R en los 10 minutos previos a
