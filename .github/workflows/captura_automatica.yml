@@ -2,33 +2,39 @@ name: Captura automática de resultados
 
 on:
   schedule:
-    # 04:00 UTC = 11:00 PM hora Colombia (COT, UTC-5 todo el año, sin
-    # horario de verano). Corre una vez al día, pensado para llegar
-    # después de los sorteos "Noche". GitHub puede retrasar workflows
-    # programados unos minutos en horas de mucha carga; no afecta nada.
+    # 04:00 UTC = 11:00 PM hora Colombia (UTC-5 todo el año). GitHub puede
+    # retrasar las tareas programadas en horas de mucha carga; no importa:
+    # si un sorteo de la noche todavía no estaba publicado, la corrida
+    # siguiente lo recupera desde el histórico del juego.
     - cron: '0 4 * * *'
-  # Permite lanzarlo a mano desde la pestaña "Actions" del repositorio,
-  # sin esperar al horario, para probarlo o forzar una corrida puntual.
-  workflow_dispatch: {}
+  # Para correrlo a mano desde la pestaña "Actions" (botón "Run workflow").
+  workflow_dispatch:
+    inputs:
+      historial:
+        description: 'Guardar también el histórico de un año de cada juego (historial_ganagana.json)'
+        type: boolean
+        default: false
 
-# Necesario para que el robot pueda subir el cambio de vuelta al
-# repositorio. También hay que activar "Read and write permissions" en
-# Settings -> Actions -> General -> Workflow permissions: este bloque de
-# aquí no basta por sí solo si esa opción del repositorio está en
-# solo-lectura (esa configuración manda por encima de lo que diga este
-# archivo).
+# Necesario para que el robot pueda subir los resultados al repositorio.
+# También debe estar "Read and write permissions" en
+# Settings -> Actions -> General -> Workflow permissions.
 permissions:
   contents: write
+
+# Nunca dos capturas a la vez (una manual y una programada chocarían al subir).
+concurrency:
+  group: captura-automatica
+  cancel-in-progress: false
 
 jobs:
   capturar:
     runs-on: ubuntu-latest
     steps:
       - name: Clonar el repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Preparar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -36,49 +42,67 @@ jobs:
         run: pip install requests beautifulsoup4
 
       - name: Correr la captura (mismo script que se corre en local)
-        run: python capturar_resultados.py
+        id: captura
+        run: python capturar_resultados.py ${{ github.event.inputs.historial == 'true' && '--historial' || '' }}
 
+      # Sube lo capturado aunque alguna fuente haya fallado (lo que sí se
+      # leyó no se pierde). Solo se salta si la corrida se cancela.
       - name: Subir cambios si hay algo nuevo
+        if: success() || failure()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # git add sobre un archivo que no existe corta el paso entero (los
-          # steps de Actions corren con "set -e"). Se agrega uno por uno,
-          # solo si existe, para que la subida nunca truene por esto de
-          # nuevo -- pase lo que pase con la ubicación de los archivos.
-          for f in captura_automatica.js captura_acumulada.json captura_estado.json; do
+          for f in captura_automatica.js captura_acumulada.json captura_estado.json historial_ganagana.json; do
             [ -f "$f" ] && git add "$f"
           done
           [ -d capturas ] && git add capturas/
           if git diff --cached --quiet; then
             echo "Sin resultados nuevos en esta corrida, nada que subir."
-          else
-            git commit -m "Captura automática: $(date -u +'%Y-%m-%d %H:%M UTC')"
-            git push
+            exit 0
           fi
+          git commit -m "Captura automática: $(date -u +'%Y-%m-%d %H:%M UTC')"
+          # Si mientras corría subiste otro archivo (index.html, etc.), se
+          # integra primero y se vuelve a intentar.
+          for intento in 1 2 3; do
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME"; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::No se pudieron subir los resultados al repositorio."
+          exit 1
 
-      # v30 -- Monitor: si la captura deja de traer resultados (el sitio cambió,
-      # bloqueó al robot, etc.), la corrida termina en ROJO en vez de pasar en
-      # silencio. GitHub avisa por correo cuando falla una tarea programada.
-      # Va al final a propósito: lo que sí se haya capturado ya quedó subido.
+      # Monitor: la corrida termina en ROJO (y GitHub te avisa por correo)
+      # si alguna fuente falló hoy o si la captura lleva más de 3 días sin
+      # traer nada nuevo. Va al final a propósito: lo capturado ya quedó subido.
       - name: Verificar que la captura siga trayendo resultados
+        if: success() || failure()
+        env:
+          RESULTADO_CAPTURA: ${{ steps.captura.outcome }}
+          ERRORES: ${{ steps.captura.outputs.errores }}
         run: |
           python - <<'PY'
-          import json, sys, datetime, pathlib
+          import datetime, json, os, pathlib, sys
+          fallas = []
+          if os.environ.get("RESULTADO_CAPTURA") != "success":
+              fallas.append("El script de captura no terminó. Mira el paso 'Correr la captura'.")
+          errores = os.environ.get("ERRORES") or "0"
+          if errores != "0":
+              fallas.append(f"{errores} fuente(s) fallaron hoy. El detalle está arriba en 'Annotations' y en el resumen de la corrida.")
           ruta = pathlib.Path("captura_acumulada.json")
-          if not ruta.exists():
-              print("::error::No existe captura_acumulada.json: la captura nunca ha guardado resultados.")
-              sys.exit(1)
-          filas = json.loads(ruta.read_text(encoding="utf-8"))
-          fechas = sorted({f.get("fecha", "") for f in filas if f.get("fecha")})
+          fechas = []
+          if ruta.exists():
+              fechas = sorted({f.get("fecha", "") for f in json.loads(ruta.read_text(encoding="utf-8")) if f.get("fecha")})
           if not fechas:
-              print("::error::captura_acumulada.json está vacío.")
-              sys.exit(1)
-          ultima = datetime.date.fromisoformat(fechas[-1])
-          hoy = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=5)).date()  # hora Colombia
-          atraso = (hoy - ultima).days
-          print(f"Último día capturado: {ultima} · hoy (Colombia): {hoy} · atraso: {atraso} día(s)")
-          if atraso > 3:
-              print(f"::error::La captura no trae resultados nuevos desde {ultima} ({atraso} días). Revisa si cambió el sitio de origen.")
-              sys.exit(1)
+              fallas.append("captura_acumulada.json no existe o está vacío: la captura nunca ha guardado resultados.")
+          else:
+              ultima = datetime.date.fromisoformat(fechas[-1])
+              hoy = (datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(hours=5)).date()  # hora Colombia
+              atraso = (hoy - ultima).days
+              print(f"Último día capturado: {ultima} · hoy (Colombia): {hoy} · atraso: {atraso} día(s)")
+              if atraso > 3:
+                  fallas.append(f"La captura no trae resultados nuevos desde {ultima} ({atraso} días). Revisa si cambió el sitio de origen.")
+          for f in fallas:
+              print(f"::error::{f}")
+          sys.exit(1 if fallas else 0)
           PY
